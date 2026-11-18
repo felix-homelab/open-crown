@@ -37,6 +37,8 @@ __pycache__/
 
 # Local toolchains (installed inside the repo to stay sandbox-legal)
 .toolchain/
+.android-sdk/
+.gradle-home/
 
 # Editors
 .vscode/

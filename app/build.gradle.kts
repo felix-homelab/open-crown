@@ -7,6 +7,8 @@ plugins {
 android {
     namespace = "org.opencrown.app"
     compileSdk = 36
+    // Pinned so AGP does not try to fetch its default build-tools at configure time.
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "org.opencrown.app"

@@ -123,6 +123,20 @@ Decisions are recorded as ADRs in [`docs/adr/`](docs/adr/).
 
 ---
 
+## Building
+
+The toolchain lives inside the repository so the build is self-contained and
+reproducible:
+
+    tools/dev/bootstrap-toolchain.sh     # JDK 21, Gradle 8.14.3, SDK 36, Rust
+    ./gradlew :app:assembleDebug         # app/build/outputs/apk/debug/
+    cargo test --workspace               # Rust core
+    PYTHONPATH=tools/lib python3 -m unittest discover -s tools/tests
+
+The debug APK is verified: package org.opencrown.app, minSdk 31, targetSdk 36,
+signed with the debug certificate. It contains a skeleton screen and nothing
+else; there is no protocol logic and no payload.
+
 ## Repository layout (skeleton)
 
 ```text
