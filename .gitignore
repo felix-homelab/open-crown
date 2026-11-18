@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+captures/
+*.jks
+*.keystore
+
+# Rust
+target/
+**/*.rs.bk
+
+# Captures and raw evidence (large, often sensitive)
+*.pcap
+*.pcapng
+*.snoop
+*.cap
+docs/evidence/raw/
+
+# Secrets and signing material
+keystore.properties
+signing/
+*.pem
+*.key
+
+# Editors
+.vscode/
+*.swp
