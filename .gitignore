@@ -30,6 +30,11 @@ signing/
 *.pem
 *.key
 
+# Python tooling
+.venv/
+__pycache__/
+*.pyc
+
 # Editors
 .vscode/
 *.swp

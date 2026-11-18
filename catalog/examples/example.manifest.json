@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "id": "org.opencrown.payload.example",
+  "version": "0.1.0",
+  "min_agent": "0.1.0",
+  "family": "page-cache",
+  "targets": [
+    {
+      "model": "CPH2653",
+      "kernel_build": "6.1.1-android14-example",
+      "abi": "arm64-v8a",
+      "android": ">=14"
+    }
+  ],
+  "capabilities": [
+    "root",
+    "domain",
+    "controller"
+  ],
+  "entry": "files/payload.bin",
+  "agent": "files/agent",
+  "persistence": "boot",
+  "reversible": "reboot",
+  "artifacts": [
+    {
+      "path": "files/payload.bin",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "size": 1024
+    },
+    {
+      "path": "files/agent",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "size": 2048
+    }
+  ],
+  "notes": "Example only. No signed payload exists; hashes are placeholders."
+}

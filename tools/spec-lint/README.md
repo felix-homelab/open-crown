@@ -1,6 +1,6 @@
 # spec-lint
 
-**Status:** not implemented.
+**Status:** implemented - cli.py on top of tools/lib/opencrown_tools.
 
 ## Purpose
 
