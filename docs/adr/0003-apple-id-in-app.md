@@ -1,43 +1,47 @@
-# ADR 0003 — In-app Apple ID sign-in
+# ADR 0003 — Apple ID handling
 
-**Status:** Accepted (with a security gate)
-**Date:** 2026-11-18
+**Status:** **Proposed** — blocked on the Phase 2 experiment
+**Date:** 2026-11-18 (revised)
 
 ## Context
 
-Activation is an Apple service bound to an Apple ID. Two viable models exist:
-the user activates once on an iPhone and the app takes over, or the user signs
-in inside the app. The owner chose in-app sign-in.
+Activation is coupled to an Apple ID, but the previous version of this ADR
+assumed the app had to perform SRP-6a and store tokens. The prior art reaches a
+visible face with no Apple ID string in its documentation, using an
+`activationResponse` command and an `ACTIVATION_INPUT` phase: the owner's
+input travels separately, through the setup flow.
+
+Two shapes are plausible:
+
+1. **Relay** — the Watch holds the session; the phone forwards the owner's input
+   and stores nothing.
+2. **Session** — the phone authenticates against Apple (SRP + 2FA) and
+   provisions the Watch; tokens become the most valuable secret in the system.
+
+We do not know which the Watch accepts, so this ADR does not decide.
 
 ## Decision
 
-The app implements Apple ID sign-in with SRP-6a and a 2FA relay. The password
-is transient and zeroized; only tokens are stored, in the Android Keystore, with
-expiry and revocation.
+**Deferred.** Phase 2 traces the prior art's activation path and tests which
+shape is accepted. The ADR is updated to Accepted or Superseded with evidence.
 
-This decision has a hard gate: it ships only if the auth subsystem passes an
-independent security review and the SRP implementation matches published test
-vectors.
+Until then, no SRP client and no token store are written.
 
 ## Consequences
 
-**Positive:** the product is genuinely iPhone-free; the user experience is
-self-contained; no dependency on a second device.
+**Positive:** the highest-risk subsystem is not built on a guess; the relay
+shape, if it works, removes the token store and much of the credential liability.
 
-**Negative:** the project becomes a credential-handling product. That raises
-the security bar, the liability, and the trust requirements. Apple may
-rate-limit or lock accounts. The auth code must be open and reviewed. The app
-must explain exactly what is sent to Apple and why.
+**Negative:** activation stays unresolved longer; the UI cannot be finalised;
+both shapes must be kept in the data model.
+
+Either way: the password is transient and zeroized, never logged or persisted; a
+2FA code is used once and never stored; the auth code is open source and reviewed.
 
 ## Alternatives considered
 
-- **iPhone-once activation:** simpler and safer, but contradicts the product
-  promise. Kept as a fallback if the auth gate fails.
-- **App-specific password:** only if Apple requires it; worse UX and still a
-  credential.
-- **OAuth / Sign in with Apple:** not applicable to the activation service.
-
-## Gate
-
-Kill gate K4 in the roadmap: if safe sign-in cannot be demonstrated, activation
-falls back to iPhone-once and the positioning changes.
+- **Decide app-side now** — rejected: it is exactly the assumption that failed
+  the review.
+- **iPhone-once activation** — kept as a fallback, but note that unpairing an
+  Apple Watch erases it, so "activate on the iPhone, then take over" may not
+  survive the handover. It needs the same experiment, not a sentence.

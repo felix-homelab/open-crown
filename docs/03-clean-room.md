@@ -1,117 +1,118 @@
-# 03 — Clean room
+# 03 — Provenance and clean-room discipline
 
-## 1. What "clean room" means here
+## 1. The prior art, named
 
-You asked for a clean room but allowed the **ideas and principles** of prior
-work to be carried over. That is a pragmatic, not a strict, clean room. This
-document defines exactly what that permits, so the position is defensible and
-auditable.
+The protocol layer was reconstructed in public by
+[apple_watch_connector](https://github.com/LordixDemon/apple_watch_connector)
+(Java, Flutter, Rust; Android via Magisk, Linux and Windows via native HCI).
 
-**Allowed:** concepts, architecture patterns, protocol facts, behavioural
-observations, lessons learned, and public documentation.
+Open Crown is an independent reimplementation. We use **ideas, protocol facts,
+and behavioural observations** from that work. We do not copy source, comments,
+identifiers, string tables, assets, watch-face files, or binaries.
 
-**Not allowed:** source code, comments, identifiers, string tables, assets,
-watch-face files, binaries, or internal APIs copied from another project.
+Naming it is a requirement, not a courtesy. The previous revision of this
+document referred to "prior companion projects" without naming one, which made
+the provenance claim unauditable.
 
-The line is: **re-implement the idea; never copy the expression.**
+## 2. What the licence position actually is
 
-## 2. Why it matters
+- The prior repository has **no licence file**, so its code is all rights
+  reserved.
+- If Open Crown and the prior project share an author, self-reimplementation is
+  a **choice**, not a legal necessity; the author could relicense their own code.
+  The rewrite is justified as a maintainability decision in
+  [ADR 0001](adr/0001-kotlin-rust-uniffi.md), not as a legal shield.
+- If they do not share an author, copying is infringement; reading ideas is not.
+  Ideas and functionality are not protected by copyright, though patents can
+  still apply.
+- The real provenance risks are the **third-party components** in that tree and
+  in ours (Flutter, Java libraries, Rust crates), Apple's terms, and patents —
+  not the author's memory.
 
-- Prior companion projects in this space are often unlicensed (no LICENSE means
-  all rights reserved). Copying creates a derivative-work risk that is hard to
-  unwind later.
-- A from-scratch implementation forces a written specification and gives us
-  golden vectors that a copied implementation never has.
-- Clean provenance is a distribution requirement: users are being asked to run
-  root-capable code, and "where did this come from" must have an answer.
+Accordingly: no code is copied, and this document does not claim the legal
+benefits of a two-team clean room. It claims provenance discipline, which is what
+a single maintainer can actually deliver.
 
-## 3. Rules
+## 3. What is allowed
 
-### Allowed
-
+- Concepts, architecture patterns, protocol facts, behavioural observations,
+  lessons learned, and public documentation.
 - Reading prior design documents and public write-ups for ideas.
 - Observing traffic between a phone and a Watch you own.
 - Decoding captures and writing prose, diagrams, and tables about them.
 - Reading public specifications, patents, and vendor documentation.
 - Writing independent code from a spec.
-- Reusing protocol constants that are visible in a capture.
+- Reusing protocol constants visible in a capture.
 
-### Not allowed
+## 4. What is not allowed
 
 - Copying source, comments, identifiers, string tables, or assets.
 - Porting a function by "translating" it line by line.
 - Lifting binaries, resources, watch-face assets, or keystores.
 - Using decompiler output as a code template.
 - Mirroring another project's file layout, class names, or internal APIs.
+- Reusing a prior project's binary or generated code as a starting point.
 
-### Grey zone — note it in the provenance log
-
-- Reading a prior design doc that describes a sequence.
-- Comparing behaviour against another running implementation (black-box only).
-- Reusing an idea whose name is also a protocol term (e.g. "IDS", "checkpoint").
-
-## 4. Artefacts per feature
+## 5. Artefacts per feature
 
 Every protocol feature lands with:
 
 1. **Spec** — `protocol/<area>/<feature>.md`: purpose, sequence, fields,
    endianness, error cases, open questions.
-2. **Vectors** — `protocol/<area>/vectors/*.json`: input bytes, expected output,
-   and the capture that produced them.
+2. **Vectors** — `protocol/<area>/vectors/*.json`: input bytes, expected
+   output, and the capture that produced them.
 3. **Code + test** — an implementation that consumes the vectors.
 
 A spec without a vector is a hypothesis. A vector without a capture is a guess.
 Both may exist, labelled as such.
 
-## 5. Information barrier in practice
+## 6. Naming
 
-One person holds prior knowledge, so the barrier is made of artefacts and time:
+The project uses its own vocabulary: Crown, Agent, Catalog, Link, Channel,
+Session, Checkpoint, Borrow, Domain. Shared identifiers are the easiest way to
+create a derivative, so if a name matches another project's internal type,
+rename it.
 
-- Specs are written from captures **before** the corresponding code, and
-  committed with a timestamp.
-- Implementation PRs link to the spec, never to another repository.
-- The reviewer checks code against the spec and vectors, not against memory.
-- Any file that "feels familiar" is rewritten from the spec.
+The opposite rule also applies: **do not invent synonyms for the prior art's
+public protocol names to hide the relationship.** SPAKE2+, uIKE, NetworkRelay,
+IDS, NWSC, PBBridge, PairedSync and NPS stay as they are, because they are
+observable protocol terms, not copied identifiers.
 
-This is not a perfect barrier. It is a documented, auditable effort.
+## 7. Provenance log
 
-## 6. Provenance log
-
-`docs/provenance.md` (created with the first code commit) records, per feature:
+[docs/provenance.md](provenance.md) records, per feature:
 
 ```text
 feature:        discovery advertisement decode
 spec:           protocol/discovery/advertisement.md @ <commit>
 vectors:        protocol/discovery/vectors/*.json
-sources:        own captures (2026-11-18), public BLE advertising format
-prior ideas:    setup-state advertisement concept (public write-ups)
+sources:        own captures (2026-11-18), prior art README (October 2026)
+prior ideas:    apple_watch_connector — setup-state advertisement concept
 code copied:    none
 reviewer:       <name>, <date>
 ```
 
-The `prior ideas` line is the honest record of what §1 permits.
+The `prior ideas` line must name the project, not gesture at it.
 
-## 7. Third-party code
+## 8. Third-party code
 
 - Every dependency is pinned and recorded in an SBOM.
-- Licenses are checked in CI; copyleft in the app process requires review.
+- Licences are checked in CI; copyleft in the app process requires review.
 - No Apple binaries, Apple SDKs, or internal entitlements are vendored.
 - Generated code (UniFFI, protobuf) is marked generated and excluded from
   provenance review.
+- The prior art's `NOTICE`-bearing components are not copied; if one is ever
+  needed, it enters through the SBOM like any other dependency.
 
-## 8. Naming
-
-The project uses its own vocabulary: Crown, Agent, Catalog, Link, Channel,
-Session, Checkpoint, Borrow. Shared identifiers are the easiest way to create a
-derivative, so if a name matches another project's internal type, rename it.
-
-## 9. Exit criteria for the clean-room audit
+## 9. Exit criteria for the audit
 
 Before v1.0:
 
 - `docs/provenance.md` has an entry for every protocol feature.
-- CI runs a similarity scan against a list of known prior projects.
-- A reviewer reads the spec and the code and signs off that the code follows
-  the spec.
+- CI runs a similarity scan against a named list of prior projects, including
+  the one above.
+- A reviewer reads the spec and the code and signs off that the code follows the
+  spec.
 - No release binary lacks a reproducible build path.
 - No asset in the repository is traceable to another project.
+- The prior art is named in the README and in the provenance log.

@@ -1,110 +1,122 @@
 # Open Crown
 
-**A clean-room Android companion for Apple Watch, with a per-boot privilege layer.**
+**An Android companion for Apple Watch, built on a per-boot privilege model.**
 
 Open Crown lets an Android phone discover, pair with, activate, and operate an
-Apple Watch without an iPhone in the loop. The phone stays stock: no bootloader
-unlock, no permanent root, no custom boot image. When the app needs the radio,
-it runs a signed, device-matched **exploit payload** that borrows root for one
-session and gives it back at reboot.
+Apple Watch without an iPhone in the loop. The bootloader stays locked and the
+system partition stays untouched: when the app needs the Bluetooth controller it
+borrows root for the life of the boot, and a reboot takes it back.
 
-> **Status: planning.** This repository contains design documents only. There is
-> no application code, no payload, and no working pairing path.
+> **Status: planning.** Design documents only. There is no application code, no
+> payload, and no working pairing path in this repository.
+
+> **What it needs today.** A phone you can prepare: already rooted, or on a build
+> with a usable n-day. It is not a universal companion. The supported list is
+> short, evidence-backed, and may lose entries when a vendor patches. See
+> [04 — Payload system](docs/04-payload-system.md).
 
 ---
 
 ## The one-paragraph version
 
-An Apple Watch speaks a proprietary, encrypted protocol family to its iPhone.
-Android's public Bluetooth APIs cannot open the channels that protocol needs,
-so the phone has to own the Bluetooth controller at the HCI level. That needs
-elevated privileges, which stock Android will not grant. Open Crown therefore
-has three parts: a **protocol companion** (Kotlin UI + Rust core), a **per-boot
-exploit runtime** that acquires root through signed, device-specific payloads,
-and a **privileged agent** that holds the radio for the session. The Watch
-itself is never attacked.
+The Watch speaks a proprietary, encrypted protocol over Classic Bluetooth, and
+Android's public APIs cannot open the channels it needs. Owning those channels
+means owning the Bluetooth controller, and on a modern enforcing device owning
+the controller means more than `uid 0`: it needs an SELinux domain and a
+platform configuration that stock Android will not hand an ordinary app. Open
+Crown therefore has three parts: a **protocol companion** (Kotlin UI + Rust
+core), a **per-boot payload runtime** that acquires privilege through signed,
+device-matched n-day chains, and a **resident agent** that holds the radio while
+a watch is paired. The Watch itself is never attacked.
 
----
+## The one claim the project rests on
+
+Everything else here is inherited work. The new claim is:
+
+> **K2a — a per-boot payload can take the Bluetooth controller under enforcing
+> SELinux, without Magisk's priv-app, hidden-API whitelist, or a persistent
+> module.**
+
+It is unproven. Until it passes, every "stock phone" sentence in these documents
+is a hypothesis. The experiment is [Phase 0](docs/06-roadmap.md), and it runs
+before the scaffolding, not after it.
 
 ## What Open Crown is
 
 - A native Android app (Kotlin + Jetpack Compose) with a Rust protocol core.
-- A **zero-install privilege model**: the phone remains unrooted between
-  sessions; root exists only while the app is actively using it.
-- A signed catalog of device-matched exploit payloads (page-cache, futex,
-  and future families) plus the agent binary they bootstrap.
-- In-app Apple ID sign-in for activation, with tokens only — the password is
-  never stored.
-- A clean-room implementation: new code and assets, with prior art used for
-  ideas and principles only.
+- **Borrowed privilege, one boot at a time:** a signed payload raises root, a
+  resident agent uses it, a reboot ends it. Nothing survives the reboot.
+- A **resident agent** behind a visible foreground service for as long as a
+  watch is paired. It is a root daemon while the phone is up; we say so.
+- A signed catalog of device-matched payloads and the agent they bootstrap.
+- A clean-room protocol implementation with published specs and vectors.
+- A licence that lets people audit and rebuild it: MIT.
 
 ## What Open Crown is not
 
-- **Not a watch jailbreak.** No public watchOS jailbreak exists and this project
-  does not pretend to have one. No code runs on the Watch.
-- **Not an activation-lock bypass.** Open Crown only works with a Watch the
-  user already owns and can activate with their own Apple ID. Bypassing
-  Activation Lock, iCloud Lock, or a previous owner's pairing is out of scope
-  and will not be implemented.
-- **Not a stolen-device tool.** Ownership attestation is a design requirement,
-  not a disclaimer.
-- **Not a permanent root.** There is no persistent su, no Magisk module in the
-  critical path, and no boot-image modification.
-- **Not an iPhone replacement for day one.** Pairing, activation, and reconnect
-  are staged goals with hard gates.
+- **Not a watch jailbreak.** No code runs on the Watch and no firmware is touched.
+- **Not an Activation Lock bypass.** Locked devices are out of scope and stay out.
+- **Not an iPhone replacement.** No App Store, no Apple Pay, no cellular
+  provisioning, no watchOS updates.
+- **Not universal.** One model and one watchOS version at a time, with evidence.
+- **Not a silent root.** The agent is visible, the payload is signed, and a
+  reboot is an unconditional recovery path.
+- **Not a general-purpose rooting tool** for arbitrary phones — but the payload
+  artifact is extractable from the APK, and [09](docs/09-legal-ethics.md) says so
+  instead of pretending otherwise.
 
----
-
-## Why this is hard (read this first)
+## Why this is hard
 
 | Layer | Reality |
 | --- | --- |
-| Bluetooth | The Watch uses Classic L2CAP/ERTM channels Android does not expose to ordinary apps. The app must own the controller (HCI) or the HAL. |
-| Privilege | Owning the controller needs uid 0. Stock Android will not give it. The app must borrow it per boot through a kernel exploit. |
-| Pairing | Apple's pairing bootstrap, SMP bonding, and long-term key exchange are undocumented. They must be specified from black-box captures. |
-| Activation | Activation is an Apple service tied to an Apple ID. The app relays it; it never forges it. |
-| Services | Control, setup, sync, faces, notifications, health, and call relay are separate protocols with their own state machines. |
-| Drift | A watchOS or Android update can invalidate an exploit or a protocol assumption overnight. |
+| Bluetooth | The Watch uses Classic L2CAP/ERTM, which Android does not expose to apps. You own the controller or you do nothing. |
+| Privilege | `uid 0` alone is not enough on Android 12+. The only working Android build of this stack ships a priv-app, a hidden-API whitelist and SELinux rules. |
+| Protocol | Already mapped by a public prior project; the work is verification and reimplementation, not discovery. |
+| Activation | Device activation is demonstrated by that project; whether an Apple ID session can live on the phone is undecided. |
+| Supply | Supported devices are the ones that stopped receiving patches. That trade-off is in the README on purpose. |
 
-The exploit layer solves the **second** row, on the user's own phone, for the
-duration of a session. It does not solve, and is not intended to solve, any of
-the others.
-
----
-
-## Feature scope for v1.0
+## Scope for v1.0
 
 | Tier | Feature | Status |
 | --- | --- | --- |
-| T0 | Pair, activate, visible face, reconnect | Core |
-| T1 | Notifications (Android apps → Watch) | Core |
-| T1 | Watch faces: inventory, select, safe mutate | Core |
-| T1 | Settings: wrist, 24-hour, invert | Core |
-| T2 | Health data ingress (local only) | Core |
-| T2 | Wi-Fi credential relay | Core |
-| T3 | Calls / SMS relay | Stretch, last, may slip |
+| T0 | Pair, activate, visible face, reconnect | Gated by K2a and the activation decision |
+| T1 | Notifications, faces, settings | After T0 |
+| T2 | Health ingress, Wi-Fi relay | After T1 |
+| T3 | Calls / SMS relay | Best effort, may never ship |
 
-T0–T2 are the v1.0 commitment. T3 is explicitly allowed to miss v1.0 without
-blocking the release.
+The ship order is in [ADR 0010](docs/adr/0010-ship-order.md): research first, a
+rooted-device companion next, the catalog when the supply and review gates pass.
 
----
+## Prior art and provenance
+
+The protocol layer was reconstructed in public by
+[apple_watch_connector](https://github.com/LordixDemon/apple_watch_connector)
+(Java, Flutter, Rust; Android via Magisk, Linux and Windows via native HCI).
+Open Crown is an independent reimplementation: ideas and observations are used,
+code is not. The relationship, the licence position, and what "clean room" means
+here are in [03 — Provenance](docs/03-clean-room.md) and
+[docs/provenance.md](docs/provenance.md).
+
+Naming it is not a courtesy. A design document that benchmarks against an
+unnamed project cannot be audited.
 
 ## Docs
 
 Read in this order:
 
 1. [Charter](docs/00-charter.md) — why the project exists, what "done" means.
-2. [Feasibility](docs/01-feasibility.md) — the honest engineering assessment.
-3. [Architecture](docs/02-architecture.md) — components, boundaries, data flow.
-4. [Clean room](docs/03-clean-room.md) — how we stay legally and technically clean.
-5. [Payload system](docs/04-payload-system.md) — the exploit/payload catalog.
-6. [Stack](docs/05-stack.md) — language and framework decisions.
-7. [Roadmap](docs/06-roadmap.md) — phases, gates, kill criteria.
-8. [Protocol research](docs/07-protocol-research.md) — what to reverse engineer and how.
-9. [Testing](docs/08-testing.md) — evidence, hardware matrix, acceptance.
-10. [Legal and ethics](docs/09-legal-ethics.md) — the lines we do not cross.
+2. [Feasibility](docs/01-feasibility.md) — what the evidence proves, and what it does not.
+3. [Architecture](docs/02-architecture.md) — components, boundaries, the two transport shapes.
+4. [Provenance](docs/03-clean-room.md) — prior art, clean room, licences.
+5. [Payload system](docs/04-payload-system.md) — privilege, supply, resident agent.
+6. [Stack](docs/05-stack.md) — language and framework decisions, including why a rewrite.
+7. [Roadmap](docs/06-roadmap.md) — K2a first, gates, kill criteria.
+8. [Protocol research](docs/07-protocol-research.md) — what is already mapped, what we verify.
+9. [Testing](docs/08-testing.md) — evidence, hardware matrix, privilege gates.
+10. [Legal and ethics](docs/09-legal-ethics.md) — accepted risk, stated plainly.
 11. [Risks](docs/10-risks.md) — what can kill the project.
-12. [Glossary](docs/11-glossary.md) — terms and abbreviations.
+12. [Glossary](docs/11-glossary.md) — terms and the real protocol vocabulary.
+13. [Decisions](docs/12-decisions.md) — the decision log this revision came from.
 
 Decisions are recorded as ADRs in [`docs/adr/`](docs/adr/).
 
@@ -114,25 +126,18 @@ Decisions are recorded as ADRs in [`docs/adr/`](docs/adr/).
 
 ```text
 open-crown/
-├── app/                  Android application (Kotlin, Compose)
+├── app/                  Android application (Kotlin, Compose, foreground service)
 ├── core/                 Rust protocol core (no OS I/O)
 ├── ffi/                  UniFFI bindings and generated Kotlin
-├── agent/                Privileged helper (HCI broker, payload host)
-├── runtime/              Exploit runtime and payload loader (native)
-├── catalog/              Payload catalog schema, manifests, tooling
-├── protocol/             Clean-room protocol specs and golden vectors
+├── agent/                Resident privileged helper (controller, policy, audit)
+├── runtime/              Payload runtime and payload loader (native)
+├── catalog/              Payload schema, manifests, signing tooling
+├── protocol/             Specs and golden vectors
 ├── docs/                 This documentation set
 └── tools/                Capture analysis, profile builders, release tooling
 ```
 
-The layout is deliberately different from any prior project: Android-native UI,
-Rust core, a separate privileged agent, and a first-class signed payload
-catalog with its own runtime.
+## Licence
 
----
-
-## License
-
-Not chosen yet. Until a license is selected, all rights are reserved. The
-clean-room policy in [docs/03-clean-room.md](docs/03-clean-room.md) applies to
-every contribution.
+MIT — see [LICENSE](LICENSE). Third-party components keep their own licences;
+the release SBOM records them.

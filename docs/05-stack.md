@@ -5,142 +5,151 @@
 | Layer | Choice |
 | --- | --- |
 | Android UI | Kotlin 2.x + Jetpack Compose (Material 3) |
-| Protocol core | Rust 2024, `no_std`-friendly where practical |
-| Bindings | UniFFI (replaces hand-written JNI/C ABI) |
+| Protocol core | Rust 2024, host-testable, no OS I/O |
+| Bindings | UniFFI |
 | Privileged agent | Rust static binary, separate process, Unix-socket RPC |
-| Exploit runtime | Rust + a small C shim, loaded as a native lib |
+| Payload runtime | Rust + a small C shim, loaded as a native lib |
 | IPC | Unix socket + protobuf (versioned); Binder for Android services |
-| Storage | SQLite + SQLCipher for metadata; Android Keystore for key material |
-| Crypto | `ed25519-dalek` (signatures), `x25519-dalek` (key agreement), `rustls` (TLS), `zeroize` |
-| Apple ID auth | SRP-6a (in-house, reviewed) + 2FA relay; tokens only |
+| Storage | SQLite + SQLCipher for metadata; Android Keystore for wrapped keys |
+| Crypto | `ed25519-dalek`, `x25519-dalek`, `rustls`, `zeroize` |
+| Apple ID | Role undecided — see ADR 0003 |
 | Build | Gradle (version catalog) + `cargo-ndk`; JDK 21; NDK r27+ |
 | CI | GitHub Actions: Rust tests, Kotlin tests, `cargo-deny`, `ktlint`, SBOM, reproducible APK |
 | Min SDK | 31 (Android 12) |
-| Target SDK | current stable at kickoff |
+| Licence | MIT |
 
 ## 2. Why this stack
 
-### Android-native UI, not Flutter
+### The rewrite is the goal
 
-The previous generation of this idea used a shared Flutter UI. That buys
-cross-platform screens but costs a runtime bridge at exactly the place we need
-control: process lifetime, foreground services, Bluetooth permissions, and
-Binder. Open Crown is Android-first; the portable part is the protocol core,
-not the UI. Compose gives the same velocity with none of the bridge.
+The protocol already works in Java + Flutter + Rust. Open Crown does not exist to
+add a feature the prior art lacks; the one new capability is *stock packaging*,
+and that is the payload project, not the rewrite.
 
-### Rust core, not Kotlin core
+The rewrite is a deliberate maintainability decision: a pure Rust core with
+host-side tests, a small privileged binary, and an explicit IPC contract. It is
+recorded in [ADR 0001](adr/0001-kotlin-rust-uniffi.md) and it costs three to six
+months before the protocol work starts. The previous revision justified the
+rewrite with "Flutter bridge control" and "JNI drift"; those are real but
+secondary, and stating the real reason keeps the effort estimate honest.
+
+### Android-native UI
+
+Compose gives direct control of process lifetime, foreground services,
+permissions and Binder. The portable part is the core, not the UI.
+
+### Rust core
 
 The core is a state machine over untrusted bytes. Rust gives memory safety,
-deterministic error handling, and a test surface that runs on the host. The same
-core can run in a desktop bridge or a capture analyzer without an emulator.
+deterministic errors, and a test surface that runs on the host.
 
-### UniFFI, not hand-written JNI
+### UniFFI
 
-Hand-written JNI is where previous projects accumulated ABI drift and unsafe
-pointers. UniFFI generates the Kotlin bindings from the Rust API, preserving
-types and errors. The cost is a code-generation step; that is cheaper than a
-runtime signature mismatch.
+Generated bindings remove hand-written JNI and its ABI drift. The generated
+Kotlin is committed and diffed in CI.
 
-### Separate agent, not "the app runs as root"
+### Separate, resident agent
 
-Running the whole APK as root turns every UI bug into a root bug and makes the
-audit surface enormous. The agent is a small static binary with a typed socket
-API and a capability policy. The app can be compromised without handing over the
-radio.
-
-### Exploit runtime in-app, agent in root
-
-The exploit must run in the app because it needs the app's network and file
-descriptors. The agent is the thing that needs root. Splitting them keeps the
-privileged surface to a few hundred lines of Rust.
+The whole APK never runs as root. The agent is a small binary with a typed socket
+API, a capability policy, and a foreground notification. It is resident for the
+life of the boot while a watch is paired — see
+[ADR 0008](adr/0008-resident-agent.md). The threat model treats the app process
+as hostile because it is the component with network, parsers, and UI.
 
 ### Payload-agnostic privilege
 
-No hard dependency on Magisk, KernelSU, or a specific exploit. The agent can use
-a catalog payload, a user-supplied root, or a desktop bridge. That keeps the
+No hard dependency on Magisk, KernelSU, or one exploit family. The agent can use
+a catalog payload, a user-supplied root, or the desktop harness. That keeps the
 project alive when a root method dies.
 
 ## 3. Deliberate changes from the prior approach
 
 | Prior approach | Open Crown | Why |
 | --- | --- | --- |
-| Flutter/Dart UI | Kotlin + Compose | Fewer runtimes, better service/permission control |
+| Flutter/Dart UI | Kotlin + Compose | Fewer runtimes, better service control — and a rewrite we chose |
 | Java bridge + hand-written JNI | Rust + UniFFI | Safer ABI, testable core |
 | App itself runs as root | Separate agent | Smaller attack surface |
-| Magisk module as install path | Per-boot exploit catalog | Stock phone, no permanent install |
-| Shared IPC with desktop | Socket + protobuf, versioned | Explicit contracts, easier mocks |
+| Magisk module as install path | Per-boot payload | The one product differentiator |
+| Shared IPC with desktop | Socket + protobuf | Explicit contracts, easier mocks |
 | Feature-first development | Spec + vectors first | Clean room and regressions |
-| Credential handling unspecified | SRP + 2FA, tokens only | Explicit, auditable auth |
+| Credential handling unspecified | Undecided by design | ADR 0003 is Proposed until the experiment runs |
 
 ## 4. Repository layout
 
 ```text
-app/            Kotlin application, Compose screens, DI, services
+app/            Kotlin application, Compose screens, DI, foreground service
 core/           Rust crate: protocol, crypto, state machines
 ffi/            UniFFI definitions + generated Kotlin (checked in)
-agent/          Rust privileged helper (HCI broker, policy, audit)
-runtime/        Exploit runtime, device matcher, payload loader
+agent/          Rust privileged helper (controller broker, policy, audit)
+runtime/        Payload runtime, device matcher, payload loader
 catalog/        Manifest schema, signing tool, transparency log client
-protocol/       Specs and golden vectors (the clean-room record)
-tools/          Capture analysis, profile builder, fixture generator
+protocol/       Specs and golden vectors
+tools/          Capture analysis, profile builders, fixture generator
 docs/           This documentation set
 ```
 
 ## 5. Toolchain and build
 
 - **JDK 21**, **Gradle 9.x** with a version catalog, **AGP** current stable.
-- **Rust** stable, `edition = "2024"`, `rust-toolchain.toml` pinned.
+- **Rust** stable, edition 2024, `rust-toolchain.toml` pinned.
 - **cargo-ndk** for `arm64-v8a` (primary) and `x86_64` (emulator).
 - **UniFFI** pinned; generated Kotlin committed and diffed in CI.
 - **NDK** pinned in `gradle.properties`.
 - **Reproducible builds**: `SOURCE_DATE_EPOCH`, deterministic zip, pinned
   dependencies, `cargo vendor` for release.
-- The agent is built `panic = "abort"`, stripped, with a fixed syscall
-  allowlist enforced by seccomp at startup.
+- The agent is built `panic = "abort"`, stripped, with a syscall allowlist
+  enforced by seccomp at startup.
 
-## 6. Auth stack
+## 6. Auth stack — proposed, not decided
 
-Apple ID sign-in is the highest-risk subsystem, so it gets its own rules:
+The previous revision specified an in-app SRP-6a client and a token store. The
+experiment has not been run, and the prior art suggests the Watch may hold the
+session while the phone only relays the owner's input.
 
-- SRP-6a client implemented in Rust, reviewed against published test vectors.
-- TLS via `rustls` with certificate pinning to Apple's endpoints.
-- The password exists only in memory for the duration of the SRP exchange and
-  is zeroized immediately after.
-- 2FA is relayed: the app shows the prompt target and accepts the code; no code
-  is logged.
-- Only tokens are stored, in the Android Keystore, with an expiry and a
-  revocation path.
-- No analytics, no crash reporter payloads containing identifiers, no network
-  calls except Apple endpoints and the catalog.
+Two candidate shapes:
+
+| Shape | What the app does | Cost |
+| --- | --- | --- |
+| **Relay** | Passes the owner's input into the Watch's setup flow; stores nothing | No SRP, no token store; the password still transits the app and must be zeroized |
+| **Session** | SRP-6a + 2FA in Rust, token in Keystore, provisions the Watch | Device attestation is the unknown; tokens become the highest-value secret |
+
+Rules that hold either way:
+
+- No password on disk, in logs, in crash reports, or in backups.
+- No 2FA code in logs; expire it from memory.
+- Confirmation that a code is accepted only once.
+- A sign-out path that works offline.
+- No analytics or crash SDK on auth screens.
+- The auth code is open source and reviewed.
+
+ADR 0003 stays **Proposed** until the experiment says which shape the Watch
+accepts.
 
 ## 7. CI gates
 
 1. `cargo fmt --check`, `cargo clippy -D warnings`, `cargo test`.
-2. `cargo deny` (licenses, advisories, bans).
+2. `cargo deny` (licences, advisories, bans).
 3. Kotlin: `ktlint`, `detekt`, unit tests.
 4. Golden-vector suite: every protocol spec has a passing vector.
 5. Generated-bindings diff.
 6. APK build + signature verification + SBOM.
-7. Similarity scan for the clean-room policy (see 03).
-8. Auth tests: SRP vectors, token expiry, zeroization assertions.
+7. Similarity scan for the provenance policy (see [03](03-clean-room.md)).
+8. Auth tests once a shape is chosen: SRP or relay vectors, expiry, zeroization.
 
 ## 8. Performance and power
 
 - The core is allocation-light; hot paths reuse buffers.
-- Scanning is duty-cycled; the agent exposes a scan window, not a free-running
-  radio.
-- No background work without a foreground service and a visible notification.
-- The exploit runs at most three times per boot; the UI shows the budget.
+- The agent is resident while paired. That has a battery cost, and the UI states
+  it. Scanning is duty-cycled; the link is not.
+- The foreground service is mandatory, visible, and stoppable.
+- The payload runs at most three times per boot; the UI shows the budget.
 
 ## 9. Open stack questions
 
-- **UniFFI vs. a thin C ABI** — UniFFI default; revisit if it becomes the
+- **UniFFI vs a thin C ABI** — UniFFI by default; revisit if it becomes the
   bottleneck.
-- **SQLCipher vs. field-level encryption** — depends on the metadata threat
-  model.
-- **Protobuf vs. CBOR** for IPC — protobuf for schema evolution.
-- **SRP implementation** — in-house reviewed vs. a vetted crate; prefer a
-  vetted crate if one passes review.
-- **Kotlin Multiplatform** for a future desktop UI — not now.
-
-These are tracked as ADRs, not decided in prose.
+- **SQLCipher vs field-level encryption** — depends on the metadata threat model.
+- **Protobuf vs CBOR** for IPC — protobuf for schema evolution.
+- **SRP vs relay** — decided by the activation experiment, not by preference.
+- **Kotlin Multiplatform** for a desktop UI — not now; the desktop harness is a
+  test tool, not a product.

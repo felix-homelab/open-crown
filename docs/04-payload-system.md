@@ -2,55 +2,79 @@
 
 ## 1. Scope
 
-A **payload** is a signed package that gives the app a capability stock Android
-will not grant. Payloads run on the **phone**, for one session. Nothing in this
-system runs on, modifies, or attacks the Watch.
+A **payload** is a signed package that gives the app a capability Android will
+not grant. Payloads run on the **phone**, for one boot. Nothing in this system
+runs on, modifies, or attacks the Watch.
 
-The model is **zero-install privilege**:
+## 2. The contract: uid 0 + domain
 
-- The phone is stock between sessions: no permanent root, no Magisk module, no
-  boot-image change.
-- When the app needs the radio, it runs a device-matched exploit, borrows root,
-  starts the agent, and uses the radio.
-- When the session ends — or the phone reboots — the privilege is gone.
+The previous revision said "borrow `uid 0` for a session." That is not the
+capability the design needs, and the only working Android build of this stack
+says so itself: it ships a priv-app, a hidden-API whitelist and SELinux rules,
+and states that *"root access alone does not supply this configuration."*
 
-This is the same shape as community per-boot root tools, but the payload does
-not exist to give the user root. It exists to let Open Crown own the Bluetooth
-controller. The user never gets a shell unless they ask for one.
+The contract is therefore:
 
-## 2. Payload classes
+> **A payload yields `uid 0` and an SELinux context that can hold the
+> Bluetooth controller, for the life of the boot.**
+
+This is unproven for a stock phone. It is the first experiment (K2a) and the
+first kill criterion. See [ADR 0007](adr/0007-uid0-plus-domain.md).
+
+## 3. Payload classes
 
 | Class | Grants | Example | Lifetime |
 | --- | --- | --- | --- |
-| `exploit` | uid 0 for the session | Device/kernel-matched chain (page-cache, futex/UAF, future family) | One session |
-| `agent` | The root helper binary | HCI broker + policy + audit | One session |
-| `shim` | A narrow transport API | HAL bridge or socket shim for a specific device family | One session |
-| `diag` | Read-only device report | Kernel, build, capability probe | Runs unprivileged |
+| `payload` | `uid 0` + domain | Device/kernel-matched n-day chain | One boot |
+| `agent` | The privileged helper binary | Controller broker + policy + audit | One boot |
+| `shim` | A narrow transport API | HAL bridge for a specific family | One boot |
+| `diag` | Read-only device report | Kernel, build, capability probe | Unprivileged |
 
-Every run requires `exploit` + `agent`. `shim` is optional and device-specific.
+Every run requires `payload` + `agent`. `shim` is optional and
+device-specific.
 
-## 3. Exploit families
+## 4. Supply: public n-days
+
+**We use publicly disclosed vulnerabilities, calibrated per build.** We do not
+acquire 0-days and we do not write a fresh chain for every device.
+
+Consequences, stated plainly:
+
+- A supported device is, by definition, a device that has not received the patch
+  that fixes the payload. The README says this in its first screen.
+- The supported list ages. Every security bulletin can remove an entry.
+- The app must never pressure a user to skip updates. It states the trade-off
+  once, at setup, and links to the supported list.
+- A retired payload is marked retired; the app says so and stops offering it.
+- We do not ship a payload for a build we have not run. A port is a new entry
+  with its own evidence.
+
+The alternative — buying or developing chains — is out of scope for a
+single-maintainer project and would change the legal posture in
+[09](09-legal-ethics.md).
+
+## 5. Exploit families
 
 The catalog is organised by family, not by CVE. A family is a reusable technique
 with a per-device calibration:
 
 | Family | Sketch | Calibration |
 | --- | --- | --- |
-| Page-cache write | A kernel path writes attacker-controlled bytes into a file's page cache without write permission; the app patches a root-executed component | Exact kernel build, target file, block offsets |
-| Futex/UAF | A race in a kernel object gives a controlled write; used to forge a work item that runs a helper as root | Struct offsets, symbol addresses, KASLR strategy |
-| Future | Anything that yields a reliable uid 0 | Same contract |
+| Page-cache write | A kernel path writes attacker-controlled bytes into a file's page cache without write permission; used to patch a root-executed component | Exact kernel build, target file, block offsets, persistence behaviour |
+| Futex/UAF | A race gives a controlled write; used to forge a work item that runs a helper with `uid 0` | Struct offsets, symbols, KASLR strategy |
+| Future | Anything that yields a reliable `uid 0` + domain | Same contract |
 
-The catalog never ships a payload that has not been run on the target build. A
-"port" is a new entry with its own evidence.
+Each family must document its **persistence behaviour**: what survives a reboot,
+and why. "Memory-only" is a per-family claim, not a slogan.
 
-## 4. Bundle format
+## 6. Bundle format
 
 ```text
 payload.crown
 ├── manifest.json
 ├── manifest.sig
 ├── files/
-│   ├── exploit.bin
+│   ├── payload.bin
 │   └── agent
 └── SBOM.json
 ```
@@ -60,26 +84,26 @@ payload.crown
 ```json
 {
   "schema": 1,
-  "id": "org.opencrown.payload.example-e1s",
+  "id": "org.opencrown.payload.example",
   "version": "1.0.0",
   "min_agent": "1.0.0",
   "family": "page-cache",
   "targets": [
     {
-      "model": "SM-S921B",
-      "kernel_build": "6.1.162-android14-11-34343818",
+      "model": "CPH2653",
+      "kernel_build": "6.1.x-android14-...",
       "abi": "arm64-v8a",
       "android": ">=14"
     }
   ],
-  "capabilities": ["root", "hci"],
-  "entry": "files/exploit.bin",
+  "capabilities": ["root", "domain", "controller"],
+  "entry": "files/payload.bin",
   "agent": "files/agent",
-  "persistence": "ephemeral",
-  "reversible": true,
+  "persistence": "boot",
+  "reversible": "reboot",
   "artifacts": [
-    {"path": "files/exploit.bin", "sha256": "…", "size": 123456},
-    {"path": "files/agent", "sha256": "…", "size": 654321}
+    {"path": "files/payload.bin", "sha256": "...", "size": 1},
+    {"path": "files/agent", "sha256": "...", "size": 2}
   ],
   "notes": "Shown at consent time."
 }
@@ -91,10 +115,10 @@ Rules:
 - `capabilities` is a closed enum; unknown capability = reject.
 - `entry` and `agent` must resolve inside `files/`; traversal is rejected.
 - Every artifact is hashed; the manifest hash is signed.
-- `persistence` must be `ephemeral` for v1. `session` and `explicit` are
+- `persistence` must be `boot` in v1. `session` and `explicit` are
   reserved and rejected by the v1 agent.
 
-## 5. Signing and trust
+## 7. Signing and trust
 
 ```text
 manifest.sig = Ed25519(catalog_key, SHA-256(canonical(manifest.json)))
@@ -105,97 +129,103 @@ manifest.sig = Ed25519(catalog_key, SHA-256(canonical(manifest.json)))
   validity.
 - A revocation list ships with the catalog and is cached; a revoked payload
   cannot run even if already downloaded.
-- Verification happens in the **agent** and in the runtime, so a compromised UI
-  cannot bypass it.
+- Verification happens in the agent and in the runtime, so a compromised UI
+  cannot inject a manifest.
 - An append-only transparency log publishes every payload hash and signature.
 
-## 6. Target matching and support
+## 8. Target matching
 
 ```text
 fingerprint = SHA-256(model || kernel_release || abi || android_sdk || build_id)
 ```
 
-Matching is exact on `model` and `kernel_build`, range-based on `android`. A
-payload that does not match is never executed. A maintainer-only override
+Matching is exact on `model` and `kernel_build`, range-based on `android`.
+A payload that does not match is never executed. A maintainer-only override
 exists behind a compile-time flag and is absent from release builds.
 
-Support policy:
-
-- A payload is **supported** while it has a passing hardware test on the current
-  app release.
-- When the vendor patches the bug, the payload is marked **retired**; the app
-  says so and points at the device matrix.
-- The catalog may carry multiple families for one device if more than one
-  works; the runtime picks the highest-reliability entry.
-
-## 7. Execution lifecycle
+## 9. Execution lifecycle
 
 ```text
-requested → consented → verified → staged → executed → observed → disposed
+requested → consented → verified → staged → executed → resident → disposed
 ```
 
-1. **Requested** — the core asks for a capability the session lacks.
-2. **Consented** — the UI shows id, publisher, family, capabilities,
-   persistence, expected reboot risk, and a plain-language explanation.
+1. **Requested** — the core asks for a capability it lacks.
+2. **Consented** — once per boot, with a user gesture. The UI shows id,
+   publisher, family, capabilities, persistence, reboot risk, and the fact that
+   the app will run a root daemon behind a notification.
 3. **Verified** — signature, revocation, target, agent version.
 4. **Staged** — files in a private dir, hashes re-checked.
-5. **Executed** — the exploit borrows root and starts the agent with a one-time
-   token over a Unix socket.
-6. **Observed** — the agent records the capability handshake and the HCI
-   operations in the audit log.
-7. **Disposed** — the agent exits; the exploit's loaded state is released; files
-   are deleted; the checkpoint is marked stale.
+5. **Executed** — the payload yields `uid 0` and a domain; the agent starts with
+   a one-time token over a Unix socket.
+6. **Resident** — the agent holds the controller behind a foreground service and
+   records every privileged action.
+7. **Disposed** — at unpair, app stop, or reboot. The agent exits; files are
+   deleted; the checkpoint is marked stale.
 
-## 8. Safety requirements
+Automatic reconnect does **not** re-run the payload: the agent is already
+resident. If the agent is gone, re-raising it requires a new gesture. This
+resolves the old contradiction between "re-run automatically" and "no silent
+execution."
 
-- **Memory-only by default.** No partition writes, no boot image, no persistent
-  module.
-- **No silent execution.** Every run has a user gesture and a visible ongoing
-  notification.
+## 10. Safety requirements
+
+- **Memory-only where the family allows it.** Each family documents its
+  persistence behaviour; no partition or boot-image writes.
+- **Visible execution.** A foreground service notification with a stop action.
+  The agent is never silent.
 - **Preflight:** battery above 30%, free space above 200 MB, exact target match,
-  no other session active.
-- **Watchdog:** the agent self-terminates if the app disappears; the exploit's
-  borrowed root does not outlive the agent.
-- **Crash recovery:** a panic reboots the phone; the app detects an unclean run
-  on next start and reports it without auto-retrying.
-- **Retry budget:** three attempts per boot, then cooldown; no boot loops.
+  no other privileged session active.
+- **Watchdog:** the agent self-terminates if the app disappears beyond the grace
+  period; borrowed privilege does not outlive the agent.
+- **Crash recovery:** a panic reboots the phone; the next start reports the
+  unclean run without auto-retrying.
+- **Retry budget:** three attempts per boot, then cooldown. No boot loops.
 - **Audit log:** append-only, local, exportable.
 
-## 9. Threat model
+## 11. Threat model
 
 | Threat | Impact | Mitigation |
 | --- | --- | --- |
-| Malicious payload in catalog | Root compromise | Offline signing, transparency log, two reviewers, reproducible builds |
-| Compromised catalog key | Same | Rotation, revocation, threshold signing for `exploit` |
-| Compromised UI process | Capability abuse | Agent checks caller UID + signature + one-time token |
+| Malicious payload in catalog | Root compromise | Offline signing, transparency log, review, reproducible builds |
+| Compromised catalog key | Same | Rotation, revocation, threshold signing |
+| Compromised app process | Capability abuse | Agent validates UID + signature + token + envelope; policy limits operations |
+| Long-lived root agent | Persistent attack surface | Small binary, seccomp, no network, foreground visibility, watchdog |
+| Public n-day known to attackers | Anyone can root that build | Payloads are not secrets; we do not pretend the exploit is confidential |
 | Replay of an old payload | Downgrade | Version monotonicity + revocation |
-| Exploit instability | Brick / panic | Memory-only, preflight, watchdog, retry budget, recovery docs |
-| Payload escape | Kernel compromise | Minimal agent, seccomp, no ambient capabilities |
+| Exploit instability | Panic / data loss | Per-family persistence analysis, preflight, watchdog, retry budget |
 | Supply chain | Backdoored binary | Reproducible builds, SBOM, pinned toolchain |
 
-## 10. What the catalog will never contain
+## 12. What the catalog will never contain
 
 - An Activation Lock, iCloud Lock, or pairing-lock bypass.
 - A watchOS exploit, jailbreak, or firmware image.
-- A payload that hides from the user, persists silently, or disables security
-  logging.
+- A payload that hides from the user, persists silently, or disables logging.
 - A payload whose only purpose is to defeat another person's device.
 - A generic "root any phone" payload with no target list.
 - A payload that gives the user a persistent shell.
 
-## 11. Governance
+## 13. Governance
 
 | Action | Requirement |
 | --- | --- |
-| Add a payload | Two reviewers, reproducible build, published source |
-| Grant `root` | Same + offline signature + 7-day comment period |
+| Add a payload | Exact-target evidence, reproducible build, source published |
+| Grant root | Same, plus a second reviewer where available |
+| Ship without a second reviewer | Allowed, but labelled `unreviewed` in the catalog and release notes |
 | Revoke | Any maintainer, immediate |
 | Change signing keys | Documented ceremony, overlap window |
-| Retire | Announce in the catalog and the app |
+| Retire | Announced in the catalog and in the app |
 
-## 12. Bring-your-own-root
+## 14. Bring-your-own-root
 
-A user who already has a root solution can point the agent at it and skip the
-catalog entirely. The agent then runs under that root, and the app records the
-provenance as `user-supplied`. This is the escape hatch for unsupported devices
-and the recommended path for developers.
+A user who already has root can point the agent at it and skip the catalog. The
+agent runs under that root, and the app records the provenance as
+`user-supplied`. This is the fallback for unsupported devices and the
+recommended path for developers. It is also the first thing to ship — see
+[ADR 0010](adr/0010-ship-order.md).
+
+## 15. What this is not
+
+It is not a hidden capability. The payload binary is in the APK, the signature is
+published, and anyone who wants the artifact can extract it. The project accepts
+that and documents it in [09 — Legal and ethics](09-legal-ethics.md). Claiming
+otherwise would be a lie that a reviewer would catch in five minutes.

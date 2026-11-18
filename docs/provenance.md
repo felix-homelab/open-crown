@@ -1,10 +1,18 @@
 # Provenance log
 
 This file records, per feature, what was consulted and what was copied. The
-policy is in [03 — Clean room](03-clean-room.md): ideas and principles allowed;
-source, comments, identifiers, assets, and binaries are not.
+policy is in [03 — Provenance](03-clean-room.md): ideas and protocol facts
+allowed; source, comments, identifiers, assets, and binaries are not.
 
-It is filled in as features land. An empty table at planning time is expected.
+## Prior art
+
+| Project | Relationship | What we take | What we do not take |
+| --- | --- | --- | --- |
+| [apple_watch_connector](https://github.com/LordixDemon/apple_watch_connector) (Java, Flutter, Rust) | Independent reimplementation of the same protocol; unlicensed | Protocol facts, layer names, behavioural observations, lessons | Source, identifiers, assets, binaries, generated code |
+
+The prior project is named here and in the README. The previous revision used
+the phrase "prior companion projects" without naming one, which made the record
+unauditable.
 
 ## Entries
 

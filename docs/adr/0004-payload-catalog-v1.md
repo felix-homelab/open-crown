@@ -1,38 +1,43 @@
-# ADR 0004 — Payload catalog ships in v1
+# ADR 0004 — Payload catalog ships with the product
 
-**Status:** Accepted
-**Date:** 2026-11-18
+**Status:** Accepted, ordered by [ADR 0010](0010-ship-order.md)
+**Date:** 2026-11-18 (revised)
 
 ## Context
 
-The catalog is the riskiest subsystem: it signs and distributes code that
-borrows root. It could have been deferred to v2, with v1 requiring an
-already-rooted phone. The owner chose to ship it in v1.
+The catalog is the riskiest subsystem: it signs and distributes code that yields
+root. It could have been deferred, with v1 requiring an already-rooted phone.
+The project wants all three of its tracks — research, companion, catalog — in
+scope.
+
+The previous guardrail contradicted the decision: it said the catalog ships in
+v1, and then said it ships in v1.1 if it is not ready. That is not a guardrail,
+it is a coin flip.
 
 ## Decision
 
-v1 includes the payload catalog, the exploit runtime, and the agent. The rest of
-the product (protocol, pairing, features) depends on the catalog for privilege,
-so the catalog and the protocol work proceed in parallel.
+The catalog is **in scope** and ships when its gates pass, in the order set by
+[ADR 0010](0010-ship-order.md):
+
+- **v1** — companion for prepared devices (bring-your-own-root, or a catalog
+  payload if one exists). A complete product on its own.
+- **v1.1** — catalog for unpatched devices, once supply, review and legal gates
+  pass.
+- If K2a and K2b pass early, the catalog returns to v1. The order decides, not
+  the version number.
 
 ## Consequences
 
-**Positive:** the app is self-contained on a stock phone; no user prerequisite;
-the core product promise holds from the first release.
+**Positive:** something useful ships even if the privilege work fails; the
+protocol work is never blocked on catalog governance; the README's support
+statements stay true.
 
-**Negative:** signing infrastructure, review process, revocation, transparency
-log, supply-chain hardening, brick liability, and a mandatory second reviewer
-all land in v1. Any delay in the catalog delays pairing.
+**Negative:** the "no root required" promise is deferred, and the announcement
+must say so plainly. Signing infrastructure, review, revocation, transparency
+log, brick liability and the reviewer requirement all still land.
 
 ## Alternatives considered
 
-- **v2 catalog, v1 requires root:** safer and faster, but splits the product
-  into two audiences and delays the stock-phone promise.
-- **No catalog, bring-your-own-root:** simplest legally, but reduces the app to
-  a tool for an already-technical audience.
-
-## Guardrail
-
-If the catalog is not review-ready by the start of Phase 3, the release target
-drops back to "requires existing root" for v1 and the catalog ships in v1.1.
-The protocol work is not blocked by catalog governance.
+- **Catalog in v1 unconditionally** — rejected: it makes the whole release
+  hostage to the least plannable subsystem.
+- **No catalog, bring-your-own-root only** — kept as the v1 fallback.

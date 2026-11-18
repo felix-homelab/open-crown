@@ -7,65 +7,83 @@ named owner and a written mitigation before the phase that exposes it.
 
 | # | Risk | L | I | Score | Mitigation |
 | --- | --- | --- | --- | --- | --- |
-| R1 | Pairing turns out to need an iPhone-held secret | 3 | 5 | 15 | Kill gate K3; the Phase 3 experiment is designed to find this early |
-| R2 | No reliable exploit for the target device family | 3 | 5 | 15 | Multi-family catalog; bring-your-own-root; bridge fallback; explicit supported list |
-| R3 | Exploit panics or bricks a phone | 3 | 4 | 12 | Memory-only payloads, preflight, watchdog, retry budget, brick drill |
-| R4 | Apple ID sign-in triggers lockout or attestation | 3 | 4 | 12 | Conservative retry, clear warnings, "iPhone-once" fallback, kill gate K4 |
-| R5 | Apple legal action or takedown | 2 | 5 | 10 | No Apple binaries/keys; jurisdiction review; research-only fallback |
-| R6 | watchOS update breaks the protocol | 4 | 3 | 12 | Versioned specs, capture suite, per-release delta, "don't update" guidance |
-| R7 | Android update breaks the exploit | 4 | 3 | 12 | Family-based catalog, support matrix, retire policy |
-| R8 | Single test device hides portability bugs | 4 | 3 | 12 | Expand matrix before claiming support; label everything "tested on" |
-| R9 | Maintainer burnout / abandonment | 3 | 4 | 12 | Scope discipline, documented architecture, small releases, no promises |
-| R10 | Malicious or broken payload in catalog | 2 | 5 | 10 | Two reviewers, offline signing, transparency log, revocation |
+| R1 | Activation needs an Apple-device-held session | 3 | 5 | 15 | Phase 2 decision; relay vs session; iPhone-once as a written fallback |
+| R2 | No payload path to the controller (K2a fails) | 3 | 5 | 15 | Phase 0 tests both shapes before any scaffolding; rooted-device fallback |
+| R3 | Payload panics or bricks a phone | 3 | 4 | 12 | Per-family persistence analysis, preflight, watchdog, brick drill |
+| R4 | Apple ID lockout or attestation wall | 3 | 4 | 12 | Relay-first bias, no auto-retry, gate G1 |
+| R5 | Apple legal action or takedown | 2 | 5 | 10 | No Apple binaries or keys; MIT; accepted-risk posture |
+| R6 | watchOS update breaks the protocol | 4 | 3 | 12 | Versioned specs, capture suite, per-release delta, support statements |
+| R7 | Android update breaks the payload | 4 | 3 | 12 | Exact-target catalog, retirement, supported list |
+| R8 | One test device hides portability bugs | 4 | 3 | 12 | Expand the matrix before claiming support |
+| R9 | Maintainer burnout / abandonment | 3 | 5 | 15 | Scope order (ADR 0010), small releases, published decision log |
+| R10 | Malicious or broken payload in the catalog | 2 | 5 | 10 | Offline signing, transparency log, review, revocation |
 | R11 | Credential handling leaks a password | 2 | 5 | 10 | Zeroization, no logging, open auth code, security review |
-| R12 | Health data leak | 2 | 5 | 10 | Local-first, encrypted at rest, opt-in, export/delete |
-| R13 | Scope creep (calls/SMS, watch apps) | 4 | 2 | 8 | T3 is best effort; watch apps permanently out |
-| R14 | Legal ambiguity in a target jurisdiction | 3 | 3 | 9 | Counsel before release; geo-restrict if needed |
+| R12 | Health data leak | 2 | 4 | 8 | Local-first, encrypted at rest, opt-in, export/delete |
+| R13 | Scope creep (calls/SMS, watch apps) | 4 | 2 | 8 | T3 best effort; watch apps permanently out |
+| R14 | Legal ambiguity in a target jurisdiction | 3 | 4 | 12 | Source-first distribution; published risk statement |
 | R15 | Supply-chain compromise of the build | 2 | 4 | 8 | Pinned deps, SBOM, reproducible builds, signed releases |
+| R16 | Product pushes users to skip security updates | 4 | 4 | 16 | One-time warning, supported list, no update-shaming, retirement on patch |
+| R17 | Resident root agent compromised | 3 | 5 | 15 | Small binary, seccomp, no network, foreground visibility, watchdog |
+| R18 | Public n-day used against users before it is patched | 4 | 4 | 16 | It is already public; we do not add capability, we document the exposure |
+| R19 | User updates and the app silently stops working | 5 | 3 | 15 | Update check, explicit "this build is no longer supported" state |
+| R20 | Prior art abandoned, map goes stale | 3 | 3 | 9 | Keep own captures; do not depend on it as a runtime component |
+| R21 | Provenance contamination from contributors | 2 | 4 | 8 | Signed attestation per PR; similarity scan; named prior art |
+| R22 | Single reviewer ships a bad payload | 3 | 4 | 12 | `unreviewed` labelling; 7-day public comment on the catalog PR |
 
-## 2. The three that actually matter
+## 2. The four that actually matter
 
-### R1 — the hidden iPhone dependency
+### R2 — no path to the controller
 
-If pairing requires a value that only an iPhone can derive, the product's core
-promise fails. This is why Phase 3 starts with a capture-and-classify
-experiment, not with code: we need to know which messages are local before
-committing months.
+If a payload cannot hold the controller under enforcing SELinux without Magisk's
+configuration, the stock-phone product does not exist. This is why Phase 0 runs
+before Phases 1–8, and why ADR 0010 already defines the fallback.
 
-**Early warning:** any step where the Watch accepts a message only after a
-round-trip we cannot reproduce, or where a key never appears on the wire.
+**Early warning:** every shape ends in `selinux_denied`; the only working
+configuration is the one we set out to replace.
 
-### R2 — exploit fragility
+### R16 — the product makes users less safe
 
-Borrowed root is the product's foundation and its weakest point. A device that
-loses its payload becomes discovery-only overnight. The catalog must be
-family-based (so one technique covers many builds), and the app must degrade
-gracefully rather than lie.
+The supported devices are the unpatched ones. That is a genuine harm, not a
+marketing problem. Mitigation is honesty and a short list, not a cleverer
+message.
 
-**Early warning:** a vendor security bulletin that lists the family's bug; a new
-kernel build with different offsets; an exploit success rate below 80% on the
-test device.
+**Early warning:** a support request that says "I turned off updates to keep it
+working" and we have no answer.
 
-### R9 — one person
+### R17 — a resident root daemon
 
-The project is long, the domain is deep, and the payoff is a fragile companion
-for a small audience. Burnout is a real risk, and it is mitigated by scope
-discipline: ship T0–T1 first, treat T2 as a bonus, and keep T3 behind a gate.
+The agent is a long-lived privileged process on a networked device. Its attack
+surface is the app's socket protocol and the controller path, and it must be
+treated as exposed for the whole boot.
+
+**Early warning:** any parser in the agent; any network call from the agent; any
+capability broader than the operation requested.
+
+### R19 — updates kill the app
+
+A vendor patch silently retires a payload, and the user experiences a broken
+app. The app must detect the build, say plainly that support ended, and point at
+the rooted-device path.
+
+**Early warning:** a user on a newer build than the catalog's newest entry.
 
 ## 3. Assumptions that could invalidate the plan
 
-1. The Watch can be paired without an iPhone physically present.
-2. Activation can be relayed with the owner's Apple ID from a non-Apple client.
-3. A per-boot exploit can be maintained for at least one device family.
-4. The protocol is observable in captures (not fully out-of-band encrypted).
-5. Users will accept a root-capable app for this use case.
+1. A payload can take the controller without Magisk-class configuration.
+2. Activation can be completed with the owner's Apple ID from the phone, or the
+   Watch can hold the session with a relay.
+3. A public n-day can be maintained for at least one Android release cycle.
+4. The protocol is observable as a pairing peer, not only on the wire.
+5. Users will accept a resident root daemon and an unpatched device.
+6. One maintainer can run research, product, and distribution at once.
 
-Each assumption has a test in Phases 2–4. If one fails, the project re-scopes;
-it does not "push through".
+Each has a test or a written fallback. If one fails, the project re-scopes; it
+does not push through.
 
 ## 4. What we will not do to de-risk
 
 - We will not ship a stolen-device feature to grow the audience.
-- We will not hide root from the user to make the app feel smoother.
+- We will not hide the agent from the user to make the app feel smoother.
 - We will not claim support for a device we have not tested.
 - We will not use Apple binaries or keys to shortcut the protocol work.
+- We will not buy or hoard 0-days to make the catalog look stronger.
