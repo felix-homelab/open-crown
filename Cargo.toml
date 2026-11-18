@@ -1,0 +1,21 @@
+# Open Crown Rust workspace.
+# see docs/02-architecture.md and docs/05-stack.md
+
+[workspace]
+resolver = "2"
+members = ["core", "ffi", "agent", "runtime"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+opencrown-core = { path = "core" }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"

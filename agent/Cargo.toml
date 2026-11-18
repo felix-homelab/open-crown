@@ -1,0 +1,13 @@
+[package]
+name = "opencrown-agent"
+description = "Resident privileged helper: controller, policy, audit"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "crown-agent"
+path = "src/main.rs"
+
+[dependencies]

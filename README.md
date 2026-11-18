@@ -7,8 +7,9 @@ Apple Watch without an iPhone in the loop. The bootloader stays locked and the
 system partition stays untouched: when the app needs the Bluetooth controller it
 borrows root for the life of the boot, and a reboot takes it back.
 
-> **Status: planning.** Design documents only. There is no application code, no
-> payload, and no working pairing path in this repository.
+> **Status: planning.** Design documents and a build skeleton. The layout is
+> real; the modules are stubs. There is no protocol logic, no payload, and no
+> working pairing path in this repository.
 
 > **What it needs today.** A phone you can prepare: already rooted, or on a build
 > with a usable n-day. It is not a universal companion. The supported list is
@@ -122,7 +123,7 @@ Decisions are recorded as ADRs in [`docs/adr/`](docs/adr/).
 
 ---
 
-## Planned repository layout
+## Repository layout (skeleton)
 
 ```text
 open-crown/

@@ -1,0 +1,10 @@
+[package]
+name = "opencrown-runtime"
+description = "Payload runtime: device matching, manifest verification, staging"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+opencrown-core.workspace = true

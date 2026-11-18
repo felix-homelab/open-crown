@@ -34,7 +34,7 @@
 
 ## Status
 
-Planning. No code. Two things gate everything:
+Planning. Build skeleton only — no protocol logic. Two things gate everything:
 
 1. **K2a** — can a payload take the controller under enforcing SELinux?
 2. **Activation** — can the phone hold the Apple ID session, or must the Watch?

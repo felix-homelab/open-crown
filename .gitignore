@@ -4,12 +4,14 @@
 # Android / Gradle
 .gradle/
 build/
+.kotlin/
 local.properties
 *.iml
 .idea/
 captures/
 *.jks
 *.keystore
+*.hprof
 
 # Rust
 target/

@@ -1,0 +1,9 @@
+[package]
+name = "opencrown-core"
+description = "Open Crown protocol core: pure logic, no OS I/O"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
