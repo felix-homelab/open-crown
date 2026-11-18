@@ -10,3 +10,6 @@
 pub mod manifest;
 pub mod matcher;
 pub mod stage;
+
+/// Re-exported so the runtime and the core agree on one revision.
+pub use opencrown_core::PROTOCOL_VERSION;
