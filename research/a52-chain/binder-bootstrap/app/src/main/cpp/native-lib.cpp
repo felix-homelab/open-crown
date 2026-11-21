@@ -56,7 +56,7 @@ static int32_t handle_from_java_binder(JNIEnv* env, jobject binder) {
     void* ibinder = *reinterpret_cast<void**>(native_data);
     __android_log_print(ANDROID_LOG_INFO, TAG, "ibinder=%p", ibinder);
     if (ibinder == nullptr) return -1;
-    int32_t handle = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(ibinder) + 8);
+    int32_t handle = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(ibinder) + 0x10);
     __android_log_print(ANDROID_LOG_INFO, TAG, "extracted handle=%d", handle);
     return handle;
 }
@@ -198,9 +198,9 @@ Java_org_opencrown_binderprobe_MainActivity_nativeObjectHandles(
     __android_log_print(ANDROID_LOG_INFO, TAG, "object raw=%lld", (long long)raw);
     if (raw == 0) return -41;
     void* p = reinterpret_cast<void*>(raw);
-    int32_t direct = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(p) + 8);
+    int32_t direct = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(p) + 0x10);
     void* first = *reinterpret_cast<void**>(p);
-    int32_t nested = first ? *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(first) + 8) : -1;
+    int32_t nested = first ? *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(first) + 0x10) : -1;
     int fd = find_binder_fd();
     __android_log_print(ANDROID_LOG_INFO, TAG, "object p=%p first=%p direct=%d nested=%d fd=%d", p, first, direct, nested, fd);
     int32_t r1 = raw_transact_handle(fd, direct, code, value);
@@ -217,8 +217,8 @@ Java_org_opencrown_binderprobe_MainActivity_nativeHandleFromData(
     void* p = reinterpret_cast<void*>(native_data);
     if (p == nullptr || fd < 0) return -50;
     void* ibinder = *reinterpret_cast<void**>(p);
-    int32_t h1 = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(p) + 8);
-    int32_t h2 = ibinder ? *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(ibinder) + 8) : -1;
+    int32_t h1 = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(p) + 0x10);
+    int32_t h2 = ibinder ? *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(ibinder) + 0x10) : -1;
     __android_log_print(ANDROID_LOG_INFO, TAG, "native_data=%p ibinder=%p h1=%d h2=%d fd=%d", p, ibinder, h1, h2, fd);
     int32_t r1 = raw_transact_handle(fd, h1, code, value);
     int32_t r2 = raw_transact_handle(fd, h2, code, value + 1);
@@ -241,9 +241,9 @@ Java_org_opencrown_binderprobe_MainActivity_nativeAIBinderHandles(
     AIBinder* native = AIBinder_fromJavaBinder(env, binder);
     if (native == nullptr) return -30;
     int fd = find_binder_fd();
-    int32_t h1 = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(native) + 8);
+    int32_t h1 = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(native) + 0x10);
     void* p0 = *reinterpret_cast<void**>(native);
-    int32_t h2 = p0 ? *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(p0) + 8) : -1;
+    int32_t h2 = p0 ? *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(p0) + 0x10) : -1;
     int32_t h3 = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(native));
     __android_log_print(ANDROID_LOG_INFO, TAG, "aibinder=%p p0=%p h1=%d h2=%d h3=%d fd=%d", native, p0, h1, h2, h3, fd);
     int32_t r1 = raw_transact_handle(fd, h1, code, value);

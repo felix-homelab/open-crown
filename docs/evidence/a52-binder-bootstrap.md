@@ -41,10 +41,18 @@ ServiceRecord{... org.opencrown.binderprobe/.ManagerService}
 ## Native handle extraction progress
 
 After adding `HiddenApiBypass`, `BinderProxy.mNativeData` became readable. The
-native side extracted the `IBinder*` and a `BpBinder` handle (12). A raw
-`BC_TRANSACTION` to handle 12 returned `-1` and did not deliver to
-`ManagerService.onTransact`; the raw packet/thread path needs debugging, but
-the native handle extraction wall is broken.
+`BpBinder` handle is at offset **0x10** (confirmed by disassembling
+`BpBinder::binderHandle` from the A52 `libbinder.so`), not +8. With the correct
+offset, a raw native `BC_TRANSACTION` reached the Java service:
+
+```text
+BinderProbe: manager transaction value=700
+BinderProbeNative: raw transact reply=701
+BinderProbe: manager transaction value=300
+BinderProbeNative: raw transact reply=301
+```
+
+The native raw-binder bridge to an app-bound service handle is proven.
 
 ## Native handle extraction limitation
 

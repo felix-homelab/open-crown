@@ -42,11 +42,10 @@ ordinary app a binder handle to a node in another app process. See
 
 ## Native handle gap
 
-`HiddenApiBypass` makes `BinderProxy.mNativeData` readable; native code
-extracts the `IBinder*` and a `BpBinder` handle (12). A raw transaction to that
-handle currently returns `-1` and does not reach the Java service, so the raw
-packet/thread path is still open. See
-[binder-bootstrap/README.md](binder-bootstrap/README.md).
+`HiddenApiBypass` makes `BinderProxy.mNativeData` readable; the native
+`BpBinder` handle is at offset 0x10, and raw native transactions now reach the
+Java service (`700 -> 701`, `300 -> 301`). The native raw-binder bridge is
+proven. See [binder-bootstrap/README.md](binder-bootstrap/README.md).
 
 ## Status
 

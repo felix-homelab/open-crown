@@ -45,18 +45,22 @@ Java binder/parcel or a private libbinder bridge.
 ## Native handle extraction
 
 A hidden-API bypass (`HiddenApiBypass.addHiddenApiExemptions`) made
-`BinderProxy.mNativeData` readable. From that pointer the native side extracted
-the `IBinder*` and a candidate `BpBinder` handle (12):
+`BinderProxy.mNativeData` readable. From that pointer the native side extracts
+the `IBinder*`; the actual `BpBinder` handle is at **offset 0x10** (confirmed
+by disassembling `BpBinder::binderHandle` in the A52 `libbinder.so`).
+
+With that offset, a raw native `BC_TRANSACTION` to the bound service works:
 
 ```text
-BinderProbe: unsafe nativeData=...
-BinderProbeNative: native_data=... ibinder=... h2=12
-BinderProbeNative: extracted handle=12
+BinderProbe: manager transaction value=41
+BinderProbeNative: extracted handle=63
+BinderProbe: manager transaction value=700
+BinderProbeNative: raw transact reply=701
+BinderProbe: manager transaction value=300
+BinderProbeNative: raw transact reply=301
 ```
 
-A raw `BC_TRANSACTION` to handle 12 returned `-1` and did not reach
-`ManagerService.onTransact` (no `manager transaction value=...` line). The
-handle extraction works; the raw packet/thread path still needs debugging.
+The native raw-binder bridge to an app-bound service handle is now proven.
 
 ## Earlier native handle extraction attempts
 
