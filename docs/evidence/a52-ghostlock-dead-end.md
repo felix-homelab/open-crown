@@ -61,3 +61,27 @@ data loss observed. No run produced `uid 0`.
 unprivileged syscalls on this exact A52 kernel, the chain cannot deliver the
 full fake waiter to the kernel stack. This is a documented dead end for this
 route, not a claim that no other kernel bug exists.
+
+## Systematic stack-copy scan (2026-11-21)
+
+Disassembled 111,558 function symbols and 255 `copy_from_user` symbols in
+the stock Image, computing each direct copy destination relative to the
+function entry.
+
+Direct unprivileged syscall copies nearest the waiter:
+
+```text
+__sys_recvmsg       top-0x100
+__sys_sendto        top-0xd8
+__sys_connect       top-0xd8
+__arm64_sys_select  top-0x88
+__arm64_sys_rt_sigaction top-0xa8
+__arm64_sys_rt_sigqueueinfo top-0xb8
+```
+
+None is at the required `top-0x198`. The candidates that do land near the
+waiter are deeper ioctl/helper copies or the capability-gated
+`PR_SET_MM_MAP`; none is an unprivileged syscall entry with a 0x50-byte
+user-controlled stack copy at the waiter address.
+
+This scan is the basis for calling the carrier family a dead end.
