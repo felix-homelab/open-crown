@@ -50,12 +50,28 @@ adb shell /data/local/tmp/gl_deadlock
 - [OnePlus aarch64 reference](https://github.com/gitchw/ghostlock-cve-2026-43499/tree/main/references/ref_oneplus_aarch64)
 - [NebulaSec write-up](https://nebusec.ai/research/ionstack-part-2/)
 
+## Stock symbols
+
+The stock `boot.img` was extracted from Samsung FUS (`A528BXXSBGYI3`, NEE)
+with `asgard-fus`; the raw arm64 `Image` yielded 190,732 symbols via
+`vmlinux-to-elf`. Key stock addresses (link-time):
+
+```text
+_text          0xffffffc010080000
+commit_creds   0xffffffc010347e48
+init_cred      0xffffffc012687c78
+init_task      0xffffffc012d24480
+selinux_state  0xffffffc012f0d000
+null_fops      0xffffffc012467708
+```
+
+See [../../docs/evidence/a52-stock-kernel-symbols.md](../../../docs/evidence/a52-stock-kernel-symbols.md).
+
 ## Next
 
-1. Build the A52 `vmlinux` from the mirrored source and the on-device
-   `config.gz`; recover symbol offsets and struct layouts.
-2. Implement a KASLR leak (the OnePlus reference uses `perf_event_open` /
-   `kernelsnitch`; the A52 shell may need a different route).
+1. Resolve KASLR (`kaslr-seed` exists; no unprivileged kbase leak yet) and the
+   A52 `kernel_phys_load` (`0x80080000` or `0xa8000000` candidates).
+2. Derive the A52 `task_struct` / `cred` / `rt_mutex_waiter` offsets.
 3. Port the arm64 PI write / SELinux / `init_cred` path from the public
    arm64 reference to the A52 5.4 offsets.
 4. Verify `uid 0` and a working domain; no persistent change.
