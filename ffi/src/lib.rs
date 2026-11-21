@@ -14,6 +14,7 @@ uniffi::setup_scaffolding!();
 pub enum FfiError {
     NotReady { reason: String },
     Payload { reason: String },
+    Config { reason: String },
 }
 
 impl std::fmt::Display for FfiError {
@@ -21,6 +22,7 @@ impl std::fmt::Display for FfiError {
         match self {
             Self::NotReady { reason } => write!(f, "not ready: {reason}"),
             Self::Payload { reason } => write!(f, "payload: {reason}"),
+            Self::Config { reason } => write!(f, "config: {reason}"),
         }
     }
 }
@@ -118,6 +120,64 @@ pub fn prepare_payload(
     })
 }
 
+/// One entry in the supported-device list.
+#[derive(Debug, uniffi::Record)]
+pub struct SupportedDevice {
+    pub model: String,
+    pub kernel_build: String,
+    pub abi: String,
+    pub android: String,
+    pub status: String,
+    pub note: Option<String>,
+}
+
+#[uniffi::export]
+pub fn parse_supported_devices(json: String) -> Result<Vec<SupportedDevice>, FfiError> {
+    let list =
+        opencrown_runtime::devices::SupportedDevices::parse(json.as_bytes()).map_err(|err| {
+            FfiError::Config {
+                reason: err.to_string(),
+            }
+        })?;
+    Ok(list
+        .devices()
+        .iter()
+        .map(|device| SupportedDevice {
+            model: device.model.clone(),
+            kernel_build: device.kernel_build.clone(),
+            abi: device.abi.clone(),
+            android: device.android.clone(),
+            status: device.status.clone(),
+            note: device.note.clone(),
+        })
+        .collect())
+}
+
+/// One of supported, example, retired, unknown.
+#[uniffi::export]
+pub fn device_status(
+    json: String,
+    model: String,
+    kernel_release: String,
+    abi: String,
+    android_sdk: u32,
+) -> Result<String, FfiError> {
+    let list =
+        opencrown_runtime::devices::SupportedDevices::parse(json.as_bytes()).map_err(|err| {
+            FfiError::Config {
+                reason: err.to_string(),
+            }
+        })?;
+    let device = opencrown_runtime::matcher::DeviceFingerprint {
+        model,
+        kernel_release,
+        abi,
+        android_sdk,
+        build_id: String::new(),
+    };
+    Ok(list.status_for(&device).to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -169,6 +229,38 @@ mod tests {
         assert_eq!(prepared.token.len(), 64);
         assert!(Path::new(&prepared.entry_path).exists());
         let _ = std::fs::remove_dir_all(&work);
+    }
+
+    #[test]
+    fn parses_the_committed_device_list() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/supported-devices.json");
+        let json = std::fs::read_to_string(path).unwrap();
+        let devices = parse_supported_devices(json.clone()).unwrap();
+        assert_eq!(devices.len(), 1);
+        assert_eq!(devices[0].model, "EXAMPLE-1");
+        assert_eq!(devices[0].status, "example");
+
+        assert_eq!(
+            device_status(
+                json,
+                "EXAMPLE-1".into(),
+                "example-6.1.0".into(),
+                "arm64-v8a".into(),
+                36
+            )
+            .unwrap(),
+            "example"
+        );
+    }
+
+    #[test]
+    fn unknown_device_status() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/supported-devices.json");
+        let json = std::fs::read_to_string(path).unwrap();
+        assert_eq!(
+            device_status(json, "OTHER".into(), "other".into(), "arm64-v8a".into(), 36).unwrap(),
+            "unknown"
+        );
     }
 
     #[test]

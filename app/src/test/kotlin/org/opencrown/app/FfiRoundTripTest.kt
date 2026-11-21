@@ -8,6 +8,8 @@ import org.junit.Assert.assertTrue
 import org.junit.BeforeClass
 import org.junit.Test
 import org.opencrown.ffi.FfiException
+import org.opencrown.ffi.deviceStatus
+import org.opencrown.ffi.parseSupportedDevices
 import org.opencrown.ffi.preparePayload
 import org.opencrown.ffi.protocolVersion
 import org.opencrown.ffi.requireVerifiedProtocol
@@ -93,6 +95,26 @@ class FfiRoundTripTest {
         } finally {
             work.deleteRecursively()
         }
+    }
+
+    @Test
+    fun deviceListCrossesTheBoundary() {
+        val repo = File(System.getProperty("user.dir") ?: ".").resolve("..").canonicalFile
+        val json = File(repo, "catalog/supported-devices.json").readText()
+
+        val devices = parseSupportedDevices(json)
+        assertEquals(1, devices.size)
+        assertEquals("EXAMPLE-1", devices[0].model)
+        assertEquals("example", devices[0].status)
+
+        assertEquals(
+            "example",
+            deviceStatus(json, "EXAMPLE-1", "example-6.1.0", "arm64-v8a", 36u),
+        )
+        assertEquals(
+            "unknown",
+            deviceStatus(json, "OTHER", "other-6.1.0", "arm64-v8a", 36u),
+        )
     }
 
     private fun hexToBytes(hex: String): ByteArray =

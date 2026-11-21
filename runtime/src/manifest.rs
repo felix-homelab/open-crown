@@ -48,7 +48,7 @@ impl Target {
     }
 }
 
-fn split_range(text: &str) -> Option<(&str, u32)> {
+pub(crate) fn split_range(text: &str) -> Option<(&str, u32)> {
     for op in [">=", "<=", ">", "<", "="] {
         if let Some(rest) = text.strip_prefix(op) {
             return rest.parse().ok().map(|value| (op, value));

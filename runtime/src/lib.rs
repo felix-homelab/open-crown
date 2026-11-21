@@ -5,6 +5,7 @@
 //! produces a one-time token for the agent launch
 //! (docs/02-architecture.md section 2.2, docs/04-payload-system.md section 9).
 
+pub mod devices;
 pub mod error;
 pub mod hex;
 pub mod launch;

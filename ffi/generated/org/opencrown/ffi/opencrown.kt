@@ -674,6 +674,10 @@ internal object IntegrityCheckingUniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_opencrown_checksum_func_device_status(
+    ): Int
+    external fun uniffi_opencrown_checksum_func_parse_supported_devices(
+    ): Int
     external fun uniffi_opencrown_checksum_func_prepare_payload(
     ): Int
     external fun uniffi_opencrown_checksum_func_protocol_version(
@@ -695,6 +699,10 @@ internal object UniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_opencrown_fn_func_device_status(`json`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_opencrown_fn_func_parse_supported_devices(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_prepare_payload(`bundleDir`: RustBuffer.ByValue,`workDir`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,`buildId`: RustBuffer.ByValue,`signature`: RustBuffer.ByValue,`publicKey`: RustBuffer.ByValue,`revocationsJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_protocol_version(uniffi_out_err: UniffiRustCallStatus, 
@@ -820,6 +828,12 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
+    if ((lib.uniffi_opencrown_checksum_func_device_status() and 0xFFFF) != 47251) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_opencrown_checksum_func_parse_supported_devices() and 0xFFFF) != 60436) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_opencrown_checksum_func_prepare_payload() and 0xFFFF) != 65423) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1108,6 +1122,67 @@ public object FfiConverterTypePreparedBundle: FfiConverterRustBuffer<PreparedBun
 
 
 
+/**
+ * One entry in the supported-device list.
+ */
+data class SupportedDevice (
+    var `model`: kotlin.String
+    , 
+    var `kernelBuild`: kotlin.String
+    , 
+    var `abi`: kotlin.String
+    , 
+    var `android`: kotlin.String
+    , 
+    var `status`: kotlin.String
+    , 
+    var `note`: kotlin.String?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeSupportedDevice: FfiConverterRustBuffer<SupportedDevice> {
+    override fun read(buf: ByteBuffer): SupportedDevice {
+        return SupportedDevice(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: SupportedDevice) = (
+            FfiConverterString.allocationSize(value.`model`) +
+            FfiConverterString.allocationSize(value.`kernelBuild`) +
+            FfiConverterString.allocationSize(value.`abi`) +
+            FfiConverterString.allocationSize(value.`android`) +
+            FfiConverterString.allocationSize(value.`status`) +
+            FfiConverterOptionalString.allocationSize(value.`note`)
+    )
+
+    override fun write(value: SupportedDevice, buf: ByteBuffer) {
+            FfiConverterString.write(value.`model`, buf)
+            FfiConverterString.write(value.`kernelBuild`, buf)
+            FfiConverterString.write(value.`abi`, buf)
+            FfiConverterString.write(value.`android`, buf)
+            FfiConverterString.write(value.`status`, buf)
+            FfiConverterOptionalString.write(value.`note`, buf)
+    }
+}
+
+
+
 
 
 sealed class FfiException: kotlin.Exception() {
@@ -1121,6 +1196,14 @@ sealed class FfiException: kotlin.Exception() {
     }
     
     class Payload(
+        
+        val `reason`: kotlin.String
+        ) : FfiException() {
+        override val message
+            get() = "reason=${ `reason` }"
+    }
+    
+    class Config(
         
         val `reason`: kotlin.String
         ) : FfiException() {
@@ -1153,6 +1236,9 @@ public object FfiConverterTypeFfiError : FfiConverterRustBuffer<FfiException> {
             2 -> FfiException.Payload(
                 FfiConverterString.read(buf),
                 )
+            3 -> FfiException.Config(
+                FfiConverterString.read(buf),
+                )
             else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
         }
     }
@@ -1165,6 +1251,11 @@ public object FfiConverterTypeFfiError : FfiConverterRustBuffer<FfiException> {
                 + FfiConverterString.allocationSize(value.`reason`)
             )
             is FfiException.Payload -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+                + FfiConverterString.allocationSize(value.`reason`)
+            )
+            is FfiException.Config -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
                 4UL
                 + FfiConverterString.allocationSize(value.`reason`)
@@ -1184,10 +1275,106 @@ public object FfiConverterTypeFfiError : FfiConverterRustBuffer<FfiException> {
                 FfiConverterString.write(value.`reason`, buf)
                 Unit
             }
+            is FfiException.Config -> {
+                buf.putInt(3)
+                FfiConverterString.write(value.`reason`, buf)
+                Unit
+            }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 
 }
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?> {
+    override fun read(buf: ByteBuffer): kotlin.String? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterString.read(buf)
+    }
+
+    override fun allocationSize(value: kotlin.String?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterString.allocationSize(value)
+        }
+    }
+
+    override fun write(value: kotlin.String?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterString.write(value, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
+public object FfiConverterSequenceTypeSupportedDevice: FfiConverterRustBuffer<List<SupportedDevice>> {
+    override fun read(buf: ByteBuffer): List<SupportedDevice> {
+        val len = buf.getInt()
+        return List<SupportedDevice>(len) {
+            FfiConverterTypeSupportedDevice.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<SupportedDevice>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeSupportedDevice.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<SupportedDevice>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeSupportedDevice.write(it, buf)
+        }
+    }
+}
+        /**
+         * One of supported, example, retired, unknown.
+         */
+    @Throws(FfiException::class) fun `deviceStatus`(`json`: kotlin.String, `model`: kotlin.String, `kernelRelease`: kotlin.String, `abi`: kotlin.String, `androidSdk`: kotlin.UInt): kotlin.String {
+            return FfiConverterString.lift(
+    uniffiRustCallWithError(FfiException) { _status ->
+    UniffiLib.uniffi_opencrown_fn_func_device_status(
+    
+        
+        FfiConverterString.lower(`json`),
+        FfiConverterString.lower(`model`),
+        FfiConverterString.lower(`kernelRelease`),
+        FfiConverterString.lower(`abi`),
+        FfiConverterUInt.lower(`androidSdk`),_status)
+}
+    )
+    }
+    
+
+    @Throws(FfiException::class) fun `parseSupportedDevices`(`json`: kotlin.String): List<SupportedDevice> {
+            return FfiConverterSequenceTypeSupportedDevice.lift(
+    uniffiRustCallWithError(FfiException) { _status ->
+    UniffiLib.uniffi_opencrown_fn_func_parse_supported_devices(
+    
+        
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
+    
+
         /**
          * Verify, check revocation, stage, and mint a token for a payload bundle.
          */

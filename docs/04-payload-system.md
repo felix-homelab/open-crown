@@ -143,6 +143,11 @@ Matching is exact on `model` and `kernel_build`, range-based on `android`.
 A payload that does not match is never executed. A maintainer-only override
 exists behind a compile-time flag and is absent from release builds.
 
+The evidence-backed list lives in `catalog/supported-devices.json`, validated by
+`catalog/tooling/devices.py` and read by the runtime (`devices` module) and by
+the app. A device that is not on the list is `unknown`, which is a normal state
+with a clear message, not a crash.
+
 ## 9. Execution lifecycle
 
 ```text

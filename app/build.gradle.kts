@@ -52,6 +52,17 @@ kotlin {
     jvmToolchain(21)
 }
 
+// The supported-device list lives in catalog/ so the Python validator and the
+// app read the same file. Copy it into assets at build time.
+val syncSupportedDevices = tasks.register<Copy>("syncSupportedDevices") {
+    from(rootProject.file("catalog/supported-devices.json"))
+    into(layout.projectDirectory.dir("src/main/assets"))
+}
+
+tasks.named("preBuild") {
+    dependsOn(syncSupportedDevices)
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

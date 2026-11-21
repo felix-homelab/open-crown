@@ -6,10 +6,11 @@ directory.
 
 ```text
 catalog/
-├── schema/                 payload-manifest.schema.json (the contract)
+├── schema/                 payload-manifest and supported-devices schemas
 ├── manifests/              one <id>/<version>.json per payload, with .sig
-├── examples/               fixture bundles for tests, never signed for release
-└── tooling/                signing, verification, transparency-log client
+├── examples/               fixture bundles, including a signed example
+├── tooling/                signing, revocation, transparency, device list
+└── supported-devices.json  the evidence-backed device list
 ```
 
 ## Rules
@@ -23,6 +24,8 @@ catalog/
 
 ## Status
 
-Schema only. No manifest is signed and no tooling exists yet. Signing,
-revocation and the transparency log land with Phase 4/8
-([roadmap](../docs/06-roadmap.md)).
+Schema, signing, revocation, the transparency log and the device list are
+implemented. There is no real payload: `catalog/examples/signed/` is dummy
+bytes signed with a throwaway key, and it exists to prove the Python signer and
+the Rust verifier agree. The catalog ships when the supply and review gates in
+[ADR 0010](../docs/adr/0010-ship-order.md) pass.

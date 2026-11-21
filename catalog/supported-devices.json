@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "updated": "2026-11-21",
+  "devices": [
+    {
+      "model": "EXAMPLE-1",
+      "kernel_build": "example-6.1.0",
+      "abi": "arm64-v8a",
+      "android": ">=31",
+      "status": "example",
+      "note": "Structural example. Not a real device; no payload exists."
+    }
+  ]
+}
