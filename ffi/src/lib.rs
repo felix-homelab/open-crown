@@ -122,6 +122,47 @@ pub fn prepare_payload(
     })
 }
 
+/// What the app needs to show before a bundle is selected.
+#[derive(Debug, uniffi::Record)]
+pub struct BundleInfo {
+    pub id: String,
+    pub version: String,
+    pub family: String,
+    pub capabilities: Vec<String>,
+    pub persistence: String,
+    pub digest: String,
+    pub targets: u32,
+}
+
+/// Parse and validate a bundle's manifest without verifying the signature.
+///
+/// Used to list installed bundles; `prepare_payload` is what actually verifies
+/// and stages.
+#[uniffi::export]
+pub fn inspect_bundle(bundle_dir: String) -> Result<BundleInfo, FfiError> {
+    let path = Path::new(&bundle_dir).join("manifest.json");
+    let bytes = std::fs::read(&path).map_err(|err| FfiError::Payload {
+        reason: err.to_string(),
+    })?;
+    let manifest =
+        opencrown_runtime::manifest::Manifest::parse(&bytes).map_err(|err| FfiError::Payload {
+            reason: err.to_string(),
+        })?;
+    let digest =
+        opencrown_runtime::manifest::digest(&manifest).map_err(|err| FfiError::Payload {
+            reason: err.to_string(),
+        })?;
+    Ok(BundleInfo {
+        id: manifest.id,
+        version: manifest.version,
+        family: manifest.family,
+        capabilities: manifest.capabilities,
+        persistence: manifest.persistence,
+        digest: opencrown_runtime::hex::encode(&digest),
+        targets: manifest.targets.len() as u32,
+    })
+}
+
 /// One entry in the supported-device list.
 #[derive(Debug, uniffi::Record)]
 pub struct SupportedDevice {
@@ -235,7 +276,18 @@ mod tests {
     }
 
     #[test]
-    fn parses_the_committed_device_list() {
+    fn inspects_the_example_bundle() {
+        let bundle = Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/examples/signed");
+        let info = inspect_bundle(bundle.to_string_lossy().into_owned()).unwrap();
+        assert_eq!(info.id, "org.opencrown.payload.example");
+        assert_eq!(info.version, "1.0.0");
+        assert_eq!(info.capabilities, vec!["root", "domain", "controller"]);
+        assert_eq!(info.targets, 1);
+        assert_eq!(info.digest.len(), 64);
+    }
+
+    #[test]
+    fn inspects_the_committed_device_list() {
         let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/supported-devices.json");
         let json = std::fs::read_to_string(path).unwrap();
         let devices = parse_supported_devices(json.clone()).unwrap();

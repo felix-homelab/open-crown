@@ -676,6 +676,8 @@ internal object IntegrityCheckingUniffiLib {
     internal fun ensureInitialized() = Unit
     external fun uniffi_opencrown_checksum_func_device_status(
     ): Int
+    external fun uniffi_opencrown_checksum_func_inspect_bundle(
+    ): Int
     external fun uniffi_opencrown_checksum_func_parse_supported_devices(
     ): Int
     external fun uniffi_opencrown_checksum_func_prepare_payload(
@@ -700,6 +702,8 @@ internal object UniffiLib {
 
     internal fun ensureInitialized() = Unit
     external fun uniffi_opencrown_fn_func_device_status(`json`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_opencrown_fn_func_inspect_bundle(`bundleDir`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_parse_supported_devices(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -829,6 +833,9 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_opencrown_checksum_func_device_status() and 0xFFFF) != 47251) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_opencrown_checksum_func_inspect_bundle() and 0xFFFF) != 61166) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_opencrown_checksum_func_parse_supported_devices() and 0xFFFF) != 60436) {
@@ -1055,6 +1062,72 @@ public object FfiConverterByteArray: FfiConverterRustBuffer<ByteArray> {
     override fun write(value: ByteArray, buf: ByteBuffer) {
         buf.putInt(value.size)
         buf.put(value)
+    }
+}
+
+
+
+/**
+ * What the app needs to show before a bundle is selected.
+ */
+data class BundleInfo (
+    var `id`: kotlin.String
+    , 
+    var `version`: kotlin.String
+    , 
+    var `family`: kotlin.String
+    , 
+    var `capabilities`: List<kotlin.String>
+    , 
+    var `persistence`: kotlin.String
+    , 
+    var `digest`: kotlin.String
+    , 
+    var `targets`: kotlin.UInt
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeBundleInfo: FfiConverterRustBuffer<BundleInfo> {
+    override fun read(buf: ByteBuffer): BundleInfo {
+        return BundleInfo(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterSequenceString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterUInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: BundleInfo) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`version`) +
+            FfiConverterString.allocationSize(value.`family`) +
+            FfiConverterSequenceString.allocationSize(value.`capabilities`) +
+            FfiConverterString.allocationSize(value.`persistence`) +
+            FfiConverterString.allocationSize(value.`digest`) +
+            FfiConverterUInt.allocationSize(value.`targets`)
+    )
+
+    override fun write(value: BundleInfo, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`version`, buf)
+            FfiConverterString.write(value.`family`, buf)
+            FfiConverterSequenceString.write(value.`capabilities`, buf)
+            FfiConverterString.write(value.`persistence`, buf)
+            FfiConverterString.write(value.`digest`, buf)
+            FfiConverterUInt.write(value.`targets`, buf)
     }
 }
 
@@ -1328,6 +1401,34 @@ public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?>
 /**
  * @suppress
  */
+public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.String>> {
+    override fun read(buf: ByteBuffer): List<kotlin.String> {
+        val len = buf.getInt()
+        return List<kotlin.String>(len) {
+            FfiConverterString.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<kotlin.String>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterString.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<kotlin.String>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterString.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeSupportedDevice: FfiConverterRustBuffer<List<SupportedDevice>> {
     override fun read(buf: ByteBuffer): List<SupportedDevice> {
         val len = buf.getInt()
@@ -1363,6 +1464,24 @@ public object FfiConverterSequenceTypeSupportedDevice: FfiConverterRustBuffer<Li
         FfiConverterString.lower(`kernelRelease`),
         FfiConverterString.lower(`abi`),
         FfiConverterUInt.lower(`androidSdk`),_status)
+}
+    )
+    }
+    
+
+        /**
+         * Parse and validate a bundle's manifest without verifying the signature.
+         *
+         * Used to list installed bundles; `prepare_payload` is what actually verifies
+         * and stages.
+         */
+    @Throws(FfiException::class) fun `inspectBundle`(`bundleDir`: kotlin.String): BundleInfo {
+            return FfiConverterTypeBundleInfo.lift(
+    uniffiRustCallWithError(FfiException) { _status ->
+    UniffiLib.uniffi_opencrown_fn_func_inspect_bundle(
+    
+        
+        FfiConverterString.lower(`bundleDir`),_status)
 }
     )
     }

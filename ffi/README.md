@@ -19,8 +19,9 @@ The app compiles `generated/` into the main source set and calls
 library shows a message instead of crashing. The skeleton screen reports the
 revision, which is `0` until a spec is verified.
 
-`prepare_payload` is exposed and covered by the JVM test, but no UI calls it
-yet: that needs the consent screen and a bundle picker, which land after
-Phase 0.
+`prepare_payload` is called from the app after the consent gate, and
+`inspect_bundle` feeds the bundle list. Bundles are read from
+`files/payloads/<name>/`; with no bundle or an unsupported device the gate stays
+closed and says why.
 
 Device behaviour is unverified until the bench run.

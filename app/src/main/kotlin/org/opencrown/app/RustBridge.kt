@@ -1,7 +1,9 @@
 package org.opencrown.app
 
+import org.opencrown.ffi.BundleInfo
 import org.opencrown.ffi.SupportedDevice
 import org.opencrown.ffi.deviceStatus as ffiDeviceStatus
+import org.opencrown.ffi.inspectBundle as ffiInspectBundle
 import org.opencrown.ffi.parseSupportedDevices as ffiParseSupportedDevices
 import org.opencrown.ffi.protocolVersion as ffiProtocolVersion
 
@@ -15,6 +17,8 @@ object RustBridge {
     fun protocolVersion(): UInt = ffiProtocolVersion()
 
     fun supportedDevices(json: String): List<SupportedDevice> = ffiParseSupportedDevices(json)
+
+    fun inspectBundle(dir: String): BundleInfo = ffiInspectBundle(dir)
 
     fun deviceStatus(
         json: String,
