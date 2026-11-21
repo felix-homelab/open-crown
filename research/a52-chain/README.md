@@ -1,6 +1,8 @@
 # A52 chain research branch
 
-**Status:** research only — no working chain, no device run in this branch.
+**Status:** research only — no working chain. One stock DoS run confirmed the
+CVE-2026-20971 UAF on the attached A52 (panic/reboot, no root); a controlled
+primitive needs a lab kernel.
 **Target:** Samsung Galaxy A52s 5G `SM-A528B`, kernel
 `5.4.254-qgki-28575149-abA528BXXSBGYI3`, binary B (11), SPL `2025-09-01`.
 **Scope:** determine whether an original temporary-root chain is feasible on

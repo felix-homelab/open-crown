@@ -41,6 +41,13 @@ force it.
 
 ### P1 — Bounded UAF confirmation
 
+**Stock result (2026-11-21):** the public harness was run once on the attached
+A52 as `uid 2000`; the device panicked and rebooted (`boot_id` changed,
+`ro.boot.bootreason=kernel_panic`). No root. This confirms the UAF surface but
+not a controlled primitive. The non-fatal/KASAN work below still needs the lab
+kernel; the stock run is recorded in
+[evidence](../../docs/evidence/a52-five-uaf-dos.md).
+
 - Build a two-process trigger on the lab kernel; CPU pinning; one run per boot.
 - Confirm the exact `d_path`/`reset_file` UAF with KASAN; capture dmesg.
 - Exit: reproducible UAF, no uncontrolled panic; trigger and logs committed

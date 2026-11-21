@@ -18,7 +18,7 @@ kernel version, the GPU family, or the public chain's maturity.
 | [DirtyFrag](https://github.com/mitschud/DirtyFrag) / CVE-2026-43284 | ESP-in-UDP page-cache write; Samsung 5.10–6.18 KMIs | **Dead on 5.4.** The bug exists in 5.4, but the exploit needs `MSG_SPLICE_PAGES` UDP support (kernel 6.5+). The 5.4-qgki research records this as not feasible: [dirtyfrag-research](https://github.com/HirokiAkihiko/dirtyfrag-research). |
 | GhostLock / CVE-2026-43499 | futex-priority-inheritance UAF; Root My Galaxy 5.15–6.6, RootMyS24 6.1 | **No 5.4 target.** Root My Galaxy publishes 5.10.237, 5.15.189, 6.1.145, 6.1.157, 6.6.x and 6.6.102 payloads; the public [supported-payload table](https://github.com/BuSung-dev/Root-My-Galaxy-Payloads#supported-payloads) has no 5.4 build. |
 | SamTimer / CVE-2026-98260 | POSIX CPU timer UAF; RootMyS24 6.1.145–6.1.162 | **No 5.4 target.** The public profiles and the integrated `futex-timer` bundle are 6.1.145+; the CVE's fixed stable lines are 6.1.191 and later. |
-| CVE-2026-20971 | Samsung KNOX `task_integrity` UAF, A-series tested (A54) | **DoS, not LPE.** The public package is an unprivileged DoS trigger and report, explicitly without a privilege-escalation chain: [CVE-2026-20971-CYL1](https://github.com/zhanghangjie/CVE-2026-20971-CYL1). No A52 target and no public exploitation. The A52 source predates the Jan-2026 fix, so the UAF code is likely present, but there is no public root chain. |
+| CVE-2026-20971 | Samsung KNOX `task_integrity` UAF, A-series tested (A54) | **DoS confirmed on the A52; no LPE.** The public package is an unprivileged DoS trigger and report, explicitly without a privilege-escalation chain: [CVE-2026-20971-CYL1](https://github.com/zhanghangjie/CVE-2026-20971-CYL1). The A52 source predates the Jan-2026 fix, and the public harness panicked the A52 (boot id changed, `kernel_panic`); no root. See [../evidence/a52-five-uaf-dos.md](../evidence/a52-five-uaf-dos.md). |
 | CVE-2023-33107 | Qualcomm KGSL SVM integer wrap; A52/778G is an affected platform | **Patched.** The exact A52 kernel source (`razorback159/A528BXXSBGYI3`) has the fix in `kgsl_iommu.c`: `iommu_addr_in_svm_ranges()` computes `end = gpuaddr + size` and rejects `end <= gpuaddr`, the same check as Qualcomm's [fix commit](https://git.codelinaro.org/clo/la/kernel/msm-4.19/-/commit/d66b799c804083ea5226cfffac6d6c4e7ad4968b). A full public exploit exists ([keto0422](https://github.com/keto0422/CVE-2023-33107)) but is dead on this build. |
 | CVE-2026-21385 | Qualcomm KGSL alignment sign extension; Snapdragon 778G listed; CISA KEV | **Public probe negative on this A52.** The exact source contains the uncapped `max_t(uint64_t, 1 << kgsl_memdesc_get_align(memdesc), PAGE_SIZE)` line, but the public probe run as `uid 2000` produced `gpuaddr=0x4080000000` for align 31, not the wrapped `0x80000000`; no `kgsl` fault or panic. See [../evidence/a52-kgsl-probe.md](../evidence/a52-kgsl-probe.md). The bug is actively exploited elsewhere, but this primitive does not work on the A52. |
 | CVE-2026-57545 | KGSL draw-object type confusion in `adreno_hwsched.c` | **Not applicable / absent.** `get_active_cmdobj_lpac` and the `is_cmdobj` path are not present in the A52 5.4 source tree; the bug is in a newer hardware-scheduler path. |
@@ -107,9 +107,12 @@ The practical options are:
 
 An original A52 chain is now scoped in
 [../../research/a52-chain/README.md](../../research/a52-chain/README.md). It is
-lab-only: no trigger is run on the daily A52, and the public CVE-2026-20971
-work stops at UAF/DoS. The branch starts with P0 (sacrificial device and
-KASAN/KCSAN kernel) and aborts if no controlled primitive appears.
+lab-only. The public CVE-2026-20971 harness was run once on the attached A52
+with the owner's authorization and confirmed the UAF as a kernel panic/reboot;
+no root. A controlled primitive needs a `panic_on_oops=0`/KASAN lab kernel,
+which the locked stock A52 cannot run. The branch still starts with P0
+(sacrificial device and lab kernel) and aborts if no controlled primitive
+appears.
 
 ## Evidence kept
 

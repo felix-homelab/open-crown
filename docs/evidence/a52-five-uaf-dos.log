@@ -1,0 +1,20 @@
+# A52 CVE-2026-20971 FIVE/PROCA UAF DoS
+# 2026-11-21T18:47Z serial R5CR916B48N
+# binary sha256: a3f7a0acf11cb28238476924bfc1e6a426ec0b25491b8d6f423053d795e36473
+# source: https://github.com/zhanghangjie/CVE-2026-20971-CYL1
+# device: SM-A528B / 5.4.254-qgki-28575149-abA528BXXSBGYI3 / Enforcing
+
+boot_before=67f3ea44-b491-4b32-956c-8c7306157040
+# adb push /tmp/five_uaf_probe /data/local/tmp/five_uaf_probe
+# adb shell 'chmod 755 /data/local/tmp/five_uaf_probe'
+# adb shell 'cd /data/local/tmp && ./five_uaf_probe 3 reset_file'
+# -> device panics before the harness can print; adb shell disconnects
+
+boot_after=27d1bcba-dea6-45b0-9cd6-1679851bbb67
+ro.boot.bootreason=kernel_panic,null
+sys.boot.reason=kernel_panic,null
+
+# /proc/self/integrity reset_file,label,value,reset_cause are readable by shell
+# /proc/sys/kernel/panic_on_oops -> permission denied (stock default 1)
+# /sys/fs/pstore -> permission denied
+# no uid=0; no root; phone recovered on its own
