@@ -50,3 +50,42 @@ the reader's scheduled-out window.
 
 No on-device cred overwrite or `uid 0` has been achieved; the msg_msg route
 from public research is unavailable here.
+
+## Disassembly correction
+
+A52 `struct cred` is randomized, but `__sys_setresuid`/`__sys_setresgid`
+disassembly gives the actual offsets:
+
+```text
+uid   0x04
+gid   0x08
+suid  0x0c
+egid  0x10
+euid  0x14
+sgid  0x18
+```
+
+So the FIVE `value_lock` at 0xc really does overlap **`cred->suid`**. The
+hypothesis is not invalidated by randomization.
+
+However, `proc_integrity_label_read()` after the spinlock does:
+
+```c
+l = TASK_INTEGRITY(task)->label;   /* object+0x18 */
+if (l) {
+    data_len = l->len * 2;          /* dereference */
+    ...
+}
+```
+
+On a reclaimed `struct cred`, object+0x18 is **`cred->sgid`**, not a label
+pointer. For an ordinary app/shell cred, `sgid` is a small nonzero gid
+(e.g., 2000), so this dereferences address `0x7d0` and panics. To make the
+primitive survive, the target cred would need `sgid == 0`, which an
+unprivileged process cannot obtain.
+
+The `value` handler has no spinlock write, and the `reset_file` handler has
+no spinlock. So the cred/suid path is blocked by the post-lock label
+dereference unless a gid-0 target can be arranged.
+
+No root.
