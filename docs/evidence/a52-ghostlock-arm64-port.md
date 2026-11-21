@@ -392,3 +392,21 @@ still invalid.
 The likely remaining fault is that compat `select` stores the fake parent in
 the **out** bitmap, which `do_select` rewrites, while the process_vm copy only
 starts at waiter+0x8. No root; phone recovered.
+
+## Carrier search after the 32-bit UAF
+
+Additional 64-bit/32-bit stack-copy candidates were checked:
+
+```text
+sendmsg iovstack     top-0x158 (too high)
+sendmmsg iovstack    top-0x3b8 (too deep)
+poll stack list      top-0x394 (too deep)
+prctl PR_SET_MM_MAP  top-0x1e0 but CAP_SYS_RESOURCE-gated
+PR_SET_VMA           stores user pointer, no stack copy
+compat select 142    works, but waiter parent is in the out bitmap
+compat pselect6      stack_fds at top-0x270 (too deep)
+process_vm_rw        iovstack at top-0x190 (misses parent by 8)
+```
+
+The 32-bit UAF and `_newselect` carrier are proven; the overlay still panics.
+No root; phone healthy.
