@@ -7,3 +7,4 @@ pub mod audit;
 pub mod broker;
 pub mod ipc;
 pub mod policy;
+pub mod protocol;

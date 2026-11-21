@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package opencrown.agent.v1;
+
+// One request per connection. The agent checks the token and boot id before it
+// touches the controller. Limits are enforced in Rust, not trusted from here.
+
+message Envelope {
+  uint32 version = 1;
+  string boot_id = 2;
+  string token = 3;
+
+  oneof request {
+    ScanRequest scan = 10;
+    ConnectRequest connect = 11;
+    OpenChannelRequest open_channel = 12;
+    SendRequest send = 13;
+    CloseRequest close = 14;
+    DiagRequest diag = 15;
+  }
+}
+
+message ScanRequest {
+  bool setup_only = 1;
+  uint32 timeout_ms = 2;
+}
+
+message ConnectRequest {
+  // Six bytes, controller order. The agent validates the length.
+  bytes address = 1;
+}
+
+enum ChannelMode {
+  CHANNEL_MODE_UNSPECIFIED = 0;
+  CHANNEL_MODE_BASIC = 1;
+  CHANNEL_MODE_ERTM = 2;
+}
+
+message OpenChannelRequest {
+  uint32 psm = 1;
+  ChannelMode mode = 2;
+}
+
+message SendRequest {
+  uint32 handle = 1;
+  bytes data = 2;
+}
+
+message CloseRequest {
+  uint32 handle = 1;
+}
+
+message DiagRequest {}
+
+message Response {
+  uint32 version = 1;
+
+  oneof result {
+    Ok ok = 10;
+    Failure failure = 11;
+  }
+}
+
+message Ok {
+  string detail = 1;
+}
+
+message Failure {
+  string code = 1;
+  string message = 2;
+}
