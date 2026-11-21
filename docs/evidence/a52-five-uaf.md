@@ -145,3 +145,20 @@ possibly user xattrs; none is a drop-in replacement for the dedicated
 This makes the FIVE/PROCA UAF a confirmed DoS/reachability result on the
 A52, but a full LPE requires developing a new cross-cache reclaim from the
 remaining allocation primitives.
+
+## `/system/bin/monkey` reset_file path
+
+A dedicated harness made the victim loop `execve("/system/bin/monkey")`
+(which returns -ENOEXEC) while the parent read
+`/proc/<pid>/integrity/reset_file`. The A52 rebooted again:
+
+```text
+ro.boot.bootreason=kernel_panic,null
+boot_id=225f002d-f89e-47ce-9e62-be0bcad2572a
+```
+
+This confirms the deterministic refcount-1 `reset_file` path. It is a second
+independent UAF trigger surface on the A52, but still a panic/DoS until the
+freed `struct file`/dentry is reclaimed with controlled data.
+
+No root.
