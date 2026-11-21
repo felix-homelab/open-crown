@@ -369,3 +369,26 @@ compat select stack_fds end at the task field, `process_vm` returns EINVAL
 after copying, and the interaction still leaves the overlay invalid.
 
 No root; phone recovered.
+
+## 32-bit full overlay result
+
+With `_newselect(142)` the select carrier returns 0, and `process_vm_readv`
+returns EINVAL after its copy. The full 32-bit run still panicked:
+
+```text
+requeue ret=-1 errno=35
+waiter wait ret=-1 errno=110
+select ret=0 errno=0
+process_vm ret=-1 errno=22
+carrier_done=1
+<adb lost>
+ro.boot.bootreason=kernel_panic,bug
+```
+
+The same helper with the carrier skipped also panics at the
+`sched_setattr(waiter)` trigger, confirming the UAF; the overlay itself is
+still invalid.
+
+The likely remaining fault is that compat `select` stores the fake parent in
+the **out** bitmap, which `do_select` rewrites, while the process_vm copy only
+starts at waiter+0x8. No root; phone recovered.
