@@ -96,3 +96,30 @@ mount/CAP_SYS_ADMIN.
 
 The raw B/P chain still works on the framework procs; the raw-proc loop is
 blocked on handle exchange.
+
+## servicemanager registration is denied
+
+App UID:
+
+```text
+SecurityException: App UIDs cannot add services.
+```
+
+Shell UID via `app_process` (a dedicated dex calling
+`ServiceManager.addService`):
+
+```text
+uid=2000
+fail java.lang.SecurityException: SELinux denied.
+```
+
+`BINDER_SET_CONTEXT_MGR` is already held by servicemanager, and unprivileged
+service registration is denied for both app and shell. Therefore a new raw
+binder_proc cannot obtain a valid handle to the Java ManagerService or to any
+broker it registers.
+
+The only remaining binder chain uses the **existing framework binder procs**,
+which completes 16/16 nested transactions but cannot be freed/reopened in a
+fast loop for the narrow race.
+
+No root.

@@ -141,6 +141,29 @@ class MainActivity : Activity() {
         Log.i("BinderProbe", "afAlgProbe=${runCatching { nativeAfAlgProbe() }.getOrElse { -99 }}")
         Log.i("BinderProbe", "perfProbe=${runCatching { nativePerfProbe() }.getOrElse { -99 }}")
         bindService(Intent(this, WalkerService::class.java), walkerConnection, Context.BIND_AUTO_CREATE)
+        try {
+            org.lsposed.hiddenapibypass.HiddenApiBypass.addHiddenApiExemptions("Landroid/os/ServiceManager;")
+            val sm = Class.forName("android.os.ServiceManager")
+            val methods = sm.declaredMethods.filter { it.name == "addService" }
+            Log.i("BinderProbe", "sm addService methods=" + methods.joinToString { it.parameterTypes.joinToString(",") { p -> p.name } })
+            val binder = android.os.Binder()
+            var added: Any? = null
+            for (m in methods) {
+                val args = when (m.parameterTypes.size) {
+                    2 -> arrayOf("ocprobe", binder)
+                    4 -> arrayOf("ocprobe", binder, false, 0)
+                    else -> continue
+                }
+                added = runCatching { m.invoke(null, *args) }.onFailure {
+                    val c = (it as? java.lang.reflect.InvocationTargetException)?.cause ?: it
+                    Log.e("BinderProbe", "sm addService failed: $c")
+                }.getOrNull()
+                if (added != null) break
+            }
+            Log.i("BinderProbe", "sm addService result=$added")
+        } catch (error: Throwable) {
+            Log.e("BinderProbe", "sm probe failed: $error")
+        }
         Log.i("BinderProbe", "binding to ManagerService")
         bindService(Intent(this, ManagerService::class.java), connection, Context.BIND_AUTO_CREATE)
     }
