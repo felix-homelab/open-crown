@@ -205,3 +205,26 @@ This explains the earlier panics at `--kaslr-base=KIMAGE_STEXT_LINK`.
 
 The KASLR slide changes per boot; the chain needs to re-derive it from the
 raw ftrace caller before every run.
+
+## Parent-color attempt and reboot
+
+Added a `pselect6(320, NULL, NULL, NULL, {0,0}, NULL)` before the
+`process_vm_readv` overlay to zero the waiter region and leave the parent
+word at zero. `--noconsume` was clean, but the full write panicked:
+
+```text
+slide carrier_done=1
+slide attempt 1 timed out waiting for child
+<adb lost>
+ro.boot.bootreason=kernel_panic,bug
+boot_id=61399fb5-4bcc-46aa-8276-5632b00ef858
+```
+
+Zero parent_color (or the pselect frame itself) is not a valid substitute
+for the expected controlled parent word. The 64-bit process_vm overlay can
+supply waiter+0x8 onward, but not waiter+0x0.
+
+The KASLR slide is per-boot; the next boot is different from the captured
+0x90000.
+
+No root; phone recovered.
