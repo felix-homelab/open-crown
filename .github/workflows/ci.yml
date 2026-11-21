@@ -42,11 +42,9 @@ jobs:
       - run: pip install -r tools/requirements.txt
       - run: PYTHONPATH=tools/lib python -m unittest discover -s tools/tests -v
       - name: Verify the committed example bundle
-        run: |
-          python catalog/tooling/sign.py verify \
-            --manifest catalog/examples/signed/manifest.json \
-            --sig catalog/examples/signed/manifest.sig \
-            --pubkey catalog/examples/signed/public_key.hex
+        run: python catalog/tooling/verify.py catalog/examples/signed
+      - name: Validate the supported-device list
+        run: python catalog/tooling/devices.py validate --list catalog/supported-devices.json
 
   android:
     name: Android
