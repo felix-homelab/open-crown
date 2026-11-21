@@ -104,9 +104,11 @@ class FfiRoundTripTest {
         val json = File(repo, "catalog/supported-devices.json").readText()
 
         val devices = parseSupportedDevices(json)
-        assertEquals(1, devices.size)
+        assertEquals(2, devices.size)
         assertEquals("EXAMPLE-1", devices[0].model)
         assertEquals("example", devices[0].status)
+        assertEquals("SM-A528B", devices[1].model)
+        assertEquals("example", devices[1].status)
 
         assertEquals(
             "example",
@@ -115,6 +117,16 @@ class FfiRoundTripTest {
         assertEquals(
             "unknown",
             deviceStatus(json, "OTHER", "other-6.1.0", "arm64-v8a", 36u),
+        )
+        assertEquals(
+            "example",
+            deviceStatus(
+                json,
+                "SM-A528B",
+                "5.4.254-qgki-28575149-abA528BXXSBGYI3",
+                "arm64-v8a",
+                34u,
+            ),
         )
     }
 

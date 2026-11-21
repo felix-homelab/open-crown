@@ -52,15 +52,19 @@ kotlin {
     jvmToolchain(21)
 }
 
-// The supported-device list lives in catalog/ so the Python validator and the
-// app read the same file. Copy it into assets at build time.
-val syncSupportedDevices = tasks.register<Copy>("syncSupportedDevices") {
+// Catalog data lives in catalog/ so the Python validators and the app read the
+// same files. Copy them into assets at build time; the assets directory is
+// generated and gitignored.
+val syncCatalogAssets = tasks.register<Copy>("syncCatalogAssets") {
     from(rootProject.file("catalog/supported-devices.json"))
+    from(rootProject.file("catalog/payload-index.json"))
+    from(rootProject.file("catalog/catalog-keys.json"))
+    from(rootProject.file("catalog/revocations.json"))
     into(layout.projectDirectory.dir("src/main/assets"))
 }
 
 tasks.named("preBuild") {
-    dependsOn(syncSupportedDevices)
+    dependsOn(syncCatalogAssets)
 }
 
 dependencies {

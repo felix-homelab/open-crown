@@ -6,10 +6,13 @@ directory.
 
 ```text
 catalog/
-├── schema/                 payload-manifest and supported-devices schemas
+├── schema/                 payload-manifest, payload-index and device schemas
 ├── manifests/              one <id>/<version>.json per payload, with .sig
 ├── examples/               fixture bundles, including a signed example
-├── tooling/                signing, revocation, transparency, device list
+├── tooling/                signing, revocation, transparency, index, device list
+├── payload-index.json      source-level payloads and their published targets
+├── catalog-keys.json       the app's pinned catalog keys (test key in M1)
+├── revocations.json        the shipped revocation list
 └── supported-devices.json  the evidence-backed device list
 ```
 
@@ -24,8 +27,14 @@ catalog/
 
 ## Status
 
-Schema, signing, revocation, the transparency log and the device list are
-implemented. There is no real payload: `catalog/examples/signed/` is dummy
-bytes signed with a throwaway key, and it exists to prove the Python signer and
-the Rust verifier agree. The catalog ships when the supply and review gates in
-[ADR 0010](../docs/adr/0010-ship-order.md) pass.
+Schema, signing, revocation, the transparency log, the device list and the
+source-level payload index are implemented. The index lists the M1 sources
+(DirtyFrag, Root My Galaxy, Root My S24) without inventing exact kernels; a
+target whose upstream only publishes a kernel version has `kernel_build: null`
+and can never be READY (ADR 0014).
+
+There is no real payload: `catalog/examples/signed/` is dummy bytes signed with
+a throwaway key, and it exists to prove the Python signer and the Rust verifier
+agree. `catalog-keys.json` pins that throwaway key for M1; the real offline key
+ceremony in ADR 0012 has not happened. The catalog ships when the supply and
+review gates in [ADR 0010](../docs/adr/0010-ship-order.md) pass.

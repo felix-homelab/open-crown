@@ -26,10 +26,14 @@ class PayloadPreparerTest {
             File(repo, "catalog/examples/signed").copyRecursively(bundle, overwrite = true)
             val work = File(root, "work")
 
+            val pinned = CatalogKeys.parse(
+                File(repo, "catalog/catalog-keys.json").readText(),
+            ).first()
             val prepared = PayloadPreparer.prepare(
                 bundle,
                 DeviceInfo("EXAMPLE-1", "example-6.1.0", "arm64-v8a", 36u, "EXAMPLE"),
                 work,
+                pinned,
             )
 
             assertEquals("org.opencrown.payload.example", prepared.id)

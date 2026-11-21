@@ -40,7 +40,7 @@ tools/hci-echo/hci-echo
 
 # Cross-compiled native library (build artifact)
 app/src/main/jniLibs/
-# Asset copied from catalog/ by the syncSupportedDevices task
+# Assets copied from catalog/ by the syncCatalogAssets task
 app/src/main/assets/
 
 # Local toolchains (installed inside the repo to stay sandbox-legal)

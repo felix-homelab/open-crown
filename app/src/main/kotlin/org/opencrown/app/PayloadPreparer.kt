@@ -12,6 +12,7 @@ data class DeviceInfo(
     val abi: String,
     val sdk: UInt,
     val buildId: String,
+    val fingerprint: String = "",
 ) {
     companion object {
         fun fromBuild(): DeviceInfo = DeviceInfo(
@@ -20,6 +21,7 @@ data class DeviceInfo(
             abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "unknown",
             sdk = Build.VERSION.SDK_INT.toUInt(),
             buildId = Build.ID,
+            fingerprint = Build.FINGERPRINT,
         )
     }
 }
@@ -30,10 +32,11 @@ object PayloadPreparer {
         bundleDir: File,
         device: DeviceInfo,
         workDir: File,
+        pinnedKeyHex: String,
         revocationsJson: String = "",
     ): PreparedBundle {
         val signature = File(bundleDir, "manifest.sig").readBytes()
-        val publicKey = hexToBytes(File(bundleDir, "public_key.hex").readText().trim())
+        val publicKey = hexToBytes(pinnedKeyHex)
         return preparePayload(
             bundleDir.path,
             workDir.path,

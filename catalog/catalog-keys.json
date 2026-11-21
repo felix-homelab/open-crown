@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "updated": "2026-11-21",
+  "keys": [
+    {
+      "id": "example-throwaway",
+      "public_key": "9b0b1a24457e16d971f24efd6f58228e408f3f91878a601a6ec7b1713ae1082e",
+      "status": "test-only",
+      "note": "Throwaway key for catalog/examples/signed. ADR 0012's offline ceremony has not happened; this is not a release root."
+    }
+  ]
+}
