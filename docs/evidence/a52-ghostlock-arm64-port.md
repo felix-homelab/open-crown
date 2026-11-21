@@ -177,3 +177,31 @@ boot_id=5357412a-f4df-4888-ad53-8f33442c4d77
 
 The missing `tree.rb_parent_color` word and/or the unresolved KASLR base is
 still wrong. No root; phone recovered.
+
+## KASLR leak from raw sched trace
+
+A raw `sched_blocked_reason` record contains the caller address at event
+offset +16.  Correlating the raw records with the text trace shows:
+
+```text
+raw caller        0xffffffc0109fc158
+text caller       rpmh_write_batch+0x27c/0x2d8
+static symbol     0xffffffc01096bedc
+static caller     0xffffffc01096c158
+difference        0x90000
+```
+
+The same difference appears for the current boot's other event callers, so
+the runtime slide is **0x90000**, not zero:
+
+```text
+runtime _stext = 0xffffffc010081000 + 0x90000
+               = 0xffffffc010111000
+```
+
+The write test with `--kaslr-base=0xffffffc010111000` no longer panics; it
+reaches the carrier and times out because the fake waiter is incomplete.
+This explains the earlier panics at `--kaslr-base=KIMAGE_STEXT_LINK`.
+
+The KASLR slide changes per boot; the chain needs to re-derive it from the
+raw ftrace caller before every run.
