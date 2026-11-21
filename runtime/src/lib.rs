@@ -8,9 +8,11 @@
 pub mod devices;
 pub mod error;
 pub mod hex;
+pub mod index;
 pub mod launch;
 pub mod manifest;
 pub mod matcher;
+pub mod readiness;
 pub mod revocation;
 pub mod stage;
 
