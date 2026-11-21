@@ -259,3 +259,32 @@ process_vm overlay, including `tree.rb_parent_color`. The remaining question
 is whether the vulnerable `remove_waiter` UAF can be reached through the
 LOCK_PI/requeue path; the current WAIT_REQUEUE_PI trigger leaves the waiter
 at `top-0x198`, where process_vm misses the parent word.
+
+## LOCK_PI trigger experiment
+
+Built a variant where the waiter blocks with `FUTEX_LOCK_PI(target)` instead
+of `FUTEX_WAIT_REQUEUE_PI`, while still holding the chain lock.  The waiter
+then sits at `top-0x168`, fully inside the process_vm iovstack overlay.
+
+The no-consume run was stable:
+
+```text
+slide child requeue ret=0 errno=0
+slide child carrier_done=1
+carrier=0/0
+```
+
+The full write run also did **not** panic, but the child timed out:
+
+```text
+slide attempt 1 timed out waiting for child
+slide write test FAILED
+```
+
+`requeue=0/0` and `wait=-1/35` suggest the LOCK_PI/chain cycle returned
+EDEADLK without creating the WAIT_REQUEUE_PI-style dangling waiter that the
+write needs. No write was observed; boot id unchanged.
+
+This is the first full run with the corrected KASLR base and a fully
+overlapped fake waiter that did not panic, so the remaining issue is the
+trigger topology/UAF, not the carrier address range.
