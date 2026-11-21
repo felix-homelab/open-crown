@@ -17,6 +17,7 @@ path = "src/main.rs"
 
 [dependencies]
 prost = "0.14"
+libc = "0.2"
 
 [build-dependencies]
 prost-build = "0.14"

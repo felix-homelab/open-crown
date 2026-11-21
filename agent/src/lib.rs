@@ -5,6 +5,7 @@
 
 pub mod audit;
 pub mod broker;
+#[cfg(unix)]
 pub mod ipc;
 pub mod policy;
 pub mod protocol;

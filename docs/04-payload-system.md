@@ -148,6 +148,11 @@ The evidence-backed list lives in `catalog/supported-devices.json`, validated by
 the app. A device that is not on the list is `unknown`, which is a normal state
 with a clear message, not a crash.
 
+The list gates the UI and consent, not the runtime. The security boundary is the
+manifest's exact target match; the list is evidence that we tested that build.
+`runtime::prepare` therefore does not consult it, which keeps example bundles
+and bench experiments working without pretending they are supported.
+
 ## 9. Execution lifecycle
 
 ```text

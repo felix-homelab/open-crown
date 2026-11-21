@@ -71,8 +71,15 @@ pub fn decode(bytes: &[u8]) -> Result<Envelope, IpcError> {
     Envelope::decode(bytes).map_err(|err| IpcError::Decode(err.to_string()))
 }
 
-pub fn encode(envelope: &Envelope) -> Vec<u8> {
-    envelope.encode_to_vec()
+pub fn encode<M: Message>(message: &M) -> Vec<u8> {
+    message.encode_to_vec()
+}
+
+pub fn decode_response(bytes: &[u8]) -> Result<Response, IpcError> {
+    if bytes.len() > MAX_ENVELOPE {
+        return Err(IpcError::TooLarge(bytes.len()));
+    }
+    Response::decode(bytes).map_err(|err| IpcError::Decode(err.to_string()))
 }
 
 pub fn validate(envelope: &Envelope) -> Result<(), IpcError> {

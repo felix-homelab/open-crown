@@ -39,6 +39,11 @@ will try to forge.
 numbers give forward compatibility without accepting unknown requests. The
 agent never parses JSON.
 
+**Transport:** a Unix socket with mode 0600, one request per connection, a
+4-byte big-endian length prefix, a 5-second read/write timeout, and a peer-UID
+check (SO_PEERCRED on Linux/Android, getpeereid on macOS) against the app UID
+passed at launch. A frame larger than 4096 bytes is refused before allocation.
+
 **Negative:** prost and a build-time protoc add to the build; proto3 ignores
 unknown fields, so a future request type could be silently ignored by an old
 agent — the version check is what prevents that.
