@@ -118,6 +118,7 @@ Read in this order:
 11. [Risks](docs/10-risks.md) — what can kill the project.
 12. [Glossary](docs/11-glossary.md) — terms and the real protocol vocabulary.
 13. [Decisions](docs/12-decisions.md) — the decision log this revision came from.
+14. [Status](docs/13-status.md) — what exists, what is verified, what is blocked.
 
 Decisions are recorded as ADRs in [`docs/adr/`](docs/adr/).
 

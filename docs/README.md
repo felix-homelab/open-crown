@@ -15,6 +15,7 @@
 | [10 — Risks](10-risks.md) | Risk register and the four that actually matter |
 | [11 — Glossary](11-glossary.md) | Terms and the real protocol vocabulary |
 | [12 — Decisions](12-decisions.md) | The decision log this revision came from |
+| [13 — Status](13-status.md) | What exists, what is verified, what is blocked |
 | [Provenance log](provenance.md) | Per-feature clean-room record |
 
 ## ADRs
