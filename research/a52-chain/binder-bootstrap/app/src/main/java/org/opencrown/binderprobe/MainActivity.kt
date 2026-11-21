@@ -25,14 +25,24 @@ class MainActivity : Activity() {
     private external fun nativeExecProbe(): Int
     private external fun nativeAfAlgProbe(): Int
     private external fun nativePerfProbe(): Int
+    private external fun nativeBrokerProbe(managerNativeData: Long, slot: Int): Int
 
     companion object {
         init { System.loadLibrary("binderprobe") }
     }
 
+    private val walkerConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {}
+        override fun onServiceDisconnected(name: ComponentName) {}
+    }
+
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             manager = service
+            val brokerResult = runCatching {
+                nativeBrokerProbe(BinderNative.nativeData(service), 1)
+            }.getOrElse { -99 }
+            Log.i("BinderProbe", "brokerProbe=$brokerResult")
             val data = Parcel.obtain()
             val reply = Parcel.obtain()
             try {
@@ -130,8 +140,7 @@ class MainActivity : Activity() {
         Log.i("BinderProbe", "execProbe=${runCatching { nativeExecProbe() }.getOrElse { -99 }}")
         Log.i("BinderProbe", "afAlgProbe=${runCatching { nativeAfAlgProbe() }.getOrElse { -99 }}")
         Log.i("BinderProbe", "perfProbe=${runCatching { nativePerfProbe() }.getOrElse { -99 }}")
-        startService(Intent(this, WalkerService::class.java))
-        startService(Intent(this, VictimService::class.java))
+        bindService(Intent(this, WalkerService::class.java), walkerConnection, Context.BIND_AUTO_CREATE)
         Log.i("BinderProbe", "binding to ManagerService")
         bindService(Intent(this, ManagerService::class.java), connection, Context.BIND_AUTO_CREATE)
     }

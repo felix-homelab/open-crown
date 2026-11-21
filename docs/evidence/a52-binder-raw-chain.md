@@ -51,3 +51,24 @@ Java-service loop is too slow for a probabilistic race.
 
 The next implementation should use a raw P loop that reopens `/dev/binder`
 and re-registers its node without waiting for an Android service restart.
+
+## Manager broker scaffold
+
+Added a Java ManagerService handle broker (codes 10/12 register, 11 get)
+and a native raw registration probe. The native probe reports
+
+```text
+broker manager=63 slot=1 rc=0 errno=11
+brokerProbe=0
+```
+
+but the manager never logs the registration, so the binder object is not
+being delivered/parsed yet. The next fix is the binder object alignment and
+the raw transaction offsets/reply reading.
+
+The chain itself was stabilized by fixing the victim expected count at 16.
+A 60-second run still produced only 4 complete victim cycles; the service
+restart/reconnect delay dominates. A raw P endpoint loop is still needed for
+a useful race rate.
+
+No root; no panic in this run.

