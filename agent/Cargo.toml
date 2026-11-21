@@ -7,6 +7,10 @@ license.workspace = true
 rust-version.workspace = true
 publish.workspace = true
 
+[lib]
+name = "opencrown_agent"
+path = "src/lib.rs"
+
 [[bin]]
 name = "crown-agent"
 path = "src/main.rs"

@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "id": "org.opencrown.payload.example",
+  "version": "1.0.0",
+  "min_agent": "0.1.0",
+  "family": "page-cache",
+  "targets": [
+    {
+      "model": "EXAMPLE-1",
+      "kernel_build": "example-6.1.0",
+      "abi": "arm64-v8a",
+      "android": ">=31"
+    }
+  ],
+  "capabilities": [
+    "root",
+    "domain",
+    "controller"
+  ],
+  "entry": "files/payload.bin",
+  "agent": "files/agent",
+  "persistence": "boot",
+  "reversible": "reboot",
+  "artifacts": [
+    {
+      "path": "files/payload.bin",
+      "sha256": "ba0fdfd62c111ba07f787684aeb32cf8fff3f6b03d9908293a9c900ffea7fa22",
+      "size": 26
+    },
+    {
+      "path": "files/agent",
+      "sha256": "306c6ca7407560340797866e077e053627ad409277d1b9da58106fce4cf717cb",
+      "size": 17
+    }
+  ],
+  "notes": "Example bundle. Signed with a throwaway key; private half discarded."
+}

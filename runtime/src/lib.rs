@@ -10,6 +10,7 @@ pub mod hex;
 pub mod launch;
 pub mod manifest;
 pub mod matcher;
+pub mod revocation;
 pub mod stage;
 
 use std::path::Path;
@@ -36,9 +37,13 @@ pub fn prepare(
     device: &DeviceFingerprint,
     signature: &[u8],
     public_key: &[u8],
+    revocations: &revocation::RevocationList,
 ) -> Result<Prepared, RuntimeError> {
     let manifest_bytes = std::fs::read(bundle.join("manifest.json"))?;
     let manifest = Manifest::parse(&manifest_bytes)?;
+    if revocations.is_revoked(&manifest.id, &manifest.version) {
+        return Err(RuntimeError::Invalid("payload is revoked".to_string()));
+    }
     matcher::select(&manifest, device)?;
     manifest::verify_signature(&manifest, signature, public_key)?;
     let staged = stage::stage(bundle, &manifest, work)?;
@@ -54,6 +59,7 @@ pub fn prepare(
 mod tests {
     use super::*;
     use crate::manifest::{Artifact, Target};
+    use crate::revocation::RevocationList;
     use ed25519_dalek::{Signer, SigningKey};
     use sha2::{Digest, Sha256};
     use std::fs;
@@ -141,6 +147,7 @@ mod tests {
             &device(),
             &signature.to_bytes(),
             key.verifying_key().as_bytes(),
+            &RevocationList::empty(),
         )
         .unwrap();
 
@@ -165,6 +172,7 @@ mod tests {
             &device(),
             &signature.to_bytes(),
             key.verifying_key().as_bytes(),
+            &RevocationList::empty(),
         )
         .unwrap_err();
         assert!(error.to_string().contains("signature"));
@@ -187,9 +195,35 @@ mod tests {
             &other,
             &signature.to_bytes(),
             key.verifying_key().as_bytes(),
+            &RevocationList::empty(),
         )
         .unwrap_err();
         assert!(error.to_string().contains("target mismatch"));
+        let _ = fs::remove_dir_all(&dir);
+        let _ = fs::remove_dir_all(&work);
+    }
+
+    #[test]
+    fn rejects_a_revoked_payload() {
+        let (dir, manifest) = bundle("prepare-revoked");
+        let key = SigningKey::from_bytes(&[7u8; 32]);
+        let signature = key.sign(&crate::manifest::digest(&manifest).unwrap());
+        let work = temp("prepare-revoked-work");
+        let revocations = RevocationList::parse(
+            br#"{"schema":1,"revoked":[{"id":"org.opencrown.payload.example","version":"1.0.0"}]}"#,
+        )
+        .unwrap();
+
+        let error = prepare(
+            &dir,
+            &work,
+            &device(),
+            &signature.to_bytes(),
+            key.verifying_key().as_bytes(),
+            &revocations,
+        )
+        .unwrap_err();
+        assert!(error.to_string().contains("revoked"));
         let _ = fs::remove_dir_all(&dir);
         let _ = fs::remove_dir_all(&work);
     }

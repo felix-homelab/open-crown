@@ -13,8 +13,8 @@ There is **no harness root**. The only path to privilege is the payload itself,
 so K2b and K2a are exercised in the same session. Each stage reports separately,
 because a failure has to say whether the exploit failed or the policy did.
 
-- [ ] Payload runtime: matcher, manifest verification, staging (`runtime/`).
-- [ ] Probe agent: the first `agent/` binary; prints uid, SELinux context, and
+- [x] Payload runtime: matcher, manifest verification, staging (`runtime/`).
+- [x] Probe agent: the first `agent/` binary; prints uid, SELinux context, and
       attempts the HCI user channel bind (`tools/hci-echo`).
 - [ ] First payload: an exact-target public n-day for the test build. Supplied
       by the maintainer; the repository carries the plumbing, not the chain.

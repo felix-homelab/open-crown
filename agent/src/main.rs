@@ -4,15 +4,15 @@
 //! the app, and records every privileged action. It never parses Watch protocol
 //! messages; it moves bytes (docs/02-architecture.md section 2.3).
 //!
-//! Status: skeleton. The socket, the policy, and the controller backend land in
-//! Phase 0 (harness) and Phase 4 (product).
+//! Status: skeleton. The socket, the controller backend and the probe launch
+//! land in Phase 0/4.
 
-mod audit;
-mod broker;
-mod ipc;
-mod policy;
+use opencrown_agent::policy::{self, Action, CapabilitySet};
 
 fn main() {
-    eprintln!("crown-agent: skeleton; see docs/02-architecture.md section 2.3");
+    // Nothing is granted before a manifest is verified. Prove the default.
+    if let Err(deny) = policy::check(CapabilitySet::empty(), Action::Diag) {
+        eprintln!("crown-agent: {deny}; see docs/02-architecture.md section 2.3");
+    }
     std::process::exit(70);
 }
