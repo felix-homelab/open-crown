@@ -8,7 +8,8 @@ Build-time and research tooling. They are not part of the shipped APK.
 | [fixture-diff](fixture-diff/) | Diff two captures, highlight changed messages | 1 | implemented |
 | [spec-lint](spec-lint/) | Require spec sections and at least one vector | 1 | implemented |
 | [vector-gen](vector-gen/) | Capture to golden vector with redaction | 1 | implemented |
-| [hci-echo](hci-echo/) | Phase 0 harness: own the controller, echo bytes | 0 | not started |
+| [hci-echo](hci-echo/) | Phase 0 harness: own the controller, echo bytes | 0 | implemented |
+| [link-check](link-check/) | Relative Markdown links and anchors | — | implemented |
 
 ## Layout
 
