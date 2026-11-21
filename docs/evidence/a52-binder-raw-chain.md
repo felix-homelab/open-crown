@@ -36,3 +36,18 @@ steps are to increase B-thread/round concurrency, add an observable UAF
 oracle, and only then attempt reclaim/creds.
 
 No root; no `uid 0`.
+
+## Thread scaling
+
+The binder process is limited to **16 simultaneous binder threads**:
+
+- with `walkerStart(..., 64)`, the victim stopped at `count=16/64` and never
+  completed the chain;
+- with 16, it completes all 16 nested e1 calls and execs.
+
+A 60-second run completed 4 victim cycles (`victim execing clean shell`),
+with no panic. Each victim restart takes roughly 15 seconds, so the current
+Java-service loop is too slow for a probabilistic race.
+
+The next implementation should use a raw P loop that reopens `/dev/binder`
+and re-registers its node without waiting for an Android service restart.
