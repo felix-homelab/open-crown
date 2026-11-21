@@ -80,3 +80,10 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew :app:assembleDebug :app:testDebugUnitTest --no-daemon --stacktrace
+
+      - name: APK report
+        run: python3 tools/release/apk-report.py app/build/outputs/apk/debug/app-debug.apk --out apk-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk-report
+          path: apk-report.json
