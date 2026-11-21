@@ -1,0 +1,19 @@
+# A52 CVE-2026-64468 binder UAF reachability
+# 2026-11-21 serial R5CR916B48N, uid 2000(shell), Enforcing
+# device: SM-A528B / 5.4.254-qgki-28575149-abA528BXXSBGYI3
+# public PoC: https://github.com/aramosf/CVE-2026-64468
+
+# /dev/binder is 0666; manager opens it, but:
+CVE-2026-64468 CHAIN-START duration=1s threads=2 ... cpus=8
+CVE-2026-64468 CHAIN-ABORT stage=manager status=M
+
+# /dev/vndbinder:
+CVE-2026-64468 CHAIN-ABORT stage=manager status=O
+
+# /dev/hwbinder:
+CVE-2026-64468 CHAIN-ABORT stage=manager status=M
+
+# unshare -U -> EINVAL
+# unshare -m -> Operation not permitted
+# /dev/binderfs/binder-control -> crw------- root root
+# boot id unchanged; no panic; no root

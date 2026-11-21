@@ -17,6 +17,7 @@ that no practical path exists under the project constraints.
 
 | # | Candidate | Why it is on the list | Main obstacle |
 | --- | --- | --- | --- |
+| 0 | CVE-2026-64468 Binder `binder_free_transaction` UAF | A52 source lacks the 2026 fix; binder is the Android IPC path; public arm64 PoC + x86_64 LPE exist | Android `servicemanager` already owns the context manager; PoC aborts at `BINDER_SET_CONTEXT_MGR`; needs a bootstrap and arm64 offsets |
 | 1 | CVE-2026-20971 PROCA/FIVE `task_integrity` UAF | A52 source predates the Jan-2026 fix; reachable from `/proc/<pid>/integrity/*`; and the public report shows the UAF trigger | Dedicated `task_integrity_cache`, free-time scrub, RKP_CFP/KDP; public work stops at DoS |
 | 2 | CVE-2025-47375/47376/47379/47386 Qualcomm IOCTL UAFs | A52 is EOL and pre-March-2026; generic-looking IOCTL/shared-buffer bugs | No public PoC; patch diff and object lifetime must be derived |
 | 3 | CVE-2026-25291 shared-memory page-list race | A52 is pre-Oct-2026; local race | No public PoC; concurrency and cache control unknown |
@@ -24,8 +25,9 @@ that no practical path exists under the project constraints.
 | — | CVE-2023-33107 KGSL SVM | Full public exploit exists | Patched in A52 source; older builds blocked by binary B |
 | — | GhostLock / 98260 / DirtyFrag | Public chains exist | Wrong kernel branch (5.4 vs 5.10/6.x) |
 
-Start with #1 because the trigger is public and the A52 source is confirmed to
-have the vulnerable lifetime pattern. If the UAF cannot be turned into a
+Start with #0 because a public LPE exists and the A52 source is confirmed
+vulnerable; the immediate blocker is the Android binder bootstrap, not the
+bug. If the bootstrap cannot be built without root, fall back to #1. If the UAF cannot be turned into a
 controlled primitive after a bounded reclaim study, move to #2/#3 rather than
 force it.
 

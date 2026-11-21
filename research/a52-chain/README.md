@@ -21,7 +21,9 @@ Start here:
 
 1. [PLAN.md](PLAN.md) — phases, candidate triage, abort criteria.
 2. [RECON.md](RECON.md) — exact A52 source facts already checked.
-3. [LAB.md](LAB.md) — sacrificial-device and recovery requirements.
+3. [CANDIDATE-64468.md](CANDIDATE-64468.md) — the binder UAF candidate and
+   the Android context-manager blocker.
+4. [LAB.md](LAB.md) — sacrificial-device and recovery requirements.
 
 No exploit code is committed until there is a lab device and a bounded,
 KASAN-instrumented trigger. Running a stock-kernel UAF trigger on the daily
