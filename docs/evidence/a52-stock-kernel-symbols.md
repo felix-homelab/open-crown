@@ -60,3 +60,36 @@ offsets only; stock symbol addresses come from the extracted ELF above).
 Stock A52 symbols and the raw kernel image are now available locally. The next
 blockers are KASLR/`kernel_phys_load` and the A52 `task_struct`/`cred`/
 `rt_mutex_waiter` offsets.
+
+## Struct offsets recovered from stock disassembly
+
+`commit_creds` and `remove_waiter` in the reconstructed stock ELF give:
+
+```text
+task_struct.cred              0x800
+task_struct.real_cred         0x808
+task_struct.pi_lock           0x8dc
+task_struct.pi_waiters        0x8e8   (rb_root)
+task_struct.pi_waiters_leftmost 0x8f0
+task_struct.pi_blocked_on     0x900
+
+rt_mutex_waiter.tree_entry    0x00
+rt_mutex_waiter.pi_tree_entry 0x18
+rt_mutex_waiter.task          0x30
+rt_mutex_waiter.lock          0x38
+rt_mutex_waiter.prio          0x40
+rt_mutex_waiter.deadline      0x48
+```
+
+`selinux_enforcing` is a separate data symbol at
+`0xffffffc0130c8c54` (not the `selinux_state` struct base). The vulnerable
+`remove_waiter()` clears `[current, #0x900]`, exactly the stock
+`pi_blocked_on` field.
+
+## Build attempt
+
+The stubbed source build still fails in `techpack/display` and on the
+uppercase `xt_DSCP.o` rule, so the debug-info `vmlinux` is not available yet.
+The stock ELF above is sufficient for symbols and the key task/waiter
+offsets; the remaining offsets (`rt_mutex`, `file_operations`, `mm_struct`)
+can be read from source/disassembly.
