@@ -70,9 +70,11 @@ See [../../docs/evidence/a52-stock-kernel-symbols.md](../../../docs/evidence/a52
 ## arm64 port
 
 The public Huawei P50 Pro 5.4.86 arm64 GhostLock chain builds against an A52
-target header and runs on the device. The MCAST carrier fails on A52 with
-`EADDRNOTAVAIL` when the fake waiter fields are present, so the write test
-does not complete. See
+target header and runs on the device. `MCAST_BLOCK_SOURCE` copies the fake
+waiter but returns `EADDRNOTAVAIL` after validation on A52; a full write test
+with the link-time base panicked the kernel (`ro.boot.bootreason=
+kernel_panic,bug`), and the phone recovered. The carrier copy offset, fake
+lock target, or KASLR assumption still needs correction. See
 [../../../docs/evidence/a52-ghostlock-arm64-port.md](../../../docs/evidence/a52-ghostlock-arm64-port.md).
 
 ## Next
