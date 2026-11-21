@@ -54,3 +54,35 @@ required.
 
 This is a reachable new bug, not another GhostLock carrier attempt. No root
 yet.
+
+## On-device result
+
+The public victim/reader harness was compiled aarch64-static and run as
+shell on the A52:
+
+```text
+/data/local/tmp/five_uaf_probe 5 reset_file
+```
+
+The device immediately rebooted:
+
+```text
+ro.boot.bootreason=kernel_panic,null
+boot_id=c8eede6d-1971-41e4-80e8-fd003373c54b
+```
+
+That confirms the FIVE/PROCA `task_integrity` UAF is reachable on this A52
+kernel, not just on the public SM-S9210 target.
+
+A `value`-field run did not panic, but hung until the timeout; the boot id
+stayed `c8eede6d-...`.
+
+## Remaining exploitation problem
+
+A52 has `CONFIG_CFI_CLANG=y` (non-permissive) and the `task_integrity`
+dedicated cache. The public primitives are a DWORD leak, a CFI-constrained
+`d_dname` call, and the `value_lock` spinlock write at offset 0xc. None is a
+direct arbitrary write; a cross-cache reclaim + CFI-compatible target is
+needed before a cred/SELinux path can be built.
+
+No root.
