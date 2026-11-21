@@ -63,6 +63,7 @@ class FfiRoundTripTest {
             assertEquals("org.opencrown.payload.example", prepared.id)
             assertEquals("1.0.0", prepared.version)
             assertEquals(64, prepared.token.length)
+            assertEquals(32, prepared.bootId.length)
             assertTrue(File(prepared.entryPath).exists())
             assertTrue(File(prepared.agentPath).exists())
         } finally {

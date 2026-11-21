@@ -501,6 +501,7 @@ name = "opencrown-agent"
 version = "0.1.0"
 dependencies = [
  "libc",
+ "opencrown-runtime",
  "prost",
  "prost-build",
  "protoc-bin-vendored",

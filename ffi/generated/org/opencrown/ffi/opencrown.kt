@@ -1075,6 +1075,8 @@ data class PreparedBundle (
     , 
     var `token`: kotlin.String
     , 
+    var `bootId`: kotlin.String
+    , 
     var `manifestDigest`: kotlin.String
     
 ){
@@ -1098,6 +1100,7 @@ public object FfiConverterTypePreparedBundle: FfiConverterRustBuffer<PreparedBun
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
         )
     }
 
@@ -1107,6 +1110,7 @@ public object FfiConverterTypePreparedBundle: FfiConverterRustBuffer<PreparedBun
             FfiConverterString.allocationSize(value.`entryPath`) +
             FfiConverterString.allocationSize(value.`agentPath`) +
             FfiConverterString.allocationSize(value.`token`) +
+            FfiConverterString.allocationSize(value.`bootId`) +
             FfiConverterString.allocationSize(value.`manifestDigest`)
     )
 
@@ -1116,6 +1120,7 @@ public object FfiConverterTypePreparedBundle: FfiConverterRustBuffer<PreparedBun
             FfiConverterString.write(value.`entryPath`, buf)
             FfiConverterString.write(value.`agentPath`, buf)
             FfiConverterString.write(value.`token`, buf)
+            FfiConverterString.write(value.`bootId`, buf)
             FfiConverterString.write(value.`manifestDigest`, buf)
     }
 }

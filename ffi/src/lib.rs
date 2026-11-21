@@ -38,6 +38,7 @@ pub struct PreparedBundle {
     pub entry_path: String,
     pub agent_path: String,
     pub token: String,
+    pub boot_id: String,
     pub manifest_digest: String,
 }
 
@@ -116,6 +117,7 @@ pub fn prepare_payload(
         entry_path: prepared.staged.entry.to_string_lossy().into_owned(),
         agent_path: prepared.staged.agent.to_string_lossy().into_owned(),
         token: prepared.token.expose().to_string(),
+        boot_id: prepared.boot_id.expose().to_string(),
         manifest_digest: opencrown_runtime::hex::encode(&digest),
     })
 }
@@ -227,6 +229,7 @@ mod tests {
 
         assert_eq!(prepared.id, "org.opencrown.payload.example");
         assert_eq!(prepared.token.len(), 64);
+        assert_eq!(prepared.boot_id.len(), 32);
         assert!(Path::new(&prepared.entry_path).exists());
         let _ = std::fs::remove_dir_all(&work);
     }

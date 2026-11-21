@@ -13,10 +13,11 @@ implements [02 — Architecture](../docs/02-architecture.md) section 2.2 and
       -> verify_signature       Ed25519 over SHA-256 of canonical JSON
       -> stage::stage           re-hash each artifact, 0600, private dir
       -> launch::new_token      32 random bytes, hex
-      -> Prepared { manifest, staged, token }
+      -> launch::new_boot_id    16 random bytes, hex
+      -> Prepared { manifest, staged, token, boot_id }
 
-The caller launches the staged entry or agent and must present the token in
-CROWN_TOKEN. The privilege-escalation chain itself is supplied by the
+The caller launches the staged entry or agent and must present both values:
+CROWN_TOKEN and CROWN_BOOT_ID. The privilege-escalation chain itself is supplied by the
 maintainer; it is not in this crate.
 
 ## Invariants

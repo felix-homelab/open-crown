@@ -28,6 +28,7 @@ pub struct Prepared {
     pub manifest: Manifest,
     pub staged: Staged,
     pub token: launch::Token,
+    pub boot_id: launch::BootId,
 }
 
 /// Verify, stage, and prepare a launch. The caller still decides when to run
@@ -49,10 +50,12 @@ pub fn prepare(
     manifest::verify_signature(&manifest, signature, public_key)?;
     let staged = stage::stage(bundle, &manifest, work)?;
     let token = launch::new_token()?;
+    let boot_id = launch::new_boot_id()?;
     Ok(Prepared {
         manifest,
         staged,
         token,
+        boot_id,
     })
 }
 
@@ -155,6 +158,7 @@ mod tests {
         assert!(prepared.staged.entry.exists());
         assert_eq!(prepared.staged.agent, work.join("agent"));
         assert_eq!(prepared.token.expose().len(), 64);
+        assert_eq!(prepared.boot_id.expose().len(), 32);
         let _ = fs::remove_dir_all(&dir);
         let _ = fs::remove_dir_all(&work);
     }
