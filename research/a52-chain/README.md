@@ -1,11 +1,11 @@
 # A52 chain research branch
 
-**Status:** research only — documented dead end under the no-unlock
-constraint. The binder bootstrap, native raw binder and e2/e1 topology were
-built and run, but the UAF did not trigger through the app victim model, and
-the only public CVE-2026-64468 LPE is x86_64. One stock DoS run confirmed the
-CVE-2026-20971 UAF (panic/reboot, no root). See
-[../../docs/evidence/a52-no-unlock-dead-end.md](../../docs/evidence/a52-no-unlock-dead-end.md).
+**Status:** research only — active again on **GhostLock
+(CVE-2026-43499)**. The binder route is a documented dead end; the A52's
+`rtmutex` still has the GhostLock bug and the futex-PI trigger returns
+`EDEADLK` from `shell`. No root yet. See
+[ghostlock/README.md](ghostlock/README.md) and
+[../../docs/evidence/a52-ghostlock-trigger.md](../../docs/evidence/a52-ghostlock-trigger.md).
 **Target:** Samsung Galaxy A52s 5G `SM-A528B`, kernel
 `5.4.254-qgki-28575149-abA528BXXSBGYI3`, binary B (11), SPL `2025-09-01`.
 **Scope:** determine whether an original temporary-root chain is feasible on
@@ -26,7 +26,8 @@ Start here:
 2. [RECON.md](RECON.md) — exact A52 source facts already checked.
 3. [CANDIDATE-64468.md](CANDIDATE-64468.md) — the binder UAF candidate and
    the app-based bootstrap probe in [binder-bootstrap/](binder-bootstrap/README.md).
-4. [LAB.md](LAB.md) — sacrificial-device and recovery requirements.
+4. [ghostlock/README.md](ghostlock/README.md) — CVE-2026-43499 trigger and port plan.
+5. [LAB.md](LAB.md) — sacrificial-device and recovery requirements.
 
 No exploit code is committed until there is a lab device and a bounded,
 KASAN-instrumented trigger. Running a stock-kernel UAF trigger on the daily
