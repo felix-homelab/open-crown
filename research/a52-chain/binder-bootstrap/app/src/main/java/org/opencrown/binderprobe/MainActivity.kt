@@ -116,6 +116,17 @@ class MainActivity : Activity() {
         text.text = "binding..."
         setContentView(text)
         Log.i("BinderProbe", "libbinder=${nativeProbeLibbinder()}")
+        for (path in listOf(
+            "/proc/device-tree/chosen/bootargs",
+            "/proc/device-tree/chosen/kaslr-seed",
+            "/proc/device-tree/chosen/linux,initrd-start",
+            "/proc/device-tree/chosen/linux,initrd-end"
+        )) {
+            val value = runCatching {
+                java.io.File(path).readBytes().joinToString("") { "%02x".format(it) }
+            }.getOrElse { "ERR:$it" }
+            Log.i("BinderProbe", "dt $path=$value")
+        }
         Log.i("BinderProbe", "execProbe=${runCatching { nativeExecProbe() }.getOrElse { -99 }}")
         Log.i("BinderProbe", "afAlgProbe=${runCatching { nativeAfAlgProbe() }.getOrElse { -99 }}")
         Log.i("BinderProbe", "perfProbe=${runCatching { nativePerfProbe() }.getOrElse { -99 }}")
