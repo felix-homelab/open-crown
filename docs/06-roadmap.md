@@ -4,26 +4,35 @@ Gate-based and ordered by risk. The claim that can kill the project is tested
 first, not after six weeks of scaffolding. A phase ends when its exit criteria
 are met.
 
-## Phase 0 — Prove the claim (2–3 weeks)
+## Phase 0 — First payload (6–10 weeks)
 
-**Goal:** find out whether a payload can hold the controller under enforcing
-SELinux, without Magisk's configuration.
+**Goal:** run the first payload on a stock phone and find out whether the
+process it produces can hold the controller.
 
-- [ ] Build a throwaway harness on the target phone with **temporary root**
-      (Magisk is the harness, not the product).
-- [ ] Shape A: take the Bluetooth HAL and echo bytes.
-- [ ] Shape B: detach the platform stack, open HCI, echo bytes.
-- [ ] Record the exact SELinux denials, the context that works, and the minimum
-      configuration diff versus Magisk's module.
-- [ ] Measure: success rate, boot impact, recovery after a forced panic.
+There is **no harness root**. The only path to privilege is the payload itself,
+so K2b and K2a are exercised in the same session. Each stage reports separately,
+because a failure has to say whether the exploit failed or the policy did.
 
-**Exit:** a written result for both shapes — pass or fail — with the policy
-diff, the log, and a reproducible procedure.
+- [ ] Payload runtime: matcher, manifest verification, staging (`runtime/`).
+- [ ] Probe agent: the first `agent/` binary; prints uid, SELinux context, and
+      attempts the HCI user channel bind (`tools/hci-echo`).
+- [ ] First payload: an exact-target public n-day for the test build. Supplied
+      by the maintainer; the repository carries the plumbing, not the chain.
+- [ ] **Stage A (K2b):** the payload yields `uid 0`; the probe's uid line proves it.
+- [ ] **Stage B (K2a):** the probe binds `HCI_CHANNEL_USER` under enforcing SELinux.
+- [ ] Record denials, the context, and whether Android's Bluetooth stack had to
+      be stopped before the bind succeeded.
+- [ ] Reboot recovery: nothing persists, the probe is gone, SELinux is enforcing.
 
-**Gate G0 (privilege):** if shape B fails and shape A needs the same Magisk-class
-configuration we set out to replace, the stock-phone product does not exist. Fall back to
-[ADR 0010](adr/0010-ship-order.md)'s rooted-device companion, and say so in the
-README.
+**Exit:** a written result with stage-level attribution, the denial text, and a
+reproducible procedure.
+
+**Gate G0 (privilege):** two findings, two fallbacks.
+Stage A failing means no usable payload for this build: the catalog is not
+viable and the project is bring-your-own-root.
+Stage B failing while stage A passes means the stock-phone product does not
+exist without a policy change; if the change is larger than a payload can carry,
+fall back to [ADR 0010](adr/0010-ship-order.md)'s rooted-device companion.
 
 ## Phase 1 — Foundation (2–3 weeks)
 
@@ -120,7 +129,7 @@ bring-your-own-root only.
 
 | Phase | Calendar (part-time) | Confidence |
 | --- | --- | --- |
-| 0 — Prove the claim | 2–3 weeks | Medium |
+| 0 — First payload | 6–10 weeks | Low |
 | 1 — Foundation | 2–3 weeks | High |
 | 2 — Activation decision | 1–2 weeks | Medium |
 | 3 — Protocol and pairing | 6–10 weeks | Low–medium |
@@ -130,14 +139,14 @@ bring-your-own-root only.
 | 7 — Calls and SMS | best effort | Low |
 | 8 — Catalog and distribution | 4–6 weeks | Medium |
 
-Total: thirty to fifty part-time weeks of work, or roughly one to two calendar
-years once hardware waits, review cycles and payload research are included.
+Total: forty to sixty part-time weeks of work, or roughly two calendar years
+once hardware waits, review cycles and payload research are included.
 Phase 0 is two to three weeks and can end the project honestly; that is the point
 of putting it first.
 
 ## What "v0.1" means
 
-A v0.1 release is **Phase 0 + Phase 1**: the K2a result published, the harness
-working, discovery and capability reporting on a rooted device, and a clear
-explanation of what is not available yet. It is useful, safe, and shippable
+A v0.1 release is **Phase 0 + Phase 1**: the K2a result published, the payload
+plumbing and probe working, discovery and capability reporting on a stock
+device, and a clear explanation of what is not available yet. It is useful, safe, and shippable
 without the catalog.

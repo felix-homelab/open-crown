@@ -28,7 +28,8 @@ named owner and a written mitigation before the phase that exposes it.
 | R19 | User updates and the app silently stops working | 5 | 3 | 15 | Update check, explicit "this build is no longer supported" state |
 | R20 | Prior art abandoned, map goes stale | 3 | 3 | 9 | Keep own captures; do not depend on it as a runtime component |
 | R21 | Provenance contamination from contributors | 2 | 4 | 8 | Signed attestation per PR; similarity scan; named prior art |
-| R22 | Single reviewer ships a bad payload | 3 | 4 | 12 | `unreviewed` labelling; 7-day public comment on the catalog PR |
+| R22 | Single reviewer ships a bad payload | 3 | 4 | 12 | @@unreviewed@@ labelling; 7-day public comment on the catalog PR |
+| R23 | Phase 0 conflates exploit failure with policy failure | 4 | 3 | 12 | Stage-level reporting; separate K2a and K2b verdicts in the evidence |
 
 ## 2. The four that actually matter
 

@@ -109,8 +109,10 @@ experiment, not a matter of taste.
 | **A — HAL ownership** | The agent takes the Bluetooth HAL, as the prior art does | Needs priv-app, hidden-API whitelist and SELinux rules; that is the configuration we are trying to avoid |
 | **B — HCI user channel** | The agent detaches the platform stack, owns HCI, implements L2CAP/ERTM/SDP/SMP in userspace | Needs an SELinux domain that can open the device; a large userspace stack to write |
 
-Shape B is the thesis. If K2a fails for B but succeeds for A, then the honest
-product is a rooted-device companion with a Magisk-class prerequisite, and
+Shape B is the thesis and the only one Phase 0 measures. Shape A is the prior
+art's path: it needs the very configuration the product avoids, so it is a
+fallback rather than an experiment. If B fails, the honest product is a
+rooted-device companion with a Magisk-class prerequisite, and
 [ADR 0010](adr/0010-ship-order.md) already orders the release that way.
 
 The core does not know which shape is in use.

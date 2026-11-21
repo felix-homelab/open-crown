@@ -35,6 +35,9 @@ signing/
 __pycache__/
 *.pyc
 
+# Built probe binaries
+tools/hci-echo/hci-echo
+
 # Local toolchains (installed inside the repo to stay sandbox-legal)
 .toolchain/
 .android-sdk/

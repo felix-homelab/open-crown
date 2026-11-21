@@ -27,8 +27,9 @@ rules, and states that root access alone does not supply that configuration.
 
 ## 3. K2a runs first
 
-**Decision:** the first experiment is controller ownership under enforcing
-SELinux, run with temporary root before any app code.
+**Decision:** the first experiment is the first payload, on a stock phone: the
+payload yields `uid 0` and the probe takes the controller. There is no harness
+root ([ADR 0011](adr/0011-no-harness-root.md)).
 
 **Changes:** [06 — Roadmap](06-roadmap.md) starts at Phase 0, not Phase 1.
 Scaffolding moved behind the decision.
@@ -92,6 +93,15 @@ pass; no contradiction between documents; every count appears once.
 **Changes:** citations in the feasibility doc, named hardware in the test
 matrix, one retry number (three), one effort story, and a single definition of
 activation.
+
+## 11. No harness root
+
+**Decision:** no manual rooting step at any point, in development or testing.
+[ADR 0011](adr/0011-no-harness-root.md).
+
+**Changes:** Phase 0 now consumes a real payload, so K2a and K2b are exercised
+together; the runbook has no Magisk step; the probe reports stages separately so
+a failure is still attributable.
 
 ## Left open on purpose
 

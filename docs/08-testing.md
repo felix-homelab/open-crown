@@ -30,7 +30,7 @@ with a USB HCI dongle, and one iPhone as a reference stack.
 | Slot | Device | Purpose |
 | --- | --- | --- |
 | W1 | Apple Watch Ultra 2 (Watch7,5), watchOS 26.2 (23S303) | All pairing/setup tests |
-| P1 | OnePlus CPH2653, rooted (temporary Magisk harness for Phase 0) | Privilege and transport |
+| P1 | OnePlus CPH2653, stock (payload only; no harness root) | Privilege and transport |
 | P2 | Sacrificial phone, same family | Brick drill, panic tests |
 | L1 | Linux host + USB BR/EDR dongle | Protocol work without Android |
 | I1 | iPhone | Reference capture, activation comparison |
@@ -44,8 +44,8 @@ These protect the user's phone.
 
 | Test | Pass condition |
 | --- | --- |
-| **K2a — own the controller** | Under enforcing SELinux, the agent opens the controller and echoes bytes; the exact context is recorded |
-| K2a negative | Without the context, the same code is denied, and the denial is logged as `selinux_denied` |
+| **K2a — own the controller** | Under enforcing SELinux, the probe binds `HCI_CHANNEL_USER`, issues a command and reads the command complete; the exact context is recorded |
+| K2a negative | A run that does not obtain the context is denied; the avc line is recorded as the denial |
 | Clean reboot | After a session and reboot: no agent, no payload, no modified partition, no changed policy |
 | Panic recovery | A forced panic reboots to a working system; the app reports the failed run and does not auto-retry |
 | Retry budget | Three attempts in one boot; a fourth is refused |

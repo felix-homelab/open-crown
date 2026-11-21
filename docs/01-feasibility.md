@@ -120,7 +120,7 @@ firmware image, and no Apple binary in this project.
 
 | Unknown | Why it matters | How we resolve it |
 | --- | --- | --- |
-| Can a payload hold the controller under enforcing SELinux? | Decides whether a stock-phone product exists | Phase 0 / K2a, with temporary root as the harness |
+| Can a payload hold the controller under enforcing SELinux? | Decides whether a stock-phone product exists | Phase 0, through the payload (stage A + stage B) |
 | Who holds the Apple ID session? | Decides the phone's role and the credential design | Trace the prior art's `activationResponse` path; then a test account |
 | How long does an n-day survive? | Determines the supported list and the update warning | Track vendor bulletins per family; field data |
 | Does the Watch accept a non-Apple host for every service? | Decides feature tiers | Per-feature hardware tests |

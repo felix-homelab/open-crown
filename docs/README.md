@@ -31,6 +31,7 @@
 | [0008](adr/0008-resident-agent.md) | Resident agent for the life of the boot | Accepted |
 | [0009](adr/0009-payload-supply.md) | Public n-days and a supported-device list | Accepted |
 | [0010](adr/0010-ship-order.md) | Portfolio order: research, companion, catalog | Accepted |
+| [0011](adr/0011-no-harness-root.md) | No harness root; the payload is the only path | Accepted |
 
 ## Status
 
