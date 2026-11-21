@@ -47,6 +47,14 @@ ordinary app a binder handle to a node in another app process. See
 Java service (`700 -> 701`, `300 -> 301`). The native raw-binder bridge is
 proven. See [binder-bootstrap/README.md](binder-bootstrap/README.md).
 
+## Topology harness
+
+The two-service B/P topology now runs: e2 is delivered to victim, victim sends
+nested e1 back to the walker thread, walker reads e1, exits the thread, and
+victim dies. No UAF/panic in two timing configurations. The remaining problem
+is the precise release race. See
+[../../docs/evidence/a52-binder-harness.md](../../docs/evidence/a52-binder-harness.md).
+
 ## Status
 
 **Statically vulnerable; public PoC present; a viable app-based bootstrap

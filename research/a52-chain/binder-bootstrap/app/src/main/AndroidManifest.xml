@@ -11,5 +11,13 @@
             android:name=".ManagerService"
             android:exported="false"
             android:process=":manager" />
+        <service
+            android:name=".WalkerService"
+            android:exported="false"
+            android:process=":walker" />
+        <service
+            android:name=".VictimService"
+            android:exported="false"
+            android:process=":victim" />
     </application>
 </manifest>

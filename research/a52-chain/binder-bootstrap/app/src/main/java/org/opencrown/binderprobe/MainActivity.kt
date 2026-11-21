@@ -113,6 +113,8 @@ class MainActivity : Activity() {
         text.text = "binding..."
         setContentView(text)
         Log.i("BinderProbe", "libbinder=${nativeProbeLibbinder()}")
+        startService(Intent(this, WalkerService::class.java))
+        startService(Intent(this, VictimService::class.java))
         Log.i("BinderProbe", "binding to ManagerService")
         bindService(Intent(this, ManagerService::class.java), connection, Context.BIND_AUTO_CREATE)
     }

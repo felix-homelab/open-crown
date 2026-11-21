@@ -80,6 +80,16 @@ target-thread/`BINDER_THREAD_EXIT` behavior the public PoC relies on. A native
 raw-binder path needs a packaged `libbinder` + dependencies or a private
 `ibinderForJavaObject()`/`BpBinder` bridge.
 
+## Two-service topology harness
+
+`WalkerService` (`:walker`) and `VictimService` (`:victim`) bind to each other.
+Walker native threads send e2 (`CODE_PARENT`) to victim; victim sends nested e1
+(`CODE_CHILD`) back; walker threads read e1, then issue `BINDER_THREAD_EXIT`;
+victim schedules process death. Logs show `worker index=0 send=0 child=0`,
+`victim sent e1`, and `worker index=0 exited`. No panic or UAF was observed in
+two timing configurations. See
+[../../docs/evidence/a52-binder-harness.md](../../../docs/evidence/a52-binder-harness.md).
+
 ## What it does not prove
 
 - It does not run the CVE-2026-64468 transaction topology or trigger the UAF.
