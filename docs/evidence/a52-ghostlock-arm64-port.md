@@ -339,3 +339,33 @@ different entry point or a stack-copy syscall that is actually wired for
 AArch32.
 
 No root; phone healthy.
+
+## A32 `_newselect` works; UAF is confirmed in 32-bit
+
+The 32-bit EABI `select` number 82 is `sys_ni_syscall` on this kernel
+(`arch/arm64/include/asm/unistd32.h`). The wired compat entry is
+`__NR__newselect` 142 → `compat_sys_select`. Changing the helper to syscall
+142 made the carrier call succeed:
+
+```text
+select ret=0 errno=0
+```
+
+The same helper, with the carrier skipped entirely, panicked as soon as
+`sched_setattr(waiter)` ran:
+
+```text
+requeue ret=-1 errno=35
+waiter wait ret=-1 errno=110
+carrier_done=1
+<adb lost>
+ro.boot.bootreason=kernel_panic,bug
+boot_id=d2caa3ed-af36-411c-a3da-f50d9f6e05d2
+```
+
+That confirms the 32-bit task does create the dangling waiter and the
+trigger walks it. The remaining problem is the fake-waiter overlay: the
+compat select stack_fds end at the task field, `process_vm` returns EINVAL
+after copying, and the interaction still leaves the overlay invalid.
+
+No root; phone recovered.
