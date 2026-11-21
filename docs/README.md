@@ -18,6 +18,7 @@
 | [13 — Status](13-status.md) | What exists, what is verified, what is blocked |
 | [A52 payload search](research/a52-payload-search.md) | What public payloads were checked for the A52 and why none is ready |
 | [A52 chain research](../research/a52-chain/README.md) | Research branch for an original A52 chain; lab-only, no working root |
+| [A52 chain overview](research/a52-chain-overview.md) | Full works/doesn't map and flowchart for the no-unlock A52 chain attempt |
 | [Provenance log](provenance.md) | Per-feature clean-room record |
 
 ## ADRs
