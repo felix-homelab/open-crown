@@ -7,6 +7,7 @@
 
 pub mod devices;
 pub mod error;
+pub mod execution;
 pub mod hex;
 pub mod index;
 pub mod launch;

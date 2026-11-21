@@ -525,6 +525,7 @@ name = "opencrown-runtime"
 version = "0.1.0"
 dependencies = [
  "ed25519-dalek",
+ "libc",
  "opencrown-core",
  "serde",
  "serde_json",
