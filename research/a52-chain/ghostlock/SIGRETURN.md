@@ -35,3 +35,21 @@ locations (BSS, selinux_state page, empty_zero_page) all hung.
 
 The carrier is therefore not yet validated; the fake waiter placement,
 fake-lock state, or the walk's expected tree contents need correction.
+
+## Telemetry (round 10-11)
+
+Handler telemetry from the device:
+
+```text
+slide child carrier_done=1 sig magic=46508001 vregs=16 off=280 sve=0
+cur_lock=ffffffc012f3e000 task=0000000000000000
+```
+
+This confirms the fpsimd record is found, vregs start at +0x10, the stamp
+offset is 0x118, no SVE record is used, and the fake lock address is the
+runtime empty_zero_page address with slot 0 (`--slot-file ""`).
+
+The walk still hangs. A zero `wait_lock` at empty_zero_page should not spin in
+`raw_spin_trylock`, so either the page is KDP/read-only on A52, or the stale
+waiter is not at the assumed stack depth. The carrier itself is confirmed;
+the remaining issue is the fake-waiter/fake-lock state or stamp placement.
