@@ -16,7 +16,7 @@ hashes: [evidence/a52-m1.md](evidence/a52-m1.md).
 | JNA + native loading | `libjnidispatch.so` and `libopencrown.so` loaded in the app process; no `UnsatisfiedLinkError` |
 | Probe FFI | Real model, kernel release, ABI, SDK, build id and fingerprint shown |
 | Supported-list status | `example`, never `supported` |
-| Readiness FFI | 3 indexed payloads, 0 ready, all `no_match` with `bundle=none` |
+| Readiness FFI | 4 indexed payloads, 0 ready, all `no_match` with `bundle=none` |
 | App stability | No `FATAL EXCEPTION`; process alive; [screenshot](evidence/a52-probe.png) |
 | Scope | No payload installed/run, no root, no controller, no Watch |
 
@@ -29,9 +29,11 @@ inventing an A52 payload target.
 
 | Area | Evidence |
 | --- | --- |
-| Docs and ADRs | 14 documents, 14 ADRs, 0 broken links |
-| Payload index | `catalog/payload-index.json`, schema, Python validator, 70 published targets across 3 sources; null `kernel_build` never matches |
+| Docs and ADRs | 14 documents, 16 ADRs, 0 broken links |
+| Payload index | `catalog/payload-index.json`, schema, Python validator, 71 published targets across 3 sources plus the external `futex-timer` entry; null `kernel_build` never matches |
 | Readiness | `runtime::readiness`; every reason covered, including a Python-signed bundle verified by Rust and a revoked one |
+| External payload | `payloads/external/org.opencrown.payload.futex-timer` verifies, is indexed, and is READY on its exact `SM-S9280` DZJ3 target by data-on-disk rules; not run |
+| Execution supervisor | `runtime::execution` consent, staged-hash, token/boot-id, timeout and three-attempt budget tests; host-only |
 | Capture tooling | btsnoop, pcap, pcapng parsers; fixture model |
 | Spec tooling | spec-lint, vector-gen, fixture-diff |
 | Catalog trust | Ed25519 sign/verify, bundle verify, revocation builder, hash-chained transparency log |
@@ -46,9 +48,14 @@ inventing an A52 payload target.
 
 - The agent socket under Android's SELinux policy and app UID.
 - The K2a probe (`tools/hci-echo`): it compiles for arm64 but has never run.
-- Any payload, exploit chain, controller path, or root acquisition.
+- Any payload, exploit chain, controller path, or root acquisition. The
+  external `futex-timer` payload has not been run by Open Crown.
+- The external payload's Shizuku/shell runner: `libtimer` is started from a
+  shell/UserService context upstream; the app is `untrusted_app` and has no
+  such bridge yet.
 - Consent-gated prepare on a real signed bundle: the A52 is `example`, so the
-  gate correctly blocks; only the example bundle is exercised on the host.
+  gate correctly blocks; only the example bundle and the host-only external
+  bundle are exercised on the host.
 
 ## Blocked / out of M1
 
@@ -59,13 +66,14 @@ inventing an A52 payload target.
 | Protocol specs and vectors | Captures from a Watch |
 | Activation decision (ADR 0003) | A Watch and a test account |
 | Release signing | The offline key ceremony in ADR 0012; M1 pins the throwaway example key |
-| Payload verification | A built, signed, exact-target bundle; never inferred from A52 app testing |
+| Payload hardware verification | A target device (the A52 is not `SM-S9280` DZJ3) and a privileged runner |
+| Public distribution of `payloads/external/` | Licence resolution; the tree is private-use only (ADR 0015) |
 
 ## Numbers
 
 ```text
-rust tests    112
-python tests  69
+rust tests    120
+python tests  73
 jvm tests     25
 apk           26 MB, arm64-v8a, libopencrown.so + libjnidispatch.so
 supply chain  advisories ok, bans ok, licenses ok, sources ok
@@ -85,6 +93,7 @@ PYTHONPATH=tools/lib /tmp/oc-venv/bin/python -m unittest discover -s tools/tests
 python3 catalog/tooling/payload_index.py validate --index catalog/payload-index.json
 python3 catalog/tooling/devices.py validate --list catalog/supported-devices.json
 python3 catalog/tooling/verify.py catalog/examples/signed
+python3 catalog/tooling/verify.py payloads/external/org.opencrown.payload.futex-timer
 python3 tools/link-check/cli.py .
 ./gradlew :app:assembleDebug :app:testDebugUnitTest
 ```
@@ -100,6 +109,8 @@ adb exec-out screencap -p > docs/evidence/a52-probe.png
 
 ## Next
 
-Phase 0 remains: run the first payload on a stock phone, record stage A (uid 0)
-and stage B (controller bind), and fill `docs/evidence/phase0-k2a.md`. M1 did
-not start that work and must not be read as evidence for it.
+The external payload is extracted and the execution contract exists, but two
+things are still missing before it can run from the app: a privileged runner
+(Shizuku or the payload bootstrap) and a target device. The A52 cannot stand in
+for `SM-S9280` DZJ3. Phase 0 still needs a K2a/K2b result, and public release
+still needs the licence decision in ADR 0015.

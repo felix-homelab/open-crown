@@ -36,6 +36,8 @@
 | [0012](adr/0012-catalog-key-custody.md) | Offline root, delegated signing keys, revocation, log | Accepted |
 | [0013](adr/0013-agent-ipc-envelope.md) | Protobuf envelope v1 with explicit limits | Accepted |
 | [0014](adr/0014-payload-index-and-readiness.md) | Source-level payload index and a data-only readiness engine | Accepted |
+| [0015](adr/0015-external-payload-quarantine.md) | External payloads quarantined; private-use licence deferred | Accepted for private development |
+| [0016](adr/0016-consent-gated-execution.md) | Consent-gated execution supervisor | Accepted for private development |
 
 ## Status
 

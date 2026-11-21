@@ -114,6 +114,25 @@ signature, artifacts, revocation and agent version.
 and the app's probe/payload screens. Probing never stages, mints a token, runs a
 payload, or requests root.
 
+## 13. External payloads are quarantined
+
+**Decision:** upstream payload artifacts are extracted unchanged under
+`payloads/external/`, with provenance and licence notices, and are not
+MIT-licensed. Private use only until the licence decision is resolved.
+[ADR 0015](adr/0015-external-payload-quarantine.md).
+
+**Changes:** the first integrated external payload (`futex-timer`), the
+catalog/index entry, and the public-release gate.
+
+## 14. Execution is a consent-gated launch contract
+
+**Decision:** `runtime::execution` launches a staged entry only with consent
+that matches the manifest, a re-hashed entry, a token and a boot id; it does
+not acquire privilege. [ADR 0016](adr/0016-consent-gated-execution.md).
+
+**Changes:** the execution supervisor and its host tests. It is not yet wired
+to Kotlin or run on the A52.
+
 ## Left open on purpose
 
 1. **Which side authenticates** — Phase 2, ADR 0003 stays Proposed.
