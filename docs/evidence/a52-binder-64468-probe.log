@@ -7,6 +7,10 @@
 CVE-2026-64468 CHAIN-START duration=1s threads=2 ... cpus=8
 CVE-2026-64468 CHAIN-ABORT stage=manager status=M
 
+# direct IServiceManager.addService to handle 0:
+BR_REPLY code=0 flags=0x8 data_size=4 status=-2147483647
+# -2147483647 = EX_SECURITY; service list did not show the test service
+
 # /dev/vndbinder:
 CVE-2026-64468 CHAIN-ABORT stage=manager status=O
 

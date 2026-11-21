@@ -69,7 +69,7 @@ inventing an A52 payload target.
 | Release signing | The offline key ceremony in ADR 0012; M1 pins the throwaway example key |
 | A52 payload | No public per-boot payload for `5.4.254-qgki` / Adreno 642L. DirtyFrag needs 6.5+, GhostLock/SamTimer target 5.10+, CVE-2026-20971 is DoS-only, CVE-2025-21479 is A7xx-only. The CVE-2026-21385 probe ran on the A52 and was negative (no wrap). See [research/a52-payload-search.md](research/a52-payload-search.md) and [evidence/a52-kgsl-probe.md](evidence/a52-kgsl-probe.md). |
 | A52 downgrade | Bootloader binary B (11) anti-rollback blocks the pre-2024 builds; the flashable B builds are post-fix. See [research/a52-payload-search.md](research/a52-payload-search.md#can-the-a52-be-downgraded-to-a-vulnerable-build). |
-| A52 original chain | Binder candidate CVE-2026-64468 is statically present and has a public arm64 PoC, but the PoC aborts at `BINDER_SET_CONTEXT_MGR` because Android's servicemanager owns it; binderfs/userns are unavailable. CVE-2026-20971 is confirmed as a stock DoS. See [../research/a52-chain/README.md](../research/a52-chain/README.md). |
+| A52 original chain | Binder candidate CVE-2026-64468 is statically present and has a public arm64 PoC, but shell cannot become the context manager (`BINDER_SET_CONTEXT_MGR` fails) and cannot `addService` (`EX_SECURITY`); binderfs/userns are unavailable. CVE-2026-20971 is confirmed as a stock DoS. See [../research/a52-chain/README.md](../research/a52-chain/README.md). |
 | Payload hardware verification | A target device (the A52 is not `SM-S9280` DZJ3) and a privileged runner |
 | Public distribution of `payloads/external/` | Licence resolution; the tree is private-use only (ADR 0015) |
 

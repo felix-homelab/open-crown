@@ -14,18 +14,19 @@
 ## Device result
 
 The PoC runs on the A52 but aborts at `BINDER_SET_CONTEXT_MGR` (`status=M`):
-Android's `servicemanager` already owns the context manager. `/dev/vndbinder`
-is not openable by shell; `/dev/hwbinder` also has a manager; binderfs is
-root-only; unprivileged user namespaces are disabled.
+Android's `servicemanager` already owns the context manager. A direct
+`IServiceManager.addService` probe to handle 0 returned `EX_SECURITY`
+(`status=-2147483647`) and no service was registered. `/dev/vndbinder` is not
+openable by shell; `/dev/hwbinder` also has a manager; binderfs is root-only;
+unprivileged user namespaces are disabled.
 
 See [../../docs/evidence/a52-binder-64468-probe.md](../../docs/evidence/a52-binder-64468-probe.md).
 
 ## What would make it a chain
 
-1. **Bootstrap without replacing the context manager.** Register a binder node
-   with the existing `servicemanager` (`addService`) if shell/app permission
-   allows, then use `getService` handles for the walker/victim. This is the
-   open question.
+1. **Bootstrap without replacing the context manager.** Shell cannot
+   `addService` (`EX_SECURITY`). An app-based bootstrap would need a different
+   route (e.g. a bound service handle via `bindService`) and is unproven.
 2. **Arm64 offset/port work.** The public LPE is x86_64; the A52 needs binder
    object offsets, kernel base/KASLR handling, and a `cred`/SELinux bypass.
 3. **Stability.** A lost race corrupts `binder_proc`; each failed attempt can

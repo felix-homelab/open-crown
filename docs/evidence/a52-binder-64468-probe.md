@@ -47,6 +47,10 @@ Additional checks:
 
 - `/dev/binder` is a 0666 symlink to `/dev/binderfs/binder`; the manager can
   open it, but `BINDER_SET_CONTEXT_MGR` is refused (`M`).
+- A direct `IServiceManager.addService` transaction to handle 0 was also
+  tried. It returned `BR_REPLY` with `TF_STATUS_CODE` and
+  `status=-2147483647` (`EX_SECURITY`); the service never appeared in
+  `service list`. Shell cannot add a binder service.
 - `/dev/vndbinder` open is denied to shell (`O`); `/dev/hwbinder` opens but its
   context manager is already set (`M`).
 - `unshare -U` returns `EINVAL`; `unshare -m` is not permitted. A private
@@ -56,8 +60,9 @@ Additional checks:
   created.
 
 No root, no race, no panic, no persistent change. The public PoC's Linux
-context-manager bootstrap is the blocker on Android; the vulnerability itself
-is present.
+context-manager bootstrap is blocked on Android: shell cannot become the
+context manager and cannot add a service. The vulnerability itself is present,
+but the unprivileged bootstrap is not.
 
 Full output: [a52-binder-64468-probe.log](a52-binder-64468-probe.log).
 
