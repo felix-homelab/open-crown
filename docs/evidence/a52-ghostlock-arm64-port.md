@@ -311,3 +311,31 @@ So `prctl` is not an unprivileged closure of the 8-byte parent-color gap.
 The remaining viable route is a 32-bit compat `select` overlay, where the
 compat stack_fds copy puts the waiter at `out+0x20` and covers the parent
 word.
+
+## 32-bit trigger / compat select probe
+
+A 32-bit armv7 static helper runs on the A52 (`CONFIG_COMPAT=y`,
+`CONFIG_COMPAT_BINFMT_ELF=y`). It reproduced the trigger:
+
+```text
+requeue ret=-1 errno=35 (EDEADLK)
+waiter wait ret=-1 errno=110 (ETIMEDOUT)
+```
+
+The compat carrier attempt then hit the next wall:
+
+```text
+select ret=-1 errno=38 (ENOSYS)
+process_vm ret=-1 errno=22 (EINVAL)
+```
+
+On this Android arm64 kernel the 32-bit EABI `select` syscall is not wired
+for compat (only `__arm64_compat_sys_select`/old_select variants exist), and
+Android seccomp may also block it. Compat `pselect6` has its stack_fds much
+deeper (`top-0x270`), so it does not cover the `top-0x198` waiter.
+
+The 32-bit trigger itself is usable; the compat select carrier needs a
+different entry point or a stack-copy syscall that is actually wired for
+AArch32.
+
+No root; phone healthy.
