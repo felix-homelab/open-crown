@@ -72,3 +72,27 @@ restart/reconnect delay dominates. A raw P endpoint loop is still needed for
 a useful race rate.
 
 No root; no panic in this run.
+
+## Per-process binder handle blocker
+
+A new raw `/dev/binder` open creates a **separate binder_proc** from the
+Android framework's binder fd. Handles obtained from `BinderProxy` are
+per-proc, so a Java ManagerService handle is invalid on the new fd. A raw
+code-1 transaction to manager 63 returned `rc=0` but was never delivered.
+
+Using the existing framework fd still did not deliver the broker
+registration/reply; the raw write path needs the same read/reply handling as
+`nativeRawTransact`.
+
+For a looping raw P endpoint, the right architecture is either:
+
+- use the process's existing framework binder proc (but P cannot be freed
+  repeatedly), or
+- obtain a fresh context-manager handle for each new raw proc.
+
+`BINDER_SET_CONTEXT_MGR` is already held by servicemanager on this Android
+device, so the app cannot become a second context manager without a binderfs
+mount/CAP_SYS_ADMIN.
+
+The raw B/P chain still works on the framework procs; the raw-proc loop is
+blocked on handle exchange.

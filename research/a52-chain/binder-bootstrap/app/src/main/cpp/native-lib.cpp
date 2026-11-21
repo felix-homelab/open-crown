@@ -453,11 +453,15 @@ extern "C" JNIEXPORT jint JNICALL
 Java_org_opencrown_binderprobe_MainActivity_nativeBrokerProbe(
         JNIEnv*, jobject, jlong manager_native_data, jint slot) {
     int32_t manager_handle = handle_of_data(manager_native_data);
-    int fd = open("/dev/binder", O_RDWR | O_CLOEXEC);
+    int fd = find_binder_fd();
     if (fd < 0) {
-        __android_log_print(ANDROID_LOG_ERROR, TAG, "broker open failed: %s", strerror(errno));
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "broker framework fd missing: %s", strerror(errno));
         return -1;
     }
+    int probe = 1234 + slot;
+    int simple_rc = raw_send(fd, manager_handle, 1, 0, &probe, sizeof(probe));
+    __android_log_print(ANDROID_LOG_INFO, TAG, "broker simple manager=%d rc=%d errno=%d",
+                        manager_handle, simple_rc, errno);
     int rc = raw_register(fd, manager_handle, slot);
     __android_log_print(ANDROID_LOG_INFO, TAG, "broker manager=%d slot=%d rc=%d errno=%d",
                         manager_handle, slot, rc, errno);
