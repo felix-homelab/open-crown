@@ -17,4 +17,5 @@ path = "src/bin/uniffi-bindgen.rs"
 
 [dependencies]
 opencrown-core.workspace = true
+opencrown-runtime.workspace = true
 uniffi = { version = "0.32", features = ["cli"] }

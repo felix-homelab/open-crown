@@ -674,6 +674,8 @@ internal object IntegrityCheckingUniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_opencrown_checksum_func_prepare_payload(
+    ): Int
     external fun uniffi_opencrown_checksum_func_protocol_version(
     ): Int
     external fun uniffi_opencrown_checksum_func_require_verified_protocol(
@@ -693,6 +695,8 @@ internal object UniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_opencrown_fn_func_prepare_payload(`bundleDir`: RustBuffer.ByValue,`workDir`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,`buildId`: RustBuffer.ByValue,`signature`: RustBuffer.ByValue,`publicKey`: RustBuffer.ByValue,`revocationsJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_protocol_version(uniffi_out_err: UniffiRustCallStatus, 
     ): Int
     external fun uniffi_opencrown_fn_func_require_verified_protocol(`verified`: Byte,uniffi_out_err: UniffiRustCallStatus, 
@@ -816,6 +820,9 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
+    if ((lib.uniffi_opencrown_checksum_func_prepare_payload() and 0xFFFF) != 65423) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_opencrown_checksum_func_protocol_version() and 0xFFFF) != 63704) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1018,17 +1025,102 @@ public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
     }
 }
 
-
+/**
+ * @suppress
+ */
+public object FfiConverterByteArray: FfiConverterRustBuffer<ByteArray> {
+    override fun read(buf: ByteBuffer): ByteArray {
+        val len = buf.getInt()
+        val byteArr = ByteArray(len)
+        buf.get(byteArr)
+        return byteArr
+    }
+    override fun allocationSize(value: ByteArray): ULong {
+        return 4UL + value.size.toULong()
+    }
+    override fun write(value: ByteArray, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        buf.put(value)
+    }
+}
 
 
 
 /**
- * Errors the Kotlin side can catch. The first one is the honest one: the
- * protocol has not been verified on hardware yet.
+ * A verified, staged payload. The caller launches entry or agent and must
+ * present the token.
  */
+data class PreparedBundle (
+    var `id`: kotlin.String
+    , 
+    var `version`: kotlin.String
+    , 
+    var `entryPath`: kotlin.String
+    , 
+    var `agentPath`: kotlin.String
+    , 
+    var `token`: kotlin.String
+    , 
+    var `manifestDigest`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePreparedBundle: FfiConverterRustBuffer<PreparedBundle> {
+    override fun read(buf: ByteBuffer): PreparedBundle {
+        return PreparedBundle(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PreparedBundle) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`version`) +
+            FfiConverterString.allocationSize(value.`entryPath`) +
+            FfiConverterString.allocationSize(value.`agentPath`) +
+            FfiConverterString.allocationSize(value.`token`) +
+            FfiConverterString.allocationSize(value.`manifestDigest`)
+    )
+
+    override fun write(value: PreparedBundle, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`version`, buf)
+            FfiConverterString.write(value.`entryPath`, buf)
+            FfiConverterString.write(value.`agentPath`, buf)
+            FfiConverterString.write(value.`token`, buf)
+            FfiConverterString.write(value.`manifestDigest`, buf)
+    }
+}
+
+
+
+
+
 sealed class FfiException: kotlin.Exception() {
     
     class NotReady(
+        
+        val `reason`: kotlin.String
+        ) : FfiException() {
+        override val message
+            get() = "reason=${ `reason` }"
+    }
+    
+    class Payload(
         
         val `reason`: kotlin.String
         ) : FfiException() {
@@ -1058,6 +1150,9 @@ public object FfiConverterTypeFfiError : FfiConverterRustBuffer<FfiException> {
             1 -> FfiException.NotReady(
                 FfiConverterString.read(buf),
                 )
+            2 -> FfiException.Payload(
+                FfiConverterString.read(buf),
+                )
             else -> throw RuntimeException("invalid error enum value, something is very wrong!!")
         }
     }
@@ -1065,6 +1160,11 @@ public object FfiConverterTypeFfiError : FfiConverterRustBuffer<FfiException> {
     override fun allocationSize(value: FfiException): ULong {
         return when(value) {
             is FfiException.NotReady -> (
+                // Add the size for the Int that specifies the variant plus the size needed for all fields
+                4UL
+                + FfiConverterString.allocationSize(value.`reason`)
+            )
+            is FfiException.Payload -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
                 4UL
                 + FfiConverterString.allocationSize(value.`reason`)
@@ -1079,10 +1179,39 @@ public object FfiConverterTypeFfiError : FfiConverterRustBuffer<FfiException> {
                 FfiConverterString.write(value.`reason`, buf)
                 Unit
             }
+            is FfiException.Payload -> {
+                buf.putInt(2)
+                FfiConverterString.write(value.`reason`, buf)
+                Unit
+            }
         }.let { /* this makes the `when` an expression, which ensures it is exhaustive */ }
     }
 
 }
+        /**
+         * Verify, check revocation, stage, and mint a token for a payload bundle.
+         */
+    @Throws(FfiException::class) fun `preparePayload`(`bundleDir`: kotlin.String, `workDir`: kotlin.String, `model`: kotlin.String, `kernelRelease`: kotlin.String, `abi`: kotlin.String, `androidSdk`: kotlin.UInt, `buildId`: kotlin.String, `signature`: kotlin.ByteArray, `publicKey`: kotlin.ByteArray, `revocationsJson`: kotlin.String): PreparedBundle {
+            return FfiConverterTypePreparedBundle.lift(
+    uniffiRustCallWithError(FfiException) { _status ->
+    UniffiLib.uniffi_opencrown_fn_func_prepare_payload(
+    
+        
+        FfiConverterString.lower(`bundleDir`),
+        FfiConverterString.lower(`workDir`),
+        FfiConverterString.lower(`model`),
+        FfiConverterString.lower(`kernelRelease`),
+        FfiConverterString.lower(`abi`),
+        FfiConverterUInt.lower(`androidSdk`),
+        FfiConverterString.lower(`buildId`),
+        FfiConverterByteArray.lower(`signature`),
+        FfiConverterByteArray.lower(`publicKey`),
+        FfiConverterString.lower(`revocationsJson`),_status)
+}
+    )
+    }
+    
+
         /**
          * The protocol revision this build understands.
          */

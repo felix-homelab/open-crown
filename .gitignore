@@ -38,6 +38,9 @@ __pycache__/
 # Built probe binaries
 tools/hci-echo/hci-echo
 
+# Cross-compiled native library (build artifact)
+app/src/main/jniLibs/
+
 # Local toolchains (installed inside the repo to stay sandbox-legal)
 .toolchain/
 .android-sdk/

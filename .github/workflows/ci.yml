@@ -70,8 +70,12 @@ jobs:
           name: hci-echo
           path: tools/hci-echo/hci-echo
 
-      # FfiRoundTripTest loads the host library, so build it first.
       - uses: dtolnay/rust-toolchain@stable
+      - name: Build the Android FFI library
+        run: |
+          ANDROID_NDK_HOME="$ANDROID_HOME/ndk/30.0.16248370" tools/build-android-lib.sh
+
+      # FfiRoundTripTest loads the host library, so build it first.
       - run: cargo build -p opencrown-ffi
 
       - uses: gradle/actions/setup-gradle@v4
