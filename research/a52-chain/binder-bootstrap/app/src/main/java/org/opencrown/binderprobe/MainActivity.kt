@@ -24,6 +24,7 @@ class MainActivity : Activity() {
     private external fun nativeHandleFromData(nativeData: Long, code: Int, value: Int): Int
     private external fun nativeExecProbe(): Int
     private external fun nativeAfAlgProbe(): Int
+    private external fun nativeKernelProbe(): String
     private external fun nativePerfProbe(): Int
     private external fun nativeBrokerProbe(managerNativeData: Long, slot: Int): Int
 
@@ -164,6 +165,7 @@ class MainActivity : Activity() {
         } catch (error: Throwable) {
             Log.e("BinderProbe", "sm probe failed: $error")
         }
+        Log.i("BinderProbe", "kernelProbe=" + runCatching { nativeKernelProbe() }.getOrElse { "ERR:$it" })
         Log.i("BinderProbe", "binding to ManagerService")
         bindService(Intent(this, ManagerService::class.java), connection, Context.BIND_AUTO_CREATE)
     }

@@ -679,3 +679,34 @@ Java_org_opencrown_binderprobe_MainActivity_nativeTransact(
     __android_log_print(ANDROID_LOG_INFO, TAG, "native transact code=%d value=%d reply=%d", code, value, reply);
     return reply;
 }
+
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_org_opencrown_binderprobe_MainActivity_nativeKernelProbe(JNIEnv* env, jobject) {
+    char out[512];
+    int n = 0;
+    struct perf_event_attr attr;
+    memset(&attr, 0, sizeof(attr));
+    attr.type = PERF_TYPE_SOFTWARE;
+    attr.size = sizeof(attr);
+    attr.config = PERF_COUNT_SW_CPU_CLOCK;
+    attr.disabled = 1;
+    int pfd = (int)syscall(__NR_perf_event_open, &attr, 0, -1, -1, 0);
+    int perr = errno;
+    n += snprintf(out+n, sizeof(out)-n, "perf_fd=%d errno=%d;", pfd, perr);
+    if (pfd >= 0) close(pfd);
+    int sfd = open("/proc/self/stack", O_RDONLY);
+    int serr = errno;
+    n += snprintf(out+n, sizeof(out)-n, " stack_fd=%d errno=%d;", sfd, serr);
+    if (sfd >= 0) {
+        char b[256]; errno=0; int r = (int)read(sfd, b, sizeof(b)-1); int rerr=errno;
+        n += snprintf(out+n, sizeof(out)-n, " stack_read=%d errno=%d;", r, rerr);
+        if (r > 0) { b[r] = 0; n += snprintf(out+n, sizeof(out)-n, " stack=%.120s", b); }
+        close(sfd);
+    }
+    int kfd = open("/proc/kallsyms", O_RDONLY);
+    int kerr = errno;
+    n += snprintf(out+n, sizeof(out)-n, " kallsyms_fd=%d errno=%d", kfd, kerr);
+    if (kfd >= 0) close(kfd);
+    return env->NewStringUTF(out);
+}
