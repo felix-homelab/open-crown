@@ -27,9 +27,11 @@ class VictimService : Service() {
                 return false
             }
             val expected = if (data.dataSize() >= 4) data.readInt() else 8
+            val rawB = runCatching { data.readStrongBinder() }.getOrNull()
+            val bHandle = rawB?.let { BinderNative.nativeData(it) } ?: BinderNative.nativeData(target)
             val count = seen.incrementAndGet()
             return try {
-                HarnessNative.victimChild(BinderNative.nativeData(target))
+                HarnessNative.victimChild(bHandle)
                 Log.i("BinderHarness", "victim sent e1 count=$count/$expected")
                 if (count >= expected && dying.compareAndSet(false, true)) {
                     Log.i("BinderHarness", "victim execing clean shell")

