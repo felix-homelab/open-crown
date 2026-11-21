@@ -23,14 +23,23 @@ pub struct Broker<C: Controller> {
     capabilities: CapabilitySet,
     controller: C,
     audit: AuditLog,
+    expected_token: String,
+    boot_id: String,
 }
 
 impl<C: Controller> Broker<C> {
-    pub fn new(capabilities: CapabilitySet, controller: C) -> Self {
+    pub fn new(
+        capabilities: CapabilitySet,
+        controller: C,
+        expected_token: impl Into<String>,
+        boot_id: impl Into<String>,
+    ) -> Self {
         Self {
             capabilities,
             controller,
             audit: AuditLog::new(),
+            expected_token: expected_token.into(),
+            boot_id: boot_id.into(),
         }
     }
 
@@ -48,6 +57,12 @@ impl<C: Controller> Broker<C> {
         if let Err(error) = protocol::validate(&envelope) {
             self.audit.record(&boot_id, "reject", Outcome::Denied);
             return failure("invalid", &error.to_string());
+        }
+
+        if envelope.token != self.expected_token || envelope.boot_id != self.boot_id {
+            self.audit
+                .record(&self.boot_id.clone(), "reject", Outcome::Denied);
+            return failure("invalid", "token or boot id mismatch");
         }
 
         let Some(request) = envelope.request else {
@@ -187,6 +202,10 @@ mod tests {
         }
     }
 
+    fn broker(controller: MockController) -> Broker<MockController> {
+        Broker::new(controller_caps(), controller, "a".repeat(64), "boot-1")
+    }
+
     fn controller_caps() -> CapabilitySet {
         CapabilitySet::from_names(&[
             "root".to_string(),
@@ -212,7 +231,7 @@ mod tests {
 
     #[test]
     fn scan_is_dispatched_and_audited() {
-        let mut broker = Broker::new(controller_caps(), MockController::default());
+        let mut broker = broker(MockController::default());
         let response = broker.handle(envelope(Request::Scan(ScanRequest {
             setup_only: true,
             timeout_ms: 1000,
@@ -225,7 +244,12 @@ mod tests {
 
     #[test]
     fn missing_capability_is_denied_before_the_controller() {
-        let mut broker = Broker::new(CapabilitySet::empty(), MockController::default());
+        let mut broker = Broker::new(
+            CapabilitySet::empty(),
+            MockController::default(),
+            "a".repeat(64),
+            "boot-1",
+        );
         let response = broker.handle(envelope(Request::Scan(ScanRequest {
             setup_only: false,
             timeout_ms: 1000,
@@ -237,7 +261,7 @@ mod tests {
 
     #[test]
     fn invalid_envelope_is_rejected_before_policy() {
-        let mut broker = Broker::new(controller_caps(), MockController::default());
+        let mut broker = broker(MockController::default());
         let mut value = envelope(Request::Scan(ScanRequest {
             setup_only: false,
             timeout_ms: 1000,
@@ -250,13 +274,10 @@ mod tests {
 
     #[test]
     fn controller_failure_becomes_a_failure_response() {
-        let mut broker = Broker::new(
-            controller_caps(),
-            MockController {
-                fail: true,
-                ..Default::default()
-            },
-        );
+        let mut broker = broker(MockController {
+            fail: true,
+            ..Default::default()
+        });
         let response = broker.handle(envelope(Request::Scan(ScanRequest {
             setup_only: false,
             timeout_ms: 1000,
@@ -267,7 +288,7 @@ mod tests {
 
     #[test]
     fn connect_returns_a_handle() {
-        let mut broker = Broker::new(controller_caps(), MockController::default());
+        let mut broker = broker(MockController::default());
         let response = broker.handle(envelope(Request::Connect(ConnectRequest {
             address: vec![1, 2, 3, 4, 5, 6],
         })));
@@ -277,7 +298,7 @@ mod tests {
 
     #[test]
     fn open_channel_returns_a_handle() {
-        let mut broker = Broker::new(controller_caps(), MockController::default());
+        let mut broker = broker(MockController::default());
         let response = broker.handle(envelope(Request::OpenChannel(OpenChannelRequest {
             psm: 0x1001,
             mode: crate::protocol::ChannelMode::Ertm as i32,
@@ -287,13 +308,15 @@ mod tests {
 
     #[test]
     fn diag_needs_its_own_capability() {
-        let mut broker = Broker::new(controller_caps(), MockController::default());
+        let mut broker = broker(MockController::default());
         let denied = broker.handle(envelope(Request::Diag(DiagRequest {})));
         assert_eq!(failure_of(&denied).code, "denied");
 
         let mut broker = Broker::new(
             CapabilitySet::from_names(&["diag".to_string()]).unwrap(),
             MockController::default(),
+            "a".repeat(64),
+            "boot-1",
         );
         let allowed = broker.handle(envelope(Request::Diag(DiagRequest {})));
         assert_eq!(ok_of(&allowed).detail, "diag");
@@ -301,11 +324,38 @@ mod tests {
 
     #[test]
     fn send_is_dispatched() {
-        let mut broker = Broker::new(controller_caps(), MockController::default());
+        let mut broker = broker(MockController::default());
         let response = broker.handle(envelope(Request::Send(SendRequest {
             handle: 3,
             data: vec![1, 2],
         })));
         assert_eq!(ok_of(&response).detail, "sent");
+    }
+
+    #[test]
+    fn wrong_token_is_rejected_before_policy() {
+        let mut broker = broker(MockController::default());
+        let mut value = envelope(Request::Scan(ScanRequest {
+            setup_only: false,
+            timeout_ms: 1000,
+        }));
+        value.token = "b".repeat(64);
+        let response = broker.handle(value);
+        assert_eq!(failure_of(&response).code, "invalid");
+        assert_eq!(broker.controller().scans, 0);
+        assert_eq!(broker.audit().events()[0].outcome, Outcome::Denied);
+    }
+
+    #[test]
+    fn wrong_boot_id_is_rejected() {
+        let mut broker = broker(MockController::default());
+        let mut value = envelope(Request::Scan(ScanRequest {
+            setup_only: false,
+            timeout_ms: 1000,
+        }));
+        value.boot_id = "boot-2".to_string();
+        let response = broker.handle(value);
+        assert_eq!(failure_of(&response).code, "invalid");
+        assert_eq!(broker.controller().scans, 0);
     }
 }

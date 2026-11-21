@@ -258,7 +258,7 @@ mod tests {
     fn serves_one_request() {
         let path = socket_path("serve");
         let server = Server::bind(&path).unwrap();
-        let mut broker = Broker::new(caps(), MockController);
+        let mut broker = Broker::new(caps(), MockController, "a".repeat(64), "boot-1");
         let handle = client(path.clone(), protocol::encode(&envelope()));
 
         server.accept_and_serve(&mut broker, current_uid()).unwrap();
@@ -275,7 +275,7 @@ mod tests {
     fn rejects_a_different_uid() {
         let path = socket_path("uid");
         let server = Server::bind(&path).unwrap();
-        let mut broker = Broker::new(caps(), MockController);
+        let mut broker = Broker::new(caps(), MockController, "a".repeat(64), "boot-1");
         let handle = client(path.clone(), protocol::encode(&envelope()));
 
         let error = server
@@ -290,7 +290,7 @@ mod tests {
     fn rejects_an_oversized_frame() {
         let path = socket_path("large");
         let server = Server::bind(&path).unwrap();
-        let mut broker = Broker::new(caps(), MockController);
+        let mut broker = Broker::new(caps(), MockController, "a".repeat(64), "boot-1");
 
         let handle = thread::spawn({
             let path = path.clone();
@@ -312,7 +312,7 @@ mod tests {
     fn malformed_frame_gets_an_invalid_response() {
         let path = socket_path("garbage");
         let server = Server::bind(&path).unwrap();
-        let mut broker = Broker::new(caps(), MockController);
+        let mut broker = Broker::new(caps(), MockController, "a".repeat(64), "boot-1");
         let handle = client(path.clone(), vec![0xff; 8]);
 
         server.accept_and_serve(&mut broker, current_uid()).unwrap();
