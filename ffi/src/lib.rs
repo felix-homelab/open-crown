@@ -196,6 +196,139 @@ pub fn parse_supported_devices(json: String) -> Result<Vec<SupportedDevice>, Ffi
         .collect())
 }
 
+/// Device facts gathered by the app, plus the supported-list verdict and the
+/// fingerprint digest. Pure: reads no files and starts nothing.
+#[derive(Debug, uniffi::Record)]
+pub struct DeviceProbe {
+    pub model: String,
+    pub kernel_release: String,
+    pub abi: String,
+    pub android_sdk: u32,
+    pub build_id: String,
+    pub build_fingerprint: String,
+    pub digest: String,
+    pub supported_status: String,
+}
+
+/// Probe a device. The caller supplies the platform facts; the runtime only
+/// evaluates them against the supported-device list. No payload is run, no
+/// root is requested, no file is staged, and no token is minted.
+#[uniffi::export]
+#[allow(clippy::too_many_arguments)]
+pub fn probe_device(
+    model: String,
+    kernel_release: String,
+    abi: String,
+    android_sdk: u32,
+    build_id: String,
+    build_fingerprint: String,
+    supported_devices_json: String,
+) -> Result<DeviceProbe, FfiError> {
+    let list =
+        opencrown_runtime::devices::SupportedDevices::parse(supported_devices_json.as_bytes())
+            .map_err(|err| FfiError::Config {
+                reason: err.to_string(),
+            })?;
+    let device = opencrown_runtime::matcher::DeviceFingerprint {
+        model,
+        kernel_release,
+        abi,
+        android_sdk,
+        build_id,
+    };
+    let supported_status = list.status_for(&device).to_string();
+    let digest = device.digest();
+    Ok(DeviceProbe {
+        model: device.model,
+        kernel_release: device.kernel_release,
+        abi: device.abi,
+        android_sdk: device.android_sdk,
+        build_id: device.build_id,
+        build_fingerprint,
+        digest,
+        supported_status,
+    })
+}
+
+/// One payload's readiness verdict, with exactly one reason.
+#[derive(Debug, uniffi::Record)]
+pub struct PayloadStatus {
+    pub id: String,
+    pub family: String,
+    pub index_status: String,
+    pub reason: String,
+    pub detail: String,
+    pub bundle_version: Option<String>,
+}
+
+/// Evaluate the index without staging, executing, or minting anything.
+#[uniffi::export]
+#[allow(clippy::too_many_arguments)]
+pub fn evaluate_readiness(
+    index_json: String,
+    bundles_dir: String,
+    model: String,
+    kernel_release: String,
+    abi: String,
+    android_sdk: u32,
+    build_id: String,
+    agent_version: String,
+    pinned_keys_hex: Vec<String>,
+    revocations_json: String,
+) -> Result<Vec<PayloadStatus>, FfiError> {
+    let index =
+        opencrown_runtime::index::PayloadIndex::parse(index_json.as_bytes()).map_err(|err| {
+            FfiError::Config {
+                reason: err.to_string(),
+            }
+        })?;
+    let revocations = if revocations_json.trim().is_empty() {
+        opencrown_runtime::revocation::RevocationList::empty()
+    } else {
+        opencrown_runtime::revocation::RevocationList::parse(revocations_json.as_bytes()).map_err(
+            |err| FfiError::Config {
+                reason: err.to_string(),
+            },
+        )?
+    };
+    let mut keys = Vec::with_capacity(pinned_keys_hex.len());
+    for text in pinned_keys_hex {
+        let key = opencrown_runtime::hex::decode(text.trim()).ok_or_else(|| FfiError::Config {
+            reason: "pinned catalog key must be lowercase hex".to_string(),
+        })?;
+        keys.push(key);
+    }
+    let device = opencrown_runtime::matcher::DeviceFingerprint {
+        model,
+        kernel_release,
+        abi,
+        android_sdk,
+        build_id,
+    };
+    let results = opencrown_runtime::readiness::evaluate(
+        &index,
+        Path::new(&bundles_dir),
+        &device,
+        &agent_version,
+        &keys,
+        &revocations,
+    )
+    .map_err(|err| FfiError::Config {
+        reason: err.to_string(),
+    })?;
+    Ok(results
+        .into_iter()
+        .map(|result| PayloadStatus {
+            id: result.id,
+            family: result.family,
+            index_status: result.index_status,
+            reason: result.reason.as_str().to_string(),
+            detail: result.detail,
+            bundle_version: result.bundle_version,
+        })
+        .collect())
+}
+
 /// One of supported, example, retired, unknown.
 #[uniffi::export]
 pub fn device_status(
@@ -291,9 +424,11 @@ mod tests {
         let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/supported-devices.json");
         let json = std::fs::read_to_string(path).unwrap();
         let devices = parse_supported_devices(json.clone()).unwrap();
-        assert_eq!(devices.len(), 1);
+        assert_eq!(devices.len(), 2);
         assert_eq!(devices[0].model, "EXAMPLE-1");
         assert_eq!(devices[0].status, "example");
+        assert_eq!(devices[1].model, "SM-A528B");
+        assert_eq!(devices[1].status, "example");
 
         assert_eq!(
             device_status(
@@ -345,5 +480,122 @@ mod tests {
         .unwrap_err();
 
         assert!(error.to_string().contains("revoked"));
+    }
+    fn example_root(tag: &str) -> PathBuf {
+        let source = example_bundle();
+        let root = std::env::temp_dir().join(format!("opencrown-ffi-{tag}-{}", std::process::id()));
+        let destination = root.join("org.opencrown.payload.example");
+        std::fs::create_dir_all(destination.join("files")).unwrap();
+        for name in [
+            "manifest.json",
+            "manifest.sig",
+            "files/payload.bin",
+            "files/agent",
+        ] {
+            std::fs::copy(source.join(name), destination.join(name)).unwrap();
+        }
+        root
+    }
+
+    fn readiness_index() -> String {
+        r#"{
+            "schema": 1,
+            "updated": "2026-11-21",
+            "sources": [
+                {"id": "example-source", "url": "https://example.invalid/payload", "license": "MIT"}
+            ],
+            "payloads": [
+                {
+                    "id": "org.opencrown.payload.example",
+                    "name": "Example",
+                    "family": "page-cache",
+                    "status": "available",
+                    "source": "example-source",
+                    "android": ">=31",
+                    "abi": "arm64-v8a",
+                    "targets": [
+                        {"model": "EXAMPLE-1", "kernel_build": "example-6.1.0"}
+                    ]
+                }
+            ]
+        }"#
+        .to_string()
+    }
+
+    #[test]
+    fn probes_a_known_and_an_unknown_device() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/supported-devices.json");
+        let json = std::fs::read_to_string(path).unwrap();
+        let known = probe_device(
+            "EXAMPLE-1".into(),
+            "example-6.1.0".into(),
+            "arm64-v8a".into(),
+            36,
+            "EXAMPLE".into(),
+            "example/fingerprint".into(),
+            json.clone(),
+        )
+        .unwrap();
+        assert_eq!(known.supported_status, "example");
+        assert_eq!(known.digest.len(), 64);
+        assert_eq!(known.build_fingerprint, "example/fingerprint");
+
+        let unknown = probe_device(
+            "OTHER".into(),
+            "other".into(),
+            "arm64-v8a".into(),
+            36,
+            "OTHER".into(),
+            "other/fingerprint".into(),
+            json,
+        )
+        .unwrap();
+        assert_eq!(unknown.supported_status, "unknown");
+    }
+
+    #[test]
+    fn readiness_ready_bundle_crosses_the_boundary() {
+        let bundle = example_bundle();
+        let public_hex = std::fs::read_to_string(bundle.join("public_key.hex")).unwrap();
+        let root = example_root("ready");
+        let results = evaluate_readiness(
+            readiness_index(),
+            root.to_string_lossy().into_owned(),
+            "EXAMPLE-1".into(),
+            "example-6.1.0".into(),
+            "arm64-v8a".into(),
+            36,
+            "EXAMPLE".into(),
+            "0.1.0".into(),
+            vec![public_hex.trim().into()],
+            String::new(),
+        )
+        .unwrap();
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].reason, "ready");
+        assert_eq!(results[0].bundle_version.as_deref(), Some("1.0.0"));
+        let _ = std::fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn readiness_without_bundle_crosses_the_boundary() {
+        let bundle = example_bundle();
+        let public_hex = std::fs::read_to_string(bundle.join("public_key.hex")).unwrap();
+        let root = std::env::temp_dir().join(format!("opencrown-ffi-empty-{}", std::process::id()));
+        let results = evaluate_readiness(
+            readiness_index(),
+            root.to_string_lossy().into_owned(),
+            "EXAMPLE-1".into(),
+            "example-6.1.0".into(),
+            "arm64-v8a".into(),
+            36,
+            "EXAMPLE".into(),
+            "0.1.0".into(),
+            vec![public_hex.trim().into()],
+            String::new(),
+        )
+        .unwrap();
+        assert_eq!(results[0].reason, "no_bundle");
+        let _ = std::fs::remove_dir_all(root);
     }
 }

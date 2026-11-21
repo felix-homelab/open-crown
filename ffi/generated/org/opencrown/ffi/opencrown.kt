@@ -676,11 +676,15 @@ internal object IntegrityCheckingUniffiLib {
     internal fun ensureInitialized() = Unit
     external fun uniffi_opencrown_checksum_func_device_status(
     ): Int
+    external fun uniffi_opencrown_checksum_func_evaluate_readiness(
+    ): Int
     external fun uniffi_opencrown_checksum_func_inspect_bundle(
     ): Int
     external fun uniffi_opencrown_checksum_func_parse_supported_devices(
     ): Int
     external fun uniffi_opencrown_checksum_func_prepare_payload(
+    ): Int
+    external fun uniffi_opencrown_checksum_func_probe_device(
     ): Int
     external fun uniffi_opencrown_checksum_func_protocol_version(
     ): Int
@@ -703,11 +707,15 @@ internal object UniffiLib {
     internal fun ensureInitialized() = Unit
     external fun uniffi_opencrown_fn_func_device_status(`json`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    external fun uniffi_opencrown_fn_func_evaluate_readiness(`indexJson`: RustBuffer.ByValue,`bundlesDir`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,`buildId`: RustBuffer.ByValue,`agentVersion`: RustBuffer.ByValue,`pinnedKeysHex`: RustBuffer.ByValue,`revocationsJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_inspect_bundle(`bundleDir`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_parse_supported_devices(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_prepare_payload(`bundleDir`: RustBuffer.ByValue,`workDir`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,`buildId`: RustBuffer.ByValue,`signature`: RustBuffer.ByValue,`publicKey`: RustBuffer.ByValue,`revocationsJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    external fun uniffi_opencrown_fn_func_probe_device(`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,`buildId`: RustBuffer.ByValue,`buildFingerprint`: RustBuffer.ByValue,`supportedDevicesJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_protocol_version(uniffi_out_err: UniffiRustCallStatus, 
     ): Int
@@ -835,6 +843,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
     if ((lib.uniffi_opencrown_checksum_func_device_status() and 0xFFFF) != 47251) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if ((lib.uniffi_opencrown_checksum_func_evaluate_readiness() and 0xFFFF) != 8096) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_opencrown_checksum_func_inspect_bundle() and 0xFFFF) != 61166) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -842,6 +853,9 @@ private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_opencrown_checksum_func_prepare_payload() and 0xFFFF) != 65423) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if ((lib.uniffi_opencrown_checksum_func_probe_device() and 0xFFFF) != 50167) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if ((lib.uniffi_opencrown_checksum_func_protocol_version() and 0xFFFF) != 63704) {
@@ -1128,6 +1142,139 @@ public object FfiConverterTypeBundleInfo: FfiConverterRustBuffer<BundleInfo> {
             FfiConverterString.write(value.`persistence`, buf)
             FfiConverterString.write(value.`digest`, buf)
             FfiConverterUInt.write(value.`targets`, buf)
+    }
+}
+
+
+
+/**
+ * Device facts gathered by the app, plus the supported-list verdict and the
+ * fingerprint digest. Pure: reads no files and starts nothing.
+ */
+data class DeviceProbe (
+    var `model`: kotlin.String
+    , 
+    var `kernelRelease`: kotlin.String
+    , 
+    var `abi`: kotlin.String
+    , 
+    var `androidSdk`: kotlin.UInt
+    , 
+    var `buildId`: kotlin.String
+    , 
+    var `buildFingerprint`: kotlin.String
+    , 
+    var `digest`: kotlin.String
+    , 
+    var `supportedStatus`: kotlin.String
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeDeviceProbe: FfiConverterRustBuffer<DeviceProbe> {
+    override fun read(buf: ByteBuffer): DeviceProbe {
+        return DeviceProbe(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterUInt.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: DeviceProbe) = (
+            FfiConverterString.allocationSize(value.`model`) +
+            FfiConverterString.allocationSize(value.`kernelRelease`) +
+            FfiConverterString.allocationSize(value.`abi`) +
+            FfiConverterUInt.allocationSize(value.`androidSdk`) +
+            FfiConverterString.allocationSize(value.`buildId`) +
+            FfiConverterString.allocationSize(value.`buildFingerprint`) +
+            FfiConverterString.allocationSize(value.`digest`) +
+            FfiConverterString.allocationSize(value.`supportedStatus`)
+    )
+
+    override fun write(value: DeviceProbe, buf: ByteBuffer) {
+            FfiConverterString.write(value.`model`, buf)
+            FfiConverterString.write(value.`kernelRelease`, buf)
+            FfiConverterString.write(value.`abi`, buf)
+            FfiConverterUInt.write(value.`androidSdk`, buf)
+            FfiConverterString.write(value.`buildId`, buf)
+            FfiConverterString.write(value.`buildFingerprint`, buf)
+            FfiConverterString.write(value.`digest`, buf)
+            FfiConverterString.write(value.`supportedStatus`, buf)
+    }
+}
+
+
+
+/**
+ * One payload's readiness verdict, with exactly one reason.
+ */
+data class PayloadStatus (
+    var `id`: kotlin.String
+    , 
+    var `family`: kotlin.String
+    , 
+    var `indexStatus`: kotlin.String
+    , 
+    var `reason`: kotlin.String
+    , 
+    var `detail`: kotlin.String
+    , 
+    var `bundleVersion`: kotlin.String?
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypePayloadStatus: FfiConverterRustBuffer<PayloadStatus> {
+    override fun read(buf: ByteBuffer): PayloadStatus {
+        return PayloadStatus(
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: PayloadStatus) = (
+            FfiConverterString.allocationSize(value.`id`) +
+            FfiConverterString.allocationSize(value.`family`) +
+            FfiConverterString.allocationSize(value.`indexStatus`) +
+            FfiConverterString.allocationSize(value.`reason`) +
+            FfiConverterString.allocationSize(value.`detail`) +
+            FfiConverterOptionalString.allocationSize(value.`bundleVersion`)
+    )
+
+    override fun write(value: PayloadStatus, buf: ByteBuffer) {
+            FfiConverterString.write(value.`id`, buf)
+            FfiConverterString.write(value.`family`, buf)
+            FfiConverterString.write(value.`indexStatus`, buf)
+            FfiConverterString.write(value.`reason`, buf)
+            FfiConverterString.write(value.`detail`, buf)
+            FfiConverterOptionalString.write(value.`bundleVersion`, buf)
     }
 }
 
@@ -1429,6 +1576,34 @@ public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.Str
 /**
  * @suppress
  */
+public object FfiConverterSequenceTypePayloadStatus: FfiConverterRustBuffer<List<PayloadStatus>> {
+    override fun read(buf: ByteBuffer): List<PayloadStatus> {
+        val len = buf.getInt()
+        return List<PayloadStatus>(len) {
+            FfiConverterTypePayloadStatus.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<PayloadStatus>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypePayloadStatus.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<PayloadStatus>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypePayloadStatus.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceTypeSupportedDevice: FfiConverterRustBuffer<List<SupportedDevice>> {
     override fun read(buf: ByteBuffer): List<SupportedDevice> {
         val len = buf.getInt()
@@ -1464,6 +1639,30 @@ public object FfiConverterSequenceTypeSupportedDevice: FfiConverterRustBuffer<Li
         FfiConverterString.lower(`kernelRelease`),
         FfiConverterString.lower(`abi`),
         FfiConverterUInt.lower(`androidSdk`),_status)
+}
+    )
+    }
+    
+
+        /**
+         * Evaluate the index without staging, executing, or minting anything.
+         */
+    @Throws(FfiException::class) fun `evaluateReadiness`(`indexJson`: kotlin.String, `bundlesDir`: kotlin.String, `model`: kotlin.String, `kernelRelease`: kotlin.String, `abi`: kotlin.String, `androidSdk`: kotlin.UInt, `buildId`: kotlin.String, `agentVersion`: kotlin.String, `pinnedKeysHex`: List<kotlin.String>, `revocationsJson`: kotlin.String): List<PayloadStatus> {
+            return FfiConverterSequenceTypePayloadStatus.lift(
+    uniffiRustCallWithError(FfiException) { _status ->
+    UniffiLib.uniffi_opencrown_fn_func_evaluate_readiness(
+    
+        
+        FfiConverterString.lower(`indexJson`),
+        FfiConverterString.lower(`bundlesDir`),
+        FfiConverterString.lower(`model`),
+        FfiConverterString.lower(`kernelRelease`),
+        FfiConverterString.lower(`abi`),
+        FfiConverterUInt.lower(`androidSdk`),
+        FfiConverterString.lower(`buildId`),
+        FfiConverterString.lower(`agentVersion`),
+        FfiConverterSequenceString.lower(`pinnedKeysHex`),
+        FfiConverterString.lower(`revocationsJson`),_status)
 }
     )
     }
@@ -1518,6 +1717,29 @@ public object FfiConverterSequenceTypeSupportedDevice: FfiConverterRustBuffer<Li
         FfiConverterByteArray.lower(`signature`),
         FfiConverterByteArray.lower(`publicKey`),
         FfiConverterString.lower(`revocationsJson`),_status)
+}
+    )
+    }
+    
+
+        /**
+         * Probe a device. The caller supplies the platform facts; the runtime only
+         * evaluates them against the supported-device list. No payload is run, no
+         * root is requested, no file is staged, and no token is minted.
+         */
+    @Throws(FfiException::class) fun `probeDevice`(`model`: kotlin.String, `kernelRelease`: kotlin.String, `abi`: kotlin.String, `androidSdk`: kotlin.UInt, `buildId`: kotlin.String, `buildFingerprint`: kotlin.String, `supportedDevicesJson`: kotlin.String): DeviceProbe {
+            return FfiConverterTypeDeviceProbe.lift(
+    uniffiRustCallWithError(FfiException) { _status ->
+    UniffiLib.uniffi_opencrown_fn_func_probe_device(
+    
+        
+        FfiConverterString.lower(`model`),
+        FfiConverterString.lower(`kernelRelease`),
+        FfiConverterString.lower(`abi`),
+        FfiConverterUInt.lower(`androidSdk`),
+        FfiConverterString.lower(`buildId`),
+        FfiConverterString.lower(`buildFingerprint`),
+        FfiConverterString.lower(`supportedDevicesJson`),_status)
 }
     )
     }
