@@ -288,3 +288,26 @@ write needs. No write was observed; boot id unchanged.
 This is the first full run with the corrected KASLR base and a fully
 overlapped fake waiter that did not panic, so the remaining issue is the
 trigger topology/UAF, not the carrier address range.
+
+## prctl stack-copy candidates
+
+Static analysis found a user copy to `sp+0x30` in `__do_sys_prctl`:
+
+```text
+__do_sys_prctl frame  0x210
+copy destination      top-0x1e0
+size                  up to 0x170
+```
+
+That range would fully cover the WAIT_REQUEUE_PI waiter at `top-0x198`.
+However, the path is `PR_SET_MM_MAP` and is guarded by
+`capable(CAP_SYS_RESOURCE)`; the shell's CapBnd is `0xc0`, so the copy is not
+reached.
+
+`PR_SET_VMA`/`PR_SET_VMA_ANON_NAME` does not copy the name to the kernel
+stack; it stores a user pointer in the VMA.
+
+So `prctl` is not an unprivileged closure of the 8-byte parent-color gap.
+The remaining viable route is a 32-bit compat `select` overlay, where the
+compat stack_fds copy puts the waiter at `out+0x20` and covers the parent
+word.
