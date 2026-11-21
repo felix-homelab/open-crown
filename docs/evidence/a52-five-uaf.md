@@ -86,3 +86,43 @@ direct arbitrary write; a cross-cache reclaim + CFI-compatible target is
 needed before a cred/SELinux path can be built.
 
 No root.
+
+## A52 structure/free-path analysis
+
+A52 `struct task_integrity` layout:
+
+```text
+user_value   0x00
+value        0x04
+usage_count  0x08
+value_lock   0x0c
+list_lock    0x10
+label        0x18
+events       0x20...
+reset_cause  ...
+reset_file   ...
+```
+
+`task_integrity_free()` scrubs the object before `kmem_cache_free()`:
+
+```c
+kfree(intg->label); intg->label = NULL;
+intg->user_value = INTEGRITY_NONE;
+intg->value = INTEGRITY_NONE;
+atomic_set(&intg->usage_count, 0);
+intg->reset_cause = CAUSE_UNSET;
+if (intg->reset_file) { fput(intg->reset_file); intg->reset_file = NULL; }
+kmem_cache_free(task_integrity_cache, intg);
+```
+
+So a plain reader sees scrubbed zeros unless the slot is reclaimed. The
+cache is dedicated (`task_integrity_cache`), so a cross-cache reclaim is
+required for the value/leak or spinlock primitives.
+
+The `reset_file` path is more interesting: a failed `execve` of a regular
+executable non-ELF file such as `/system/bin/monkey` leaves a fresh tint
+whose `reset_file` has refcount 1. That makes the file UAF reachable without
+cross-cache reclaim, but `d_path` then hits the A52's non-permissive KCFI
+`d_dname` call and the file/dentry objects still need controlled reclaim.
+
+No root yet.
