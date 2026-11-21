@@ -46,6 +46,8 @@ jobs:
         run: python catalog/tooling/verify.py catalog/examples/signed
       - name: Validate the supported-device list
         run: python catalog/tooling/devices.py validate --list catalog/supported-devices.json
+      - name: Validate the payload index
+        run: python catalog/tooling/payload_index.py validate --index catalog/payload-index.json
       - name: Check Markdown links
         run: python tools/link-check/cli.py .
 

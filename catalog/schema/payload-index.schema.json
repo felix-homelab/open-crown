@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opencrown.org/schema/payload-index.schema.json",
+  "title": "Open Crown payload index",
+  "description": "Source-level list of payloads and their published device targets. This is not a signed bundle manifest and grants no capability. See ADR 0014.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "updated", "sources", "payloads"],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "updated": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "url", "license"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^https://"
+          },
+          "license": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "retrieved": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      }
+    },
+    "payloads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "family",
+          "status",
+          "source",
+          "android",
+          "abi",
+          "targets"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "family": {
+            "type": "string",
+            "enum": ["page-cache", "futex-uaf", "future"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["available", "pending", "retired"]
+          },
+          "source": {
+            "type": "string"
+          },
+          "cves": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^CVE-[0-9]{4}-[0-9]+$"
+            }
+          },
+          "android": {
+            "type": "string",
+            "pattern": "^(>=|<=|=)[0-9]{2}$"
+          },
+          "abi": {
+            "type": "string",
+            "enum": ["arm64-v8a"]
+          },
+          "source_status": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["model", "kernel_build"],
+              "properties": {
+                "model": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                },
+                "kernel_build": {
+                  "type": ["string", "null"],
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "kernel_version": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "build": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "android": {
+                  "type": "string",
+                  "pattern": "^(>=|<=|=)[0-9]{2}$"
+                },
+                "abi": {
+                  "type": "string",
+                  "enum": ["arm64-v8a"]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["available", "pending", "retired"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
