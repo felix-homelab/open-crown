@@ -16,7 +16,7 @@
       "abi": "arm64-v8a",
       "android": ">=31",
       "status": "example",
-      "note": "M1 test device (Galaxy A52s 5G, a52sxq). No payload or bundle exists for this build; the entry proves the probe distinguishes a recognised device from an unknown one."
+      "note": "M1 test device (Galaxy A52s 5G, a52sxq). No public per-boot payload found for 5.4.254-qgki as of 2026-11-21; see docs/research/a52-payload-search.md. The entry proves the probe distinguishes a recognised device from an unknown one."
     }
   ]
 }

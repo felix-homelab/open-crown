@@ -66,6 +66,7 @@ inventing an A52 payload target.
 | Protocol specs and vectors | Captures from a Watch |
 | Activation decision (ADR 0003) | A Watch and a test account |
 | Release signing | The offline key ceremony in ADR 0012; M1 pins the throwaway example key |
+| A52 payload | No public per-boot payload for `5.4.254-qgki` / Adreno 642L. DirtyFrag needs 6.5+, GhostLock/SamTimer target 5.10+, CVE-2026-20971 is DoS-only, CVE-2025-21479 is A7xx-only. See [research/a52-payload-search.md](research/a52-payload-search.md). |
 | Payload hardware verification | A target device (the A52 is not `SM-S9280` DZJ3) and a privileged runner |
 | Public distribution of `payloads/external/` | Licence resolution; the tree is private-use only (ADR 0015) |
 
@@ -112,5 +113,9 @@ adb exec-out screencap -p > docs/evidence/a52-probe.png
 The external payload is extracted and the execution contract exists, but two
 things are still missing before it can run from the app: a privileged runner
 (Shizuku or the payload bootstrap) and a target device. The A52 cannot stand in
-for `SM-S9280` DZJ3. Phase 0 still needs a K2a/K2b result, and public release
-still needs the licence decision in ADR 0015.
+for `SM-S9280` DZJ3, and the 2026-11-21 search found no public per-boot chain
+for its 5.4.254 kernel (see
+[research/a52-payload-search.md](research/a52-payload-search.md)). The next
+decision is therefore a port/research effort for the A52, a relaxation of the
+no-unlock constraint, or a different payload device. Public release still needs
+the licence decision in ADR 0015.

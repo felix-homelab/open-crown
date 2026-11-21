@@ -16,6 +16,7 @@
 | [11 — Glossary](11-glossary.md) | Terms and the real protocol vocabulary |
 | [12 — Decisions](12-decisions.md) | The decision log this revision came from |
 | [13 — Status](13-status.md) | What exists, what is verified, what is blocked |
+| [A52 payload search](research/a52-payload-search.md) | What public payloads were checked for the A52 and why none is ready |
 | [Provenance log](provenance.md) | Per-feature clean-room record |
 
 ## ADRs
