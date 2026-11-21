@@ -67,11 +67,19 @@ null_fops      0xffffffc012467708
 
 See [../../docs/evidence/a52-stock-kernel-symbols.md](../../../docs/evidence/a52-stock-kernel-symbols.md).
 
+## arm64 port
+
+The public Huawei P50 Pro 5.4.86 arm64 GhostLock chain builds against an A52
+target header and runs on the device. The MCAST carrier fails on A52 with
+`EADDRNOTAVAIL` when the fake waiter fields are present, so the write test
+does not complete. See
+[../../../docs/evidence/a52-ghostlock-arm64-port.md](../../../docs/evidence/a52-ghostlock-arm64-port.md).
+
 ## Next
 
-1. Resolve KASLR (`kaslr-seed` exists; no unprivileged kbase leak yet) and the
-   A52 `kernel_phys_load` (`0x80080000` or `0xa8000000` candidates).
-2. Derive the A52 `task_struct` / `cred` / `rt_mutex_waiter` offsets.
-3. Port the arm64 PI write / SELinux / `init_cred` path from the public
-   arm64 reference to the A52 5.4 offsets.
+1. Replace/adapt the MCAST carrier for A52 (pselect/select_stack or another
+   stack-copy syscall).
+2. Fix the boot_id `ctl_table` address; the binary currently reads a wrong
+   UUID.
+3. Retry the pointer/leaf write tests, then cred/SELinux root.
 4. Verify `uid 0` and a working domain; no persistent change.
