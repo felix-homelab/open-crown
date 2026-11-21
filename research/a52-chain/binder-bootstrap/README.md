@@ -42,7 +42,23 @@ returned `-22`. This is the AIDL-oriented NDK binder API, not a raw
 the Java `IBinder.transact()` path (41 -> 42); the native topology must use
 Java binder/parcel or a private libbinder bridge.
 
-## Native handle extraction attempt
+## Native handle extraction
+
+A hidden-API bypass (`HiddenApiBypass.addHiddenApiExemptions`) made
+`BinderProxy.mNativeData` readable. From that pointer the native side extracted
+the `IBinder*` and a candidate `BpBinder` handle (12):
+
+```text
+BinderProbe: unsafe nativeData=...
+BinderProbeNative: native_data=... ibinder=... h2=12
+BinderProbeNative: extracted handle=12
+```
+
+A raw `BC_TRANSACTION` to handle 12 returned `-1` and did not reach
+`ManagerService.onTransact` (no `manager transaction value=...` line). The
+handle extraction works; the raw packet/thread path still needs debugging.
+
+## Earlier native handle extraction attempts
 
 The next step was to use the bound-service handle from native code. Two paths
 failed on this build:

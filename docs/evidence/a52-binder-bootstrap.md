@@ -38,6 +38,14 @@ ServiceRecord{... org.opencrown.binderprobe/.ManagerService}
   requested=true received=true hasBound=true
 ```
 
+## Native handle extraction progress
+
+After adding `HiddenApiBypass`, `BinderProxy.mNativeData` became readable. The
+native side extracted the `IBinder*` and a `BpBinder` handle (12). A raw
+`BC_TRANSACTION` to handle 12 returned `-1` and did not deliver to
+`ManagerService.onTransact`; the raw packet/thread path needs debugging, but
+the native handle extraction wall is broken.
+
 ## Native handle extraction limitation
 
 - `dlopen("libbinder.so")` failed; the app namespace does not expose the

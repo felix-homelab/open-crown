@@ -42,11 +42,11 @@ ordinary app a binder handle to a node in another app process. See
 
 ## Native handle gap
 
-The app-based handle is Java-only for now. `libbinder.so` is not in the app
-namespace, and hidden-API enforcement blocks JNI access to
-`BinderProxy.mNativeData`/`.mObject`. The raw-binder topology needs a packaged
-`libbinder` + dependencies or a private `ibinderForJavaObject()`/`BpBinder`
-bridge. See [binder-bootstrap/README.md](binder-bootstrap/README.md).
+`HiddenApiBypass` makes `BinderProxy.mNativeData` readable; native code
+extracts the `IBinder*` and a `BpBinder` handle (12). A raw transaction to that
+handle currently returns `-1` and does not reach the Java service, so the raw
+packet/thread path is still open. See
+[binder-bootstrap/README.md](binder-bootstrap/README.md).
 
 ## Status
 

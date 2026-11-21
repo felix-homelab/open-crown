@@ -29,3 +29,7 @@ android {
     }
 }
 kotlin { jvmToolchain(21) }
+
+dependencies {
+    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
+}

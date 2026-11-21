@@ -209,6 +209,32 @@ Java_org_opencrown_binderprobe_MainActivity_nativeObjectHandles(
     return r1 == value + 1 ? r1 : (r2 == value + 2 ? r2 : -42);
 }
 
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_MainActivity_nativeHandleFromData(
+        JNIEnv*, jobject, jlong native_data, jint code, jint value) {
+    int fd = find_binder_fd();
+    void* p = reinterpret_cast<void*>(native_data);
+    if (p == nullptr || fd < 0) return -50;
+    void* ibinder = *reinterpret_cast<void**>(p);
+    int32_t h1 = *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(p) + 8);
+    int32_t h2 = ibinder ? *reinterpret_cast<int32_t*>(reinterpret_cast<char*>(ibinder) + 8) : -1;
+    __android_log_print(ANDROID_LOG_INFO, TAG, "native_data=%p ibinder=%p h1=%d h2=%d fd=%d", p, ibinder, h1, h2, fd);
+    int32_t r1 = raw_transact_handle(fd, h1, code, value);
+    int32_t r2 = raw_transact_handle(fd, h2, code, value + 1);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "native_data raw results h1=%d h2=%d", r1, r2);
+    return r1 == value + 1 ? r1 : (r2 == value + 2 ? r2 : -51);
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_MainActivity_nativeRawHandle(
+        JNIEnv*, jobject, jint handle, jint code, jint value) {
+    int fd = find_binder_fd();
+    int32_t result = raw_transact_handle(fd, handle, code, value);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "raw handle=%d fd=%d reply=%d", handle, fd, result);
+    return result;
+}
+
 extern "C" JNIEXPORT jint JNICALL
 Java_org_opencrown_binderprobe_MainActivity_nativeAIBinderHandles(
         JNIEnv* env, jobject, jobject binder, jint code, jint value) {
