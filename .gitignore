@@ -51,3 +51,6 @@ app/src/main/assets/
 # Editors
 .vscode/
 *.swp
+
+# Android CMake/NDK build cache
+.cxx/

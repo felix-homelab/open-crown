@@ -32,6 +32,16 @@ an app can obtain a binder handle to a process-owned node through
 `ActivityManager`, even though `servicemanager` `addService` is denied
 (`EX_SECURITY`).
 
+## Native bridge attempt
+
+A JNI path using `AIBinder_fromJavaBinder()` was also tried. The NDK
+`AIBinder_prepareTransaction()` refused the Java binder (`-38`,
+`STATUS_INVALID_OPERATION`), and a raw `AParcel` through `AIBinder_transact()`
+returned `-22`. This is the AIDL-oriented NDK binder API, not a raw
+`/dev/binder` transaction interface. The working transaction in this spike is
+the Java `IBinder.transact()` path (41 -> 42); the native topology must use
+Java binder/parcel or a private libbinder bridge.
+
 ## What it does not prove
 
 - It does not run the CVE-2026-64468 transaction topology or trigger the UAF.

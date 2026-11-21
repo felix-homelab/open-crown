@@ -38,6 +38,15 @@ ServiceRecord{... org.opencrown.binderprobe/.ManagerService}
   requested=true received=true hasBound=true
 ```
 
+## Native bridge limitation
+
+A JNI `AIBinder_fromJavaBinder()` / `AIBinder_transact()` attempt was also
+made. `AIBinder_prepareTransaction()` failed with `-38`
+(`STATUS_INVALID_OPERATION`), and a raw `AParcel` through
+`AIBinder_transact()` failed with `-22`. The NDK binder API is AIDL-oriented;
+it is not a raw `/dev/binder` transact interface. The usable path is Java
+`IBinder.transact()` or a private libbinder native bridge.
+
 ## Verdict
 
 **PASS for the bootstrap probe.** `ActivityManager` binding gives an

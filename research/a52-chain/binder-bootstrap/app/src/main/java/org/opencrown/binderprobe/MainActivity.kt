@@ -14,6 +14,12 @@ import android.widget.TextView
 class MainActivity : Activity() {
     private var manager: IBinder? = null
 
+    private external fun nativeTransact(binder: IBinder, code: Int, value: Int): Int
+
+    companion object {
+        init { System.loadLibrary("binderprobe") }
+    }
+
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             manager = service
@@ -24,9 +30,11 @@ class MainActivity : Activity() {
                 val ok = service.transact(1, data, reply, 0)
                 reply.setDataPosition(0)
                 val result = if (ok) reply.readInt() else -1
-                Log.i("BinderProbe", "connected handle=${service.hashCode()} result=$result")
+                val native = runCatching { nativeTransact(service, 1, 100) }
+                    .getOrElse { -99 }
+                Log.i("BinderProbe", "connected handle=${service.hashCode()} result=$result native=$native")
                 findViewById<TextView>(R.id.text).text =
-                    "bound: handle=${service.hashCode()} result=$result"
+                    "bound: handle=${service.hashCode()} result=$result native=$native"
             } catch (error: Throwable) {
                 Log.e("BinderProbe", "transact failed: $error")
             } finally {
