@@ -126,3 +126,22 @@ cross-cache reclaim, but `d_path` then hits the A52's non-permissive KCFI
 `d_dname` call and the file/dentry objects still need controlled reclaim.
 
 No root yet.
+
+## Reclaim spray availability
+
+The usual Android/Linux cross-cache sprays were checked on the A52:
+
+```text
+CONFIG_SYSVIPC       not set
+CONFIG_POSIX_MQUEUE  not set
+add_key(user)        EACCES (Permission denied)
+```
+
+So the public msg_msg pump and key-payload spray are unavailable. The
+remaining controllable allocations are sk_buff (sendmsg), pipe buffers, and
+possibly user xattrs; none is a drop-in replacement for the dedicated
+`task_integrity_cache` reclaim in the published research.
+
+This makes the FIVE/PROCA UAF a confirmed DoS/reachability result on the
+A52, but a full LPE requires developing a new cross-cache reclaim from the
+remaining allocation primitives.
