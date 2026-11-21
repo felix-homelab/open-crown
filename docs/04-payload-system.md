@@ -239,3 +239,31 @@ It is not a hidden capability. The payload binary is in the APK, the signature i
 published, and anyone who wants the artifact can extract it. The project accepts
 that and documents it in [09 — Legal and ethics](09-legal-ethics.md). Claiming
 otherwise would be a lie that a reviewer would catch in five minutes.
+
+## 16. Readiness (M1)
+
+An indexed payload can be listed before it is built. `catalog/payload-index.json`
+is source-level data: each payload names the upstream source and the device
+targets that source publishes. It is not a signed bundle and grants nothing.
+See [ADR 0014](adr/0014-payload-index-and-readiness.md).
+
+`runtime::readiness` answers one question without running anything:
+
+> Given this device, this index, this bundle directory, these pinned keys and
+> this revocation list, would the payload be READY?
+
+It reads the manifest, verifies the signature with the pinned catalog key,
+checks every artifact's size and SHA-256, checks revocation, and compares
+`min_agent`. It never stages a file, mints a token, spawns a process, or asks for
+root. The first failing gate is the single reported reason: `no_match`,
+`not_available`, `no_bundle`, `invalid_manifest`, `bad_signature`,
+`artifact_mismatch`, `revoked` or `agent_too_old`; `ready` means every gate
+passed.
+
+Exactness is not relaxed for a payload whose upstream source publishes only a
+kernel version. `kernel_build` is then `null`, and the target can never match.
+The alternative — guessing the rest of `uname -r` — would defeat the matcher.
+
+The M1 A52 (`SM-A528B`, `5.4.254-qgki-…`) is an `example` device in the
+supported-device list and has no indexed target. The probe therefore reports
+"recognised, nothing ready"; no payload is READY on it.

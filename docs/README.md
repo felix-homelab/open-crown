@@ -35,6 +35,7 @@
 | [0011](adr/0011-no-harness-root.md) | No harness root; the payload is the only path | Accepted |
 | [0012](adr/0012-catalog-key-custody.md) | Offline root, delegated signing keys, revocation, log | Accepted |
 | [0013](adr/0013-agent-ipc-envelope.md) | Protobuf envelope v1 with explicit limits | Accepted |
+| [0014](adr/0014-payload-index-and-readiness.md) | Source-level payload index and a data-only readiness engine | Accepted |
 
 ## Status
 

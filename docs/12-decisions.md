@@ -103,6 +103,17 @@ activation.
 together; the runbook has no Magisk step; the probe reports stages separately so
 a failure is still attributable.
 
+## 12. Readiness is data, not execution
+
+**Decision:** M1 lists payloads from a source-level index and computes readiness
+from data on disk only: index target, bundle presence, manifest, pinned
+signature, artifacts, revocation and agent version.
+[ADR 0014](adr/0014-payload-index-and-readiness.md).
+
+**Changes:** `catalog/payload-index.json`, `runtime::readiness`, the probe FFI,
+and the app's probe/payload screens. Probing never stages, mints a token, runs a
+payload, or requests root.
+
 ## Left open on purpose
 
 1. **Which side authenticates** — Phase 2, ADR 0003 stays Proposed.

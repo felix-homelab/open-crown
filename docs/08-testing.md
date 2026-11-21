@@ -32,6 +32,7 @@ with a USB HCI dongle, and one iPhone as a reference stack.
 | W1 | Apple Watch Ultra 2 (Watch7,5), watchOS 26.2 (23S303) | All pairing/setup tests |
 | P1 | OnePlus CPH2653, stock (payload only; no harness root) | Privilege and transport |
 | P2 | Sacrificial phone, same family | Brick drill, panic tests |
+| P3 | Samsung Galaxy A52s 5G `SM-A528B`, stock, kernel `5.4.254-qgki-…` | M1 probe, JNA/FFI, readiness UI; no payload exists for this build |
 | L1 | Linux host + USB BR/EDR dongle | Protocol work without Android |
 | I1 | iPhone | Reference capture, activation comparison |
 
