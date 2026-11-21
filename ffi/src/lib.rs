@@ -83,10 +83,11 @@ pub fn prepare_payload(
     let revocations = if revocations_json.trim().is_empty() {
         opencrown_runtime::revocation::RevocationList::empty()
     } else {
-        opencrown_runtime::revocation::RevocationList::parse(revocations_json.as_bytes())
-            .map_err(|err| FfiError::Payload {
+        opencrown_runtime::revocation::RevocationList::parse(revocations_json.as_bytes()).map_err(
+            |err| FfiError::Payload {
                 reason: err.to_string(),
-            })?
+            },
+        )?
     };
 
     let prepared = opencrown_runtime::prepare(
@@ -128,7 +129,10 @@ mod tests {
 
     #[test]
     fn version_is_protocol_version() {
-        assert_eq!(protocol_version().unwrap(), opencrown_core::PROTOCOL_VERSION);
+        assert_eq!(
+            protocol_version().unwrap(),
+            opencrown_core::PROTOCOL_VERSION
+        );
     }
 
     #[test]
@@ -173,7 +177,8 @@ mod tests {
         let signature = std::fs::read(bundle.join("manifest.sig")).unwrap();
         let public_hex = std::fs::read_to_string(bundle.join("public_key.hex")).unwrap();
         let public = opencrown_runtime::hex::decode(public_hex.trim()).unwrap();
-        let revocations = r#"{"schema":1,"revoked":[{"id":"org.opencrown.payload.example","version":"1.0.0"}]}"#;
+        let revocations =
+            r#"{"schema":1,"revoked":[{"id":"org.opencrown.payload.example","version":"1.0.0"}]}"#;
 
         let error = prepare_payload(
             bundle.to_string_lossy().into_owned(),
