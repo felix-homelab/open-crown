@@ -478,7 +478,7 @@ mod tests {
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/payload-index.json");
         let bytes = std::fs::read(path).unwrap();
         let index = PayloadIndex::parse(&bytes).unwrap();
-        assert_eq!(index.payloads().len(), 3);
+        assert_eq!(index.payloads().len(), 4);
         let a52 = crate::matcher::DeviceFingerprint {
             model: "SM-A528B".into(),
             kernel_release: "5.4.254-qgki-28575149-abA528BXXSBGYI3".into(),

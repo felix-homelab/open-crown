@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "id": "org.opencrown.payload.futex-timer",
+  "version": "1.0.0",
+  "min_agent": "0.1.0",
+  "family": "futex-uaf",
+  "targets": [
+    {
+      "model": "SM-S9280",
+      "kernel_build": "6.1.145-android14-11-3254743-abS9280ZCS6DZJ3",
+      "abi": "arm64-v8a",
+      "android": ">=31"
+    }
+  ],
+  "capabilities": [
+    "root",
+    "domain"
+  ],
+  "entry": "files/libtimer",
+  "agent": "files/libtimer",
+  "persistence": "boot",
+  "reversible": "reboot",
+  "artifacts": [
+    {
+      "path": "files/libtimer",
+      "sha256": "8989511991779fa0eefa68bcde0373ff36737b228a617e9e2c0851edf5386539",
+      "size": 2228648
+    }
+  ],
+  "notes": "Unmodified upstream SamTimer CVE-2026-98260 payload for SM-S9280 DZJ3. External/quarantined; not built or hardware-verified by Open Crown. Root and domain only; no controller capability."
+}

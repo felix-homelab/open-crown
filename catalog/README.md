@@ -16,6 +16,10 @@ catalog/
 └── supported-devices.json  the evidence-backed device list
 ```
 
+External payload artifacts live outside `catalog/`, under
+`payloads/external/`, because they retain their upstream licences and are not
+part of the MIT tree (ADR 0015).
+
 ## Rules
 
 - A manifest is exact-target: model + kernel build, no wildcards.
@@ -33,8 +37,10 @@ source-level payload index are implemented. The index lists the M1 sources
 target whose upstream only publishes a kernel version has `kernel_build: null`
 and can never be READY (ADR 0014).
 
-There is no real payload: `catalog/examples/signed/` is dummy bytes signed with
-a throwaway key, and it exists to prove the Python signer and the Rust verifier
-agree. `catalog-keys.json` pins that throwaway key for M1; the real offline key
-ceremony in ADR 0012 has not happened. The catalog ships when the supply and
-review gates in [ADR 0010](../docs/adr/0010-ship-order.md) pass.
+`catalog/examples/signed/` is dummy bytes signed with a throwaway key; it
+exists to prove the Python signer and the Rust verifier agree. The first real
+artifact is the quarantined external `futex-timer` bundle under
+`payloads/external/` (ADR 0015). It is signed with a private-development key
+pinned in `catalog-keys.json`; the offline key ceremony in ADR 0012 has not
+happened. The catalog ships when the supply and review gates in
+[ADR 0010](../docs/adr/0010-ship-order.md) pass.
