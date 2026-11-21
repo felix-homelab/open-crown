@@ -10,7 +10,7 @@ pub mod bridge {
 
 pub use bridge::*;
 
-use bridge::envelope::Request;
+pub use bridge::envelope::Request;
 
 use std::fmt;
 

@@ -63,6 +63,8 @@ message Response {
 
 message Ok {
   string detail = 1;
+  // Set by connect and open_channel; zero otherwise.
+  uint32 handle = 2;
 }
 
 message Failure {
