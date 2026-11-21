@@ -228,3 +228,34 @@ The KASLR slide is per-boot; the next boot is different from the captured
 0x90000.
 
 No root; phone recovered.
+
+## Per-boot KASLR leak tool
+
+A small static helper starts `atrace -c sched`, reads
+`/sys/kernel/tracing/per_cpu/cpu0/trace_pipe_raw`, parses
+`sched_blocked_reason` records, and matches raw callers against known
+static callers. Example output on one boot:
+
+```text
+caller=ffffffc010b34158 rpmh_write_batch+0x27c slide=1c8000
+base=ffffffc010249000
+```
+
+The slide is page-aligned but **not 64 KiB aligned**; the tool now accepts
+any page-aligned difference. The slide changes on every reboot.
+
+## futex_lock_pi geometry
+
+A second futex path allocates its waiter at a different stack address:
+
+```text
+futex_lock_pi frame        0x1a0
+waiter                    x29-0x78 = top-0x168
+process_vm_rw iovstack    top-0x190 (covers -0x168 fully)
+```
+
+That means a LOCK_PI-based waiter would be **completely** covered by the
+process_vm overlay, including `tree.rb_parent_color`. The remaining question
+is whether the vulnerable `remove_waiter` UAF can be reached through the
+LOCK_PI/requeue path; the current WAIT_REQUEUE_PI trigger leaves the waiter
+at `top-0x198`, where process_vm misses the parent word.
