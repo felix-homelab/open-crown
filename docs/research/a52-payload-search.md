@@ -53,6 +53,32 @@ as shell (`uid 2000`, Enforcing). It opened `/dev/kgsl-3d0` and swept
 negative for this build. Full output:
 [../evidence/a52-kgsl-probe.md](../evidence/a52-kgsl-probe.md).
 
+## Can the A52 be downgraded to a vulnerable build?
+
+No useful downgrade path exists on this unit.
+
+- The device reports `ro.boot.bootloader=A528BXXSBGYI3`; the bootloader binary
+  is **B (11)**, `ro.boot.flash.locked=1`, `ro.boot.warranty_bit=0`,
+  `verifiedbootstate=green`.
+- Samsung anti-rollback blocks flashing a lower bootloader binary. The A52s
+  firmware progression is roughly binary 6–9 through 2024, **A (10)** in
+  January 2025 (`A528BXXSAGYA2`), and **B (11)** from 2025
+  (`A528BXXSBGYC1`, `...GYF1`, `...GYI3`). The pre-January-2024 builds that
+  predate the CVE-2023-33107 fix are binary 6–9, so they cannot be flashed over
+  B. The XDA A52s downgrade thread also records that the bootloader binary
+  cannot be downgraded: [XDA](https://xdaforums.com/t/downgrade-samsung-inary.4730510/).
+- The only builds that can be flashed are binary B, and those are 2025 builds
+  that already include the January-2024 CVE-2023-33107 fix and later patches.
+  Switching between same-binary B builds is possible but gains no vulnerability.
+- Even if a pre-2024 build could be forced on, the kernel is still 5.4.
+  DirtyFrag still needs 6.5+, and GhostLock/SamTimer still need 5.10/6.x.
+  The only relevant pre-2024 bug would be CVE-2023-33107, whose public exploit
+  is an A90-specific port, not an A52 payload.
+- Bypassing the bootloader (EDL/firehose, patched vbmeta, commercial boxes) is
+  not a supported downgrade, can trip KNOX/fuses, wipe data, or brick the
+  device, and still would not produce a 5.4 per-boot payload. It was not
+  attempted.
+
 ## What this means for the project
 
 The A52 remains the M1 **probe/readiness/UI** device, not a payload target.

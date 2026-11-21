@@ -67,6 +67,7 @@ inventing an A52 payload target.
 | Activation decision (ADR 0003) | A Watch and a test account |
 | Release signing | The offline key ceremony in ADR 0012; M1 pins the throwaway example key |
 | A52 payload | No public per-boot payload for `5.4.254-qgki` / Adreno 642L. DirtyFrag needs 6.5+, GhostLock/SamTimer target 5.10+, CVE-2026-20971 is DoS-only, CVE-2025-21479 is A7xx-only. The CVE-2026-21385 probe ran on the A52 and was negative (no wrap). See [research/a52-payload-search.md](research/a52-payload-search.md) and [evidence/a52-kgsl-probe.md](evidence/a52-kgsl-probe.md). |
+| A52 downgrade | Bootloader binary B (11) anti-rollback blocks the pre-2024 builds; the flashable B builds are post-fix. See [research/a52-payload-search.md](research/a52-payload-search.md#can-the-a52-be-downgraded-to-a-vulnerable-build). |
 | Payload hardware verification | A target device (the A52 is not `SM-S9280` DZJ3) and a privileged runner |
 | Public distribution of `payloads/external/` | Licence resolution; the tree is private-use only (ADR 0015) |
 
