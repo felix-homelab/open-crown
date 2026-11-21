@@ -32,8 +32,17 @@ See [../../docs/evidence/a52-binder-64468-probe.md](../../docs/evidence/a52-bind
 3. **Stability.** A lost race corrupts `binder_proc`; each failed attempt can
    panic. A lab kernel or a sacrificial boot is needed.
 
+## Bootstrap progress
+
+The `BINDER_SET_CONTEXT_MGR` and `addService` paths are denied, but a
+separate research APK proved that `ActivityManager.bindService` gives an
+ordinary app a binder handle to a node in another app process. See
+[../binder-bootstrap/README.md](binder-bootstrap/README.md) and
+[../../docs/evidence/a52-binder-bootstrap.md](../../docs/evidence/a52-binder-bootstrap.md).
+
 ## Status
 
-**Statically vulnerable; public PoC present; Android bootstrap unsolved.**
-No root and no chain. This is the most promising stock/no-unlock candidate
-found so far, ahead of the KNOX UAF because a public LPE exists.
+**Statically vulnerable; public PoC present; a viable app-based bootstrap
+handle exists.** The PoC topology and arm64 LPE are not ported yet. No root
+and no chain. This is the most promising stock/no-unlock candidate found so
+far, ahead of the KNOX UAF because a public LPE exists.
