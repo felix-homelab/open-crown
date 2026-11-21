@@ -31,4 +31,5 @@ object HarnessNative {
     external fun handleOf(nativeData: Long): Int
     external fun walkerStart(victimNativeData: Long, threads: Int): Int
     external fun victimChild(walkerNativeData: Long): Int
+    external fun closeBinder(): Int
 }

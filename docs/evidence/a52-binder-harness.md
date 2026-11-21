@@ -35,6 +35,33 @@ stack; the victim process dies. No `kernel_panic` and no UAF was observed in
 two timings (walkers exit 20–34 ms after e1 with victim death at 20 ms, and
 walkers exit 100–135 ms after e1 with victim death at 10 ms).
 
+## Coordinated run
+
+- 16 worker threads, CPU-pinned to the online CPUs.
+- Walker threads arm after e1 and wait for a controller `go`.
+- Victim counts e1 transactions; at 16/16 it closes its binder fd and then
+  dies.
+- Controller logs `armed=16 go`; all 16 workers exit.
+
+```text
+BinderHarness: victim sent e1 count=16/16
+BinderProbeNative: controller armed=16 go
+BinderHarness: victim closed binder fd
+BinderProbeNative: worker index=0 exited
+```
+
+Boot id stayed `27d1bcba-dea6-45b0-9cd6-1679851bbb67`; no panic.
+
+## Obstacle found
+
+The app victim is not a clean PoC `P`: its binder proc is shared with the
+Android framework, ActivityManager bindings, and binder thread pool. Closing
+one `/dev/binder` fd does not free the proc at the PoC's required instant, and
+process death adds framework teardown. The public PoC's P is a dedicated
+process with its own binder fd, so the race is much cleaner there. This may
+make the app-process route unable to hit the UAF without a different victim
+process model.
+
 ## Verdict
 
 **Topology: reproduced. UAF: not triggered. Root: none.**

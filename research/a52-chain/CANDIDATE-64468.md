@@ -51,8 +51,10 @@ proven. See [binder-bootstrap/README.md](binder-bootstrap/README.md).
 
 The two-service B/P topology now runs: e2 is delivered to victim, victim sends
 nested e1 back to the walker thread, walker reads e1, exits the thread, and
-victim dies. No UAF/panic in two timing configurations. The remaining problem
-is the precise release race. See
+victim dies. Coordinated 16-thread runs with CPU pinning and victim fd close
+still show no UAF/panic. The app victim's binder proc is shared with the
+framework and does not free like the PoC's dedicated P process; this is the
+current obstacle. See
 [../../docs/evidence/a52-binder-harness.md](../../docs/evidence/a52-binder-harness.md).
 
 ## Status
