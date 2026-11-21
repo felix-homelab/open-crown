@@ -40,6 +40,14 @@ ordinary app a binder handle to a node in another app process. See
 [../binder-bootstrap/README.md](binder-bootstrap/README.md) and
 [../../docs/evidence/a52-binder-bootstrap.md](../../docs/evidence/a52-binder-bootstrap.md).
 
+## Native handle gap
+
+The app-based handle is Java-only for now. `libbinder.so` is not in the app
+namespace, and hidden-API enforcement blocks JNI access to
+`BinderProxy.mNativeData`/`.mObject`. The raw-binder topology needs a packaged
+`libbinder` + dependencies or a private `ibinderForJavaObject()`/`BpBinder`
+bridge. See [binder-bootstrap/README.md](binder-bootstrap/README.md).
+
 ## Status
 
 **Statically vulnerable; public PoC present; a viable app-based bootstrap

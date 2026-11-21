@@ -42,6 +42,24 @@ returned `-22`. This is the AIDL-oriented NDK binder API, not a raw
 the Java `IBinder.transact()` path (41 -> 42); the native topology must use
 Java binder/parcel or a private libbinder bridge.
 
+## Native handle extraction attempt
+
+The next step was to use the bound-service handle from native code. Two paths
+failed on this build:
+
+- `dlopen("libbinder.so")` is denied to the app namespace
+  (`library "libbinder.so" not found`).
+- JNI lookup of the `BinderProxy` private fields (`mNativeData`, `mObject`)
+  returns null under hidden-API enforcement. The `AIBinder` wrapper's raw
+  pointer fields did not yield a usable service handle (one candidate was 0,
+  which targeted `servicemanager` and returned `EX_SECURITY`; the others were
+  invalid).
+
+Java `IBinder.transact()` works, but it does not expose the nested
+target-thread/`BINDER_THREAD_EXIT` behavior the public PoC relies on. A native
+raw-binder path needs a packaged `libbinder` + dependencies or a private
+`ibinderForJavaObject()`/`BpBinder` bridge.
+
 ## What it does not prove
 
 - It does not run the CVE-2026-64468 transaction topology or trigger the UAF.

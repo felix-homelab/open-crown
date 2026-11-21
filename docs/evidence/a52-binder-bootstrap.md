@@ -38,6 +38,18 @@ ServiceRecord{... org.opencrown.binderprobe/.ManagerService}
   requested=true received=true hasBound=true
 ```
 
+## Native handle extraction limitation
+
+- `dlopen("libbinder.so")` failed; the app namespace does not expose the
+  private platform library.
+- JNI `GetFieldID` for `BinderProxy.mNativeData` and `.mObject` returned null
+  (hidden-API enforcement).
+- The `AIBinder` wrapper's pointer fields did not yield a usable handle; one
+  candidate produced 0 (servicemanager, `EX_SECURITY`), the others were
+  invalid.
+- Java `IBinder.transact()` still works, but it cannot express the public
+  PoC's nested target-thread/`BINDER_THREAD_EXIT` steps.
+
 ## Native bridge limitation
 
 A JNI `AIBinder_fromJavaBinder()` / `AIBinder_transact()` attempt was also
