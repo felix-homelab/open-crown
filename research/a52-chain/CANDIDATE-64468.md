@@ -59,7 +59,7 @@ current obstacle. See
 
 ## Status
 
-**Statically vulnerable; public PoC present; a viable app-based bootstrap
-handle exists.** The PoC topology and arm64 LPE are not ported yet. No root
-and no chain. This is the most promising stock/no-unlock candidate found so
-far, ahead of the KNOX UAF because a public LPE exists.
+**Statically vulnerable; app-based bootstrap and native raw binder work;
+the UAF does not trigger through the app victim model.** The public LPE is
+x86_64 only; no arm64/A52 port exists. Under the no-unlock constraint this is
+a documented dead end: [../../docs/evidence/a52-no-unlock-dead-end.md](../../docs/evidence/a52-no-unlock-dead-end.md).
