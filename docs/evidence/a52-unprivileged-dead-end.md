@@ -69,3 +69,21 @@ must have gid 0; unprivileged A52 processes cannot obtain that
 
 No alternative handler performs the spinlock write, and `value` has no
 write. Thus the FIVE cred/suid idea is also blocked.
+
+## Option 3: new unprivileged primitive search
+
+After authorizing a new primitive search, I checked:
+
+- unprivileged gid-0 targets: no setgid-root binaries in accessible paths;
+  `CONFIG_USER_NS` not set; shell CapEff zero;
+- UHID (`/dev/uhid` is shell-group accessible): all user copies are
+  `min(len, sizeof(struct uhid_event))` into heap objects, no stack
+  primitive;
+- FIVE label handler: post-lock `cred->sgid` dereference makes the
+  `suid` write unusable for ordinary gids;
+- sk_buff/pipe/file +0x18 fields: non-null or unsafe for the label
+  dereference;
+- Binder handle exchange: app/shell `addService` denied; no context-manager
+  access.
+
+No new unprivileged write/reclaim/handle-exchange primitive was found.
