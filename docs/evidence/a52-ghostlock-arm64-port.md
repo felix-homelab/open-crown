@@ -149,3 +149,31 @@ The promising next carrier is a two-syscall stack overlay:
 The iovec path validates entries after the copy, so the fake bytes may be
 corrupted or rejected; this needs a standalone test before another full
 write attempt. No root; phone healthy.
+
+## process_vm stack-overlay attempt
+
+Implemented the two-syscall idea as a process_vm_rw-only overlay. The
+`process_vm_rw` frame is 0x180 with its 8-entry iovec copy at
+`top-0x190`; this covers the futex waiter at `top-0x198` from +0x8 onward,
+including task/lock/prio, but leaves `tree.rb_parent_color` at +0x0
+untouched.
+
+`--noconsume` runs cleanly and reports `carrier=0/0`, so the copy and syscall
+sequence are accepted. The full pointer-write test then panicked the A52:
+
+```text
+slide child requeue ret=-1 errno=35
+slide child carrier_done=1
+slide attempt 1 timed out waiting for child
+<adb lost>
+```
+
+After recovery:
+
+```text
+ro.boot.bootreason=kernel_panic,bug
+boot_id=5357412a-f4df-4888-ad53-8f33442c4d77
+```
+
+The missing `tree.rb_parent_color` word and/or the unresolved KASLR base is
+still wrong. No root; phone recovered.
