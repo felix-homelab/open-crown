@@ -107,3 +107,45 @@ and confirm the KASLR base before retrying the write.
 3. Then retry the pointer/leaf write tests, followed by cred/SELinux root.
 
 No root; no completion.
+
+## 2026-11-21 follow-up: carrier geometry
+
+A52 `do_ip_setsockopt` uses `memdup_user` for both
+`MCAST_BLOCK_SOURCE` and `MCAST_MSFILTER`, so neither option plants the fake
+waiter on the kernel stack. The `EADDRNOTAVAIL` / heap paths are therefore
+not usable as the P50 carrier.
+
+Relevant A52 stack geometry from the stock Image:
+
+```text
+futex_wait_requeue_pi frame  0x1a0, waiter at sp+0x98  ->  top-0x198
+__arm64_sys_futex frame      0x70
+do_futex frame               0x20
+
+__arm64_sys_select frame     0x80
+core_sys_select frame        0x1c0, stack_fds at sp+0x50 (nfds <= 320)
+                            -> stack_fds top-0x1f0
+                            -> waiter at stack_fds+0x58; max copied fd_sets
+                               0x78 (nfds=320), so task/lock are outside
+
+__arm64_compat_sys_select    0x70; compat stack_fds -> waiter +0x48,
+                            still task/lock outside the 0x78 copy
+
+__arm64_sys_pselect6         0x10 + __do_sys_pselect6 0x90
+                            -> stack_fds top-0x210; waiter +0x78
+
+__arm64_sys_process_vm_readv 0x10 + process_vm_rw 0x180
+                            -> iovstack at top-0x190, 8 bytes above the
+                               futex waiter; covers waiter+0x8.., including
+                               task/lock, but not tree.rb_parent_color
+```
+
+The promising next carrier is a two-syscall stack overlay:
+
+1. `select(320, ...)` writes the waiter's tree fields at `stack_fds+0x58`.
+2. `process_vm_readv` / `process_vm_writev` copies a 128-byte iovec array
+   at `top-0x190`, covering waiter+0x8 through task/lock/prio.
+
+The iovec path validates entries after the copy, so the fake bytes may be
+corrupted or rejected; this needs a standalone test before another full
+write attempt. No root; phone healthy.
