@@ -51,3 +51,21 @@ To continue productively, one of the constraints must change:
 
 Without one of those, the objective is a documented dead end on this exact
 locked A52.
+
+## FIVE/PROCA follow-up
+
+Cred layout on A52 was recovered from setresuid/setresgid disassembly:
+
+```text
+uid 0x04, gid 0x08, suid 0x0c, egid 0x10, euid 0x14, sgid 0x18
+```
+
+The FIVE `value_lock` at 0xc really overlaps `suid`. However, the same label
+handler then dereferences `task_integrity->label` at 0x18, which on a
+reclaimed cred is `sgid`. An ordinary app/shell cred has a nonzero gid, so
+the dereference panics before the zeroed suid can be used. A viable target
+must have gid 0; unprivileged A52 processes cannot obtain that
+(`CONFIG_USER_NS` off, no setgid-root binary, CapEff zero).
+
+No alternative handler performs the spinlock write, and `value` has no
+write. Thus the FIVE cred/suid idea is also blocked.
