@@ -28,3 +28,13 @@ work. The GhostLock walk still hangs afterward. Offsets 0x100, 0x108, 0x110,
 This rules out the ucontext-copy problem; the remaining issue is the exact
 stale-waiter stack address or the fake waiter/lock state consumed by
 `rt_mutex_adjust_prio_chain`.
+
+## uid_lock fake-lock test
+
+A real static `DEFINE_RT_MUTEX(uid_lock)` exists on A52 at
+`0xffffffc0131675b0`; `uid_sys_stats` itself is not exposed through the
+accessory path. Using the real zero `uid_lock` as `waiter->lock` with SROP
+still produced `carrier_done=1` followed by a hung `sched_setattr` walk.
+
+This makes a merely-nonzero fake `wait_lock` an unlikely sole explanation; the
+stale-waiter placement remains the leading suspect.
