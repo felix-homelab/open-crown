@@ -22,6 +22,9 @@ class MainActivity : Activity() {
     private external fun nativeObjectHandles(binder: IBinder, code: Int, value: Int): Int
     private external fun nativeRawHandle(handle: Int, code: Int, value: Int): Int
     private external fun nativeHandleFromData(nativeData: Long, code: Int, value: Int): Int
+    private external fun nativeExecProbe(): Int
+    private external fun nativeAfAlgProbe(): Int
+    private external fun nativePerfProbe(): Int
 
     companion object {
         init { System.loadLibrary("binderprobe") }
@@ -113,6 +116,9 @@ class MainActivity : Activity() {
         text.text = "binding..."
         setContentView(text)
         Log.i("BinderProbe", "libbinder=${nativeProbeLibbinder()}")
+        Log.i("BinderProbe", "execProbe=${runCatching { nativeExecProbe() }.getOrElse { -99 }}")
+        Log.i("BinderProbe", "afAlgProbe=${runCatching { nativeAfAlgProbe() }.getOrElse { -99 }}")
+        Log.i("BinderProbe", "perfProbe=${runCatching { nativePerfProbe() }.getOrElse { -99 }}")
         startService(Intent(this, WalkerService::class.java))
         startService(Intent(this, VictimService::class.java))
         Log.i("BinderProbe", "binding to ManagerService")

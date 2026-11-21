@@ -8,6 +8,9 @@
 #include <fcntl.h>
 #include <linux/android/binder.h>
 #include <sys/ioctl.h>
+#ifndef __NR_perf_event_open
+#define __NR_perf_event_open 241
+#endif
 #include <unistd.h>
 #include <cstring>
 #include <cstdio>
@@ -15,6 +18,17 @@
 #include <pthread.h>
 #include <atomic>
 #include <sched.h>
+#include <sys/wait.h>
+#include <linux/if_alg.h>
+#include <linux/perf_event.h>
+#include <sys/ioctl.h>
+#ifndef __NR_perf_event_open
+#define __NR_perf_event_open 241
+#endif
+#include <sys/socket.h>
+#ifndef AF_ALG
+#define AF_ALG 38
+#endif
 
 #define TAG "BinderProbeNative"
 
@@ -366,6 +380,22 @@ Java_org_opencrown_binderprobe_HarnessNative_walkerStart(
 }
 
 
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_HarnessNative_victimExec(
+        JNIEnv*, jobject) {
+    int fd = find_binder_fd();
+    __android_log_print(ANDROID_LOG_INFO, TAG, "victimExec fd=%d", fd);
+    if (fd >= 0) {
+        int flags = fcntl(fd, F_GETFD);
+        if (flags >= 0) fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
+    }
+    execl("/system/bin/sh", "sh", "-c", "sleep 60", (char*)nullptr);
+    __android_log_print(ANDROID_LOG_ERROR, TAG, "victimExec failed: %s", strerror(errno));
+    _exit(111);
+    return -1;
+}
+
 extern "C" JNIEXPORT jint JNICALL
 Java_org_opencrown_binderprobe_HarnessNative_closeBinder(
         JNIEnv*, jobject) {
@@ -387,6 +417,76 @@ Java_org_opencrown_binderprobe_HarnessNative_victimChild(
     __android_log_print(ANDROID_LOG_INFO, TAG, "victimChild fd=%d walker_handle=%d pin=%d", fd, handle, pin_rc);
     if (fd < 0 || handle < 0) return -1;
     return raw_send(fd, handle, 2, 0, nullptr, 0);
+}
+
+
+
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_MainActivity_nativePerfProbe(
+        JNIEnv*, jobject) {
+    struct perf_event_attr attr;
+    memset(&attr, 0, sizeof(attr));
+    attr.type = PERF_TYPE_SOFTWARE;
+    attr.size = sizeof(attr);
+    attr.config = PERF_COUNT_SW_CPU_CLOCK;
+    attr.sample_period = 10000;
+    attr.sample_type = PERF_SAMPLE_IP;
+    attr.disabled = 1;
+    attr.exclude_kernel = 0;
+    attr.exclude_user = 1;
+    int fd = (int)syscall(__NR_perf_event_open, &attr, -1, 0, -1, 0);
+    int err = errno;
+    __android_log_print(ANDROID_LOG_INFO, TAG, "perf fd=%d errno=%d (%s)", fd, err, strerror(err));
+    if (fd >= 0) close(fd);
+    return fd;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_MainActivity_nativeAfAlgProbe(
+        JNIEnv*, jobject) {
+    int fd = socket(AF_ALG, SOCK_SEQPACKET, 0);
+    int err = errno;
+    __android_log_print(ANDROID_LOG_INFO, TAG, "AF_ALG socket fd=%d errno=%d (%s)", fd, err, strerror(err));
+    if (fd < 0) return -err;
+    struct sockaddr_alg sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.salg_family = AF_ALG;
+    strcpy((char*)sa.salg_type, "hash");
+    strcpy((char*)sa.salg_name, "sha256");
+    int rc = bind(fd, (struct sockaddr*)&sa, sizeof(sa));
+    __android_log_print(ANDROID_LOG_INFO, TAG, "AF_ALG bind rc=%d errno=%d", rc, errno);
+    close(fd);
+    return rc;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_opencrown_binderprobe_MainActivity_nativeExecProbe(
+        JNIEnv*, jobject) {
+    const char* path = "/data/data/org.opencrown.binderprobe/files/exec-id.txt";
+    unlink(path);
+    pid_t pid = fork();
+    if (pid == 0) {
+        execl("/system/bin/sh", "sh", "-c",
+              "id > /data/data/org.opencrown.binderprobe/files/exec-id.txt 2>&1",
+              (char*)nullptr);
+        _exit(111);
+    }
+    if (pid < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "exec fork failed: %s", strerror(errno));
+        return -1;
+    }
+    int status = 0;
+    waitpid(pid, &status, 0);
+    char buffer[512];
+    int fd = open(path, O_RDONLY);
+    ssize_t n = fd >= 0 ? read(fd, buffer, sizeof(buffer) - 1) : -1;
+    if (fd >= 0) close(fd);
+    if (n > 0) buffer[n] = '\0';
+    __android_log_print(ANDROID_LOG_INFO, TAG, "exec status=%d exited=%d code=%d output=%s",
+                        status, WIFEXITED(status), WIFEXITED(status) ? WEXITSTATUS(status) : -1,
+                        n > 0 ? buffer : "(none)");
+    return WIFEXITED(status) ? WEXITSTATUS(status) : -2;
 }
 
 extern "C" JNIEXPORT jint JNICALL

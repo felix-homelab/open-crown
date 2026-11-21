@@ -32,16 +32,8 @@ class VictimService : Service() {
                 HarnessNative.victimChild(BinderNative.nativeData(target))
                 Log.i("BinderHarness", "victim sent e1 count=$count/$expected")
                 if (count >= expected && dying.compareAndSet(false, true)) {
-                    HarnessNative.closeBinder()
-                    Log.i("BinderHarness", "victim closed binder fd")
-                    Thread {
-                        try {
-                            Thread.sleep(30)
-                            stopSelf()
-                            Process.killProcess(Process.myPid())
-                        } catch (_: Throwable) {
-                        }
-                    }.start()
+                    Log.i("BinderHarness", "victim execing clean shell")
+                    HarnessNative.victimExec()
                 }
                 true
             } catch (error: Throwable) {
