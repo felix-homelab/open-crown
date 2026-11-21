@@ -129,9 +129,10 @@ The toolchain lives inside the repository so the build is self-contained and
 reproducible:
 
     tools/dev/bootstrap-toolchain.sh     # JDK 21, Gradle 8.14.3, SDK 36, Rust
-    ./gradlew :app:assembleDebug         # app/build/outputs/apk/debug/
+    ./gradlew :app:assembleDebug :app:testDebugUnitTest
     cargo test --workspace               # Rust core
     PYTHONPATH=tools/lib python3 -m unittest discover -s tools/tests
+    tools/ffi-generate.sh                # regenerate Kotlin bindings
 
 The debug APK is verified: package org.opencrown.app, minSdk 31, targetSdk 36,
 signed with the debug certificate. It contains a skeleton screen and nothing

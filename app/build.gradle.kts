@@ -36,6 +36,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    // The generated UniFFI bindings are the source of truth in ffi/generated;
+    // the test source set compiles them against the host library.
+    sourceSets.getByName("test").kotlin.srcDir("../ffi/generated")
 }
 
 kotlin {
@@ -50,4 +54,5 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     testImplementation(libs.junit)
+    testImplementation(libs.jna)
 }
