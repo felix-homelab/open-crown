@@ -103,6 +103,14 @@ The practical options are:
    bundle already targets `SM-S9280` DZJ3; a DZJ3 device is the shortest path
    to an actual payload run.
 
+## Research branch started
+
+An original A52 chain is now scoped in
+[../../research/a52-chain/README.md](../../research/a52-chain/README.md). It is
+lab-only: no trigger is run on the daily A52, and the public CVE-2026-20971
+work stops at UAF/DoS. The branch starts with P0 (sacrificial device and
+KASAN/KCSAN kernel) and aborts if no controlled primitive appears.
+
 ## Evidence kept
 
 - The A52 probe/readiness evidence in [../evidence/a52-m1.md](../evidence/a52-m1.md).
