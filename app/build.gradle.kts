@@ -16,6 +16,12 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+
+        // arm64 only: the runtime library is built for this ABI and the phone
+        // matrix is 64-bit (docs/00-charter.md section 8).
+        ndk {
+            abiFilters += "arm64-v8a"
+        }
     }
 
     buildTypes {
@@ -37,9 +43,9 @@ android {
         compose = true
     }
 
-    // The generated UniFFI bindings are the source of truth in ffi/generated;
-    // the test source set compiles them against the host library.
-    sourceSets.getByName("test").kotlin.srcDir("../ffi/generated")
+    // The generated UniFFI bindings are compiled into the app. The JVM test
+    // loads the host build of the same library.
+    sourceSets.getByName("main").kotlin.srcDir("../ffi/generated")
 }
 
 kotlin {
@@ -52,6 +58,10 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
+
+    // Android needs JNA's AAR so libjnidispatch.so is packaged; the JVM test
+    // uses the plain jar, which carries the desktop natives.
+    implementation("net.java.dev.jna:jna:5.17.0@aar")
 
     testImplementation(libs.junit)
     testImplementation(libs.jna)
