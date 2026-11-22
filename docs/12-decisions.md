@@ -118,8 +118,8 @@ payload, or requests root.
 
 External chain directories, quarantined payload bundles, and the external CLI
 are removed. The only chain built into the app is the A52 page-cache
-experiment under `app/src/main/cpp/a52root/`, described by
-[ADR 0017](adr/0017-a52-own-pagecache-chain.md).
+experiment under `app/src/main/cpp/pagecache_relay/`, described by
+[ADR 0017](adr/0017-pagecache-relay-payload.md).
 
 ## 14. Execution is a consent-gated launch contract
 

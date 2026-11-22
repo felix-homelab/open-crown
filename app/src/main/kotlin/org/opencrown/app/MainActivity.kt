@@ -53,7 +53,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
-import org.opencrown.app.root.A52RootChain
+import org.opencrown.app.payload.Compatibility
+import org.opencrown.app.payload.PayloadManifest
+import org.opencrown.app.root.PageCacheRelayChain
 
 private val Paper = Color(0xFFFBFBFD)
 private val PaperShade = Color(0xFFF2F2F7)
@@ -63,7 +65,7 @@ private val AppleGreen = Color(0xFF34C759)
 private val AppleRed = Color(0xFFFF3B30)
 private val AppleBlue = Color(0xFF007AFF)
 
-private enum class Stage { INITIALIZING, RUNNING, VERIFYING, WAITING, ROOTED, FAILED }
+private enum class Stage { INITIALIZING, RUNNING, VERIFYING, WAITING, ROOTED, FAILED, UNSUPPORTED, COMPATIBLE }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,13 +105,45 @@ private fun AppleTheme(content: @Composable () -> Unit) {
 @Composable
 private fun ChainScreen() {
     val context = LocalContext.current
-    val chain = remember { A52RootChain(context.applicationContext) }
-    val prefs = remember { context.getSharedPreferences("a52_chain", android.content.Context.MODE_PRIVATE) }
+    val chain = remember { PageCacheRelayChain(context.applicationContext) }
+    val manifest = remember { runCatching { PayloadManifest.load(context) }.getOrNull() }
+    val prefs = remember { context.getSharedPreferences("pagecache_relay", android.content.Context.MODE_PRIVATE) }
     var stage by remember { mutableStateOf(Stage.INITIALIZING) }
     var detail by remember { mutableStateOf("Preparing.") }
     var attempt by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(attempt) {
+    LaunchedEffect(attempt, manifest) {
+        val payloadManifest = manifest ?: run {
+            stage = Stage.FAILED
+            detail = "Payload manifest is missing."
+            return@LaunchedEffect
+        }
+        val match = payloadManifest.match(PayloadManifest.currentDevice())
+        when (match.compatibility) {
+            Compatibility.UNSUPPORTED -> {
+                stage = Stage.UNSUPPORTED
+                detail = match.reason
+                return@LaunchedEffect
+            }
+            Compatibility.COMPATIBLE -> {
+                stage = Stage.COMPATIBLE
+                detail = match.reason
+                return@LaunchedEffect
+            }
+            Compatibility.VERIFIED -> Unit
+        }
+        val payload = withContext(Dispatchers.IO) {
+            runCatching { payloadManifest.payloadBytes(context) }.getOrElse {
+                stage = Stage.FAILED
+                detail = "Payload entry could not be read."
+                return@withContext null
+            }
+        } ?: return@LaunchedEffect
+        if (payloadManifest.entrySize > 0 && payload.size != payloadManifest.entrySize) {
+            stage = Stage.FAILED
+            detail = "Payload size ${payload.size} does not match ${payloadManifest.entrySize}."
+            return@LaunchedEffect
+        }
         val boot = Settings.Global.getInt(context.contentResolver, Settings.Global.BOOT_COUNT, 0)
         val already = prefs.getInt("boot", -1) == boot && prefs.getBoolean("executed", false)
         if (already) {
@@ -135,7 +169,7 @@ private fun ChainScreen() {
         stage = Stage.RUNNING
         detail = "Preparing."
         val ok = withContext(Dispatchers.IO) {
-            chain.run(object : A52RootChain.Listener {
+            chain.run(payload, object : PageCacheRelayChain.Listener {
                 override fun onLog(line: String) {
                     detail = when {
                         line.contains("STEP A") -> "Reading the system."
@@ -192,7 +226,7 @@ private fun ChainScreen() {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "TEMPORARY ROOT",
+                text = (manifest?.name ?: "Page-cache Relay").uppercase(),
                 color = Muted,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
@@ -220,10 +254,29 @@ private fun ChainScreen() {
     }
 }
 
+private fun manifestDeviceLine(): String {
+    val facts = PayloadManifest.currentDevice()
+    return "${facts.model} · ${facts.kernel}"
+}
+
 @Composable
 private fun StatusBlock(stage: Stage, detail: String, onRetry: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         when (stage) {
+            Stage.UNSUPPORTED, Stage.COMPATIBLE -> {
+                InfoBadge()
+                Spacer(Modifier.height(18.dp))
+                Text(
+                    if (stage == Stage.UNSUPPORTED) "Unsupported device" else "Compatible, untested",
+                    color = Ink,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(detail, color = Muted, fontSize = 13.sp, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(12.dp))
+                Text(manifestDeviceLine(), color = Muted, fontSize = 11.sp, textAlign = TextAlign.Center)
+            }
             Stage.ROOTED -> {
                 CheckBadge()
                 Spacer(Modifier.height(18.dp))
@@ -278,6 +331,21 @@ private fun CrownMark() {
             color = Ink,
             style = Stroke(width = w * 0.055f, cap = StrokeCap.Round, join = StrokeJoin.Round),
         )
+    }
+}
+
+@Composable
+private fun InfoBadge() {
+    Canvas(modifier = Modifier.size(48.dp)) {
+        drawCircle(color = Muted.copy(alpha = 0.16f))
+        drawLine(
+            color = Muted,
+            start = Offset(size.width * 0.5f, size.height * 0.26f),
+            end = Offset(size.width * 0.5f, size.height * 0.56f),
+            strokeWidth = size.width * 0.06f,
+            cap = StrokeCap.Round,
+        )
+        drawCircle(color = Muted, radius = size.width * 0.035f, center = Offset(size.width * 0.5f, size.height * 0.70f))
     }
 }
 

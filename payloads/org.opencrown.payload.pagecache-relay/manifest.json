@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "id": "org.opencrown.payload.pagecache-relay",
+  "name": "Page-cache Relay",
+  "version": "0.1.0",
+  "family": "page-cache",
+  "status": "research",
+  "entry": "payload.bin",
+  "entry_size": 576,
+  "capabilities": [
+    "root",
+    "init-domain-relay"
+  ],
+  "persistence": "boot",
+  "reversible": "reboot",
+  "requirements": {
+    "abis": [
+      "arm64-v8a"
+    ],
+    "android_min_sdk": 31,
+    "android_verified_sdk": [
+      34
+    ],
+    "kernel_family": "5.4-qgki",
+    "kernel_pattern": "^5\\.4\\.[0-9]+-qgki-.*$",
+    "verified_kernel": "5.4.254-qgki-28575149-abA528BXXSBGYI3",
+    "userspace": "Android init with libbase",
+    "drivers": [
+      "IpSecManager",
+      "XFRM ESP-in-UDP",
+      "SELinux enforcing init",
+      "file-backed executable page cache"
+    ],
+    "targets": [
+      {
+        "path": "/system/lib64/libbase.so",
+        "symbol": "_ZN7android4base10LogMessageD2Ev",
+        "min_symbol_size": 580,
+        "notes": "native discovers the symbol offset; no A52 file offset is stored"
+      }
+    ],
+    "selinux_init_domain": "u:r:init:s0"
+  },
+  "kernels": [
+    {
+      "release": "5.4.254-qgki-28575149-abA528BXXSBGYI3",
+      "status": "verified",
+      "device": "SM-A528B"
+    },
+    {
+      "pattern": "^5\\.4\\.[0-9]+-qgki-.*$",
+      "status": "candidate",
+      "notes": "must have the same libbase/init/XFRM layout and be tested before enabling"
+    }
+  ],
+  "devices": [
+    {
+      "model": "SM-A528B",
+      "device": "a52sxq",
+      "soc": "snapdragon778g",
+      "kernel_release": "5.4.254-qgki-28575149-abA528BXXSBGYI3",
+      "build": "A528BXXSBGYI3",
+      "android_sdk": 34,
+      "status": "verified",
+      "notes": "verified temporary init-domain relay; app consumes root over ADB"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "samsung-5.4-qgki-libbase",
+      "status": "candidate",
+      "description": "arm64 Android 14+ Samsung 5.4 qgki with init-linked libbase and IpSecManager/XFRM ESP-in-UDP",
+      "match": {
+        "abi": "arm64-v8a",
+        "android_min_sdk": 31,
+        "kernel_pattern": "^5\\.4\\.[0-9]+-qgki-.*$",
+        "target_symbol": "_ZN7android4base10LogMessageD2Ev"
+      }
+    }
+  ],
+  "notes": "Memory-only payload for one boot. A verified device entry is required for automatic execution; matching a candidate profile only marks the device as compatible and untested."
+}

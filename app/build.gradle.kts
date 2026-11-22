@@ -43,10 +43,28 @@ android {
         compose = true
     }
 
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+        }
+    }
 }
 
 kotlin {
     jvmToolchain(21)
+}
+
+// Payload packages are the source of truth. The app assets directory is
+// generated and gitignored.
+val syncPayloadAssets = tasks.register<Copy>("syncPayloadAssets") {
+    from(rootProject.file("payloads")) {
+        include("org.opencrown.payload.pagecache-relay/**")
+    }
+    into(layout.projectDirectory.dir("src/main/assets/payloads"))
+}
+
+tasks.named("preBuild") {
+    dependsOn(syncPayloadAssets)
 }
 
 dependencies {

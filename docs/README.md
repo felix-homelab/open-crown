@@ -37,7 +37,7 @@
 | [0013](adr/0013-agent-ipc-envelope.md) | Protobuf envelope v1 with explicit limits | Accepted |
 | [0014](adr/0014-payload-index-and-readiness.md) | Source-level payload index and a data-only readiness engine | Accepted |
 | [0016](adr/0016-consent-gated-execution.md) | Consent-gated execution supervisor | Accepted for private development |
-| [0017](adr/0017-a52-own-pagecache-chain.md) | A52 page-cache chain built into the app; ADB-only relay | Accepted for private research |
+| [0017](adr/0017-pagecache-relay-payload.md) | A52 page-cache chain built into the app; ADB-only relay | Accepted for private research |
 
 ## Status
 

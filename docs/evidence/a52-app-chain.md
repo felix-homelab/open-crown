@@ -1,11 +1,11 @@
 # A52 chain in the Open Crown app
 
-The A52 page-cache chain is built into the app:
+The page-cache payload is packaged under its own name with a specification manifest:
 
-- native: `app/src/main/cpp/a52root/a52_pagecache.c`
-- library: `app/src/main/jniLibs/arm64-v8a/liba52root.so`
-- payload: `app/src/main/assets/a52_payload.bin` (576-byte A52 relay)
-- Kotlin: `app/src/main/kotlin/org/opencrown/app/root/A52RootChain.kt`
+- native: `app/src/main/cpp/pagecache_relay/pagecache_relay.c`
+- library: `app/src/main/cpp/CMakeLists.txt (built into the APK)`
+- payload: `payloads/org.opencrown.payload.pagecache-relay/payload.bin` (576-byte A52 relay)
+- Kotlin: `app/src/main/kotlin/org/opencrown/app/root/PageCacheRelayChain.kt`
 - UI: the "A52 temporary root" section in `MainActivity.kt`
 
 On-device app run (SM-A528B, 5.4.254):

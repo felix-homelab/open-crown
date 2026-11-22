@@ -271,14 +271,14 @@ supported-device list and has no indexed target. The probe therefore reports
 ## 17. In-tree A52 chain
 
 The only chain currently built into the app is the A52 page-cache experiment.
-It lives in `app/src/main/cpp/a52root/` with the A52 payload asset and is
+It lives in `app/src/main/cpp/pagecache_relay/` with the named payload package and is
 the app auto-runs it once per boot and shows a single success screen when the relay marker appears.
 
 The chain stages a page-cache patch and an init-domain relay. Android's
 `untrusted_app` SELinux domain cannot connect to that relay, so the app cannot
 consume the root itself; the operator triggers and uses the relay over ADB. The
 relay and patch are memory-only and disappear at reboot. See
-[ADR 0017](adr/0017-a52-own-pagecache-chain.md).
+[ADR 0017](adr/0017-pagecache-relay-payload.md).
 
 No external payload bundle, external CLI, or upstream chain directory is
 shipped by the app.

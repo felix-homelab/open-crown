@@ -18,14 +18,14 @@ build `UP1A.231005.007` / `A528BXXSBGYI3`, kernel
 
 The app cannot consume the relay itself: Android excludes `untrusted_app` from
 that Unix socket. The operator triggers init and uses the relay over ADB; the app cannot write the property itself. The
-only chain in the tree is `app/src/main/cpp/a52root/`.
+only chain in the tree is `app/src/main/cpp/pagecache_relay/`.
 
 ## Verified on the host
 
 | Area | Evidence |
 | --- | --- |
 | Docs and ADRs | `tools/link-check/cli.py .` passes |
-| App chain build | `liba52root.so` and the 576-byte A52 payload are packaged; JVM tests pass |
+| App chain build | `libpagecache_relay.so` and the named payload package are built from source; the app matches its manifest |
 | Payload index | `catalog/payload-index.json` is empty; no external target is indexed |
 | Readiness and execution | Host tests cover readiness reasons, signed example bundles, and the consent-gated supervisor |
 | Catalog trust | Ed25519 sign/verify, bundle verify, revocation builder, hash-chained transparency log |
@@ -58,7 +58,7 @@ Device verification:
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -n org.opencrown.app/.MainActivity
 # Tap "Run chain", then trigger init from another shell:
-adb shell setprop debug.dirtyinit 42
+adb shell setprop ctl.start zzz
 adb logcat -d | grep -E 'OpenCrown|AndroidRuntime|FATAL|UnsatisfiedLinkError'
 ```
 

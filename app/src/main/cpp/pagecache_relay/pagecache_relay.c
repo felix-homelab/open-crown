@@ -953,7 +953,7 @@ static uint32_t encode_arm64_b(int32_t offset_bytes) {
  * ═══════════════════════════════════════════════════════════════════════ */
 
 JNIEXPORT jstring JNICALL
-Java_org_opencrown_app_root_A52RootChain_nativeExploit(
+Java_org_opencrown_app_root_PageCacheRelayChain_nativeExploit(
     JNIEnv *env, jobject thiz, jint encapPort, jint spiValue,
     jbyteArray jPayloadTemplate, jbyteArray jKeyMaterial,
     jint hmacTruncBytes, jobject callback)
@@ -964,7 +964,7 @@ Java_org_opencrown_app_root_A52RootChain_nativeExploit(
     double total_write_time = 0;
     int writes_ok = 0, writes_fail = 0;
 
-    g_crash_log_fp = fopen("/data/data/org.opencrown.app/files/dfi_exploit.log", "w");
+    g_crash_log_fp = fopen("/data/data/org.opencrown.app/files/pagecache_relay.log", "w");
 
     g_env = env;
     g_callback = callback;
