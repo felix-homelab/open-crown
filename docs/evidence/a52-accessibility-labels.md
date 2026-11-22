@@ -26,9 +26,10 @@ unlabeled clickable rows.
 - Clickable rows expose title + subtitle and a button click action; decorative
   children are hidden from the accessibility tree.
 - Switch rows no longer make the whole row an unlabeled click target; the
-  switch carries its own description/state/action. That last part is
-  implemented but was not re-confirmed in a captured tree after the latest
-  capture issue.
+  switch carries its own description and toggle action. A captured tree showed
+  "Shell. Capturing" as the clickable description. The checkable attribute and
+  spoken on/off state were not present in that capture; toggleable state is set
+  explicitly in code but remains unverified.
 
 ## After
 
