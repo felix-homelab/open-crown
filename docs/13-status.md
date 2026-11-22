@@ -14,7 +14,7 @@ capability is verified.
 
 | Area | State | Evidence |
 | --- | --- | --- |
-| Compose design system | Light/dark tokens, type ramp, grouped lists, controls, sheets, original line icons, reduced motion, haptics | `app/src/main/kotlin/org/opencrown/app/ui/`; [light and 1.3x text evidence](evidence/a52-design-system.md) |
+| Compose design system | Light/dark tokens, type ramp, grouped lists, controls, sheets, original line icons, reduced motion, haptics; rows reflow at 200% text | `app/src/main/kotlin/org/opencrown/app/ui/`; [light and 1.3x text](evidence/a52-design-system.md), [200% reflow](evidence/a52-large-text-200.md) |
 | App shell | Welcome, Home, Discovery, Pairing, Setup, Faces, Notifications, Health, Apps, Settings, Accessibility, Diagnostics, Evidence, About | `CrownApp.kt`, `ui/screens/` |
 | Observation model | Every watch value is `Observation<T>` with origin, verification, time, pair/epoch and unavailable reason | `model/Observation.kt`, unit tests |
 | Rust core seam | Generated UniFFI binding, arm64 library packaged with JNA; Diagnostics renders protocol revision and core rules from Rust | [evidence](evidence/a52-uniffi-core.md) |

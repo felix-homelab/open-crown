@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -80,6 +81,7 @@ fun CrownRow(
 ) {
     val colors = CrownTheme.colors
     val spacing = CrownTheme.spacing
+    val largeText = LocalDensity.current.fontScale >= 1.5f
     Column(modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -93,7 +95,7 @@ fun CrownRow(
                 )
                 .heightIn(min = spacing.rowMinHeight)
                 .padding(horizontal = spacing.cardPadding, vertical = 9.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = if (largeText) Alignment.Top else Alignment.CenterVertically,
         ) {
             if (leadingGlyph != null) {
                 Box(
@@ -121,8 +123,24 @@ fun CrownRow(
                         color = colors.secondaryLabel,
                     )
                 }
+                if (largeText) {
+                    // At 200% the trailing badge/switch would squeeze the copy
+                    // into a narrow column. Give the copy the full width and
+                    // place the control on its own line.
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        trailing()
+                    }
+                }
             }
-            trailing()
+            if (!largeText) {
+                trailing()
+            }
         }
         if (showDivider) {
             Box(
@@ -183,6 +201,7 @@ fun CrownValueRow(
     leadingGlyph: CrownGlyph? = null,
     showDivider: Boolean = true,
 ) {
+    val largeText = LocalDensity.current.fontScale >= 1.5f
     CrownRow(
         title = title,
         modifier = modifier,
@@ -193,7 +212,7 @@ fun CrownValueRow(
                 text = value,
                 style = CrownTheme.type.body,
                 color = CrownTheme.colors.secondaryLabel,
-                maxLines = 1,
+                maxLines = if (largeText) 2 else 1,
                 overflow = TextOverflow.Ellipsis,
             )
         },
