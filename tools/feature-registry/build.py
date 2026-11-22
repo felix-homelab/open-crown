@@ -875,8 +875,8 @@ A(f("ops.release-build", "Operations & quality", "Release build and install path
     "The iPhone app ships through the App Store; Open Crown ships an APK with reproducible checks.",
     "implemented_unverified", 6,
     impl=["app/proguard-rules.pro", "app/build.gradle.kts", "app/src/main/cpp/CMakeLists.txt", "app/src/main/kotlin/org/opencrown/app/root/PageCacheRelayChain.kt"],
-    evidence=["docs/evidence/a52-release-build.md", "docs/evidence/a52-release-no-relay.md", "docs/evidence/a52-release-reproducibility.md"],
-    notes="R8 release starts and loads UniFFI on the A52 when bench-signed. The release omits the quarantined relay library and payload asset; debug keeps them. Two clean builds at b0c62b0 were byte-identical unsigned and signed with the debug key. Production signing, CI enforcement, SBOM and distribution are not verified."))
+    evidence=["docs/evidence/a52-release-build.md", "docs/evidence/a52-release-no-relay.md", "docs/evidence/a52-release-reproducibility.md", "docs/evidence/a52-release-signing-gate.md"],
+    notes="R8 release starts and loads UniFFI on the A52. Environment-based signing and tools/release/verify-artifact.sh enforce signature, minSdk 33 and exclusion of the quarantined relay/payload. Two clean builds at b0c62b0 were byte-identical. Production key custody, CI enforcement, SBOM and distribution are not verified."))
 A(f("ops.negative-tests", "Operations & quality", "Fuzz and negative tests",
     "Not user-visible; required for protocol robustness.",
     "unimplemented", 6))

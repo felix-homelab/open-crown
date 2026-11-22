@@ -3673,10 +3673,11 @@
       "evidence": [
         "docs/evidence/a52-release-build.md",
         "docs/evidence/a52-release-no-relay.md",
-        "docs/evidence/a52-release-reproducibility.md"
+        "docs/evidence/a52-release-reproducibility.md",
+        "docs/evidence/a52-release-signing-gate.md"
       ],
       "physical_verified": false,
-      "notes": "R8 release starts and loads UniFFI on the A52 when bench-signed. The release omits the quarantined relay library and payload asset; debug keeps them. Two clean builds at b0c62b0 were byte-identical unsigned and signed with the debug key. Production signing, CI enforcement, SBOM and distribution are not verified."
+      "notes": "R8 release starts and loads UniFFI on the A52. Environment-based signing and tools/release/verify-artifact.sh enforce signature, minSdk 33 and exclusion of the quarantined relay/payload. Two clean builds at b0c62b0 were byte-identical. Production key custody, CI enforcement, SBOM and distribution are not verified."
     },
     {
       "id": "ops.negative-tests",

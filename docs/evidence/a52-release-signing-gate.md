@@ -1,0 +1,56 @@
+# A52 release signing gate
+
+Date: 2026-11-22 15:50 Europe/Berlin
+Device: Samsung SM-A528B (a52sxq), Android 14 / SDK 34
+Build: release variant, R8, signed through the new Gradle env config with the
+local debug key (bench only)
+Serial: withheld.
+Apple Watch: not present.
+
+## Signing configuration
+
+app/build.gradle.kts now reads:
+
+~~~text
+OPEN_CROWN_KEYSTORE
+OPEN_CROWN_STORE_PASSWORD
+OPEN_CROWN_KEY_ALIAS
+OPEN_CROWN_KEY_PASSWORD
+~~~
+
+If OPEN_CROWN_KEYSTORE is absent, the release stays unsigned. If it is present,
+the release signing config is attached. Secrets are not committed.
+
+## Artifact gate
+
+tools/release/verify-artifact.sh checks:
+
+- SHA-256;
+- apksigner signature and certificate;
+- package, minSdk 33, targetSdk 36;
+- absence of libpagecache_relay.so and the payload asset;
+- presence of lib/arm64-v8a/libopencrown.so.
+
+Run against the Gradle-signed artifact:
+
+~~~text
+sha256 a2e3b0eae209671382e737ed43b0668d05b62852fb16b442737f134d3af372d8
+signer   CN=Android Debug (bench key)
+minSdk   33
+target   36
+relay    absent
+payload  absent
+core     lib/arm64-v8a/libopencrown.so
+GATE=0
+~~~
+
+The APK installs over the previous release build with the same key and the app
+process starts.
+
+## Limits
+
+- The signing certificate is the Android debug certificate. This proves the
+  configuration and gate, not production signing.
+- The production keystore and its custody are not in the repository; a release
+  signed with it must pass the same gate.
+- The gate is not yet a CI job, and it does not verify a hash manifest or APK v4.

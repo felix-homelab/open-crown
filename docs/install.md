@@ -23,6 +23,23 @@ The debug build is signed with the local debug key. The release build is
 currently unsigned by default and must be signed for distribution; see the
 release gate below.
 
+## Release signing
+
+Create or supply a production keystore outside the repository, then export:
+
+~~~sh
+export OPEN_CROWN_KEYSTORE=/secure/path/opencrown-release.jks
+export OPEN_CROWN_STORE_PASSWORD=...
+export OPEN_CROWN_KEY_ALIAS=...
+export OPEN_CROWN_KEY_PASSWORD=...
+./gradlew :app:assembleRelease
+tools/release/verify-artifact.sh app/build/outputs/apk/release/app-release.apk
+~~~
+
+Without OPEN_CROWN_KEYSTORE the release is unsigned. The gate rejects a package
+containing the quarantined relay or payload, checks the signature, and requires
+minSdk 33. Never commit the keystore or passwords.
+
 ## First launch
 
 1. Welcome screens explain that pairing is unavailable.

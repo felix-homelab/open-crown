@@ -26,6 +26,18 @@ android {
         }
     }
 
+    val releaseKeystore = providers.environmentVariable("OPEN_CROWN_KEYSTORE").orNull
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = file(releaseKeystore)
+                storePassword = providers.environmentVariable("OPEN_CROWN_STORE_PASSWORD").orNull
+                keyAlias = providers.environmentVariable("OPEN_CROWN_KEY_ALIAS").orNull
+                keyPassword = providers.environmentVariable("OPEN_CROWN_KEY_PASSWORD").orNull
+            }
+        }
+    }
+
     buildTypes {
         debug {
             buildConfigField("boolean", "PRIVILEGED_CHAIN", "true")
@@ -38,6 +50,7 @@ android {
         }
         release {
             buildConfigField("boolean", "PRIVILEGED_CHAIN", "false")
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

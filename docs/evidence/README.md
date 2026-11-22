@@ -21,6 +21,7 @@ attachments: capture hash, screenshots, logs (redacted)
 | 2026-11-22 | pass (privacy) | [A52 privacy screen: local data and permissions](a52-privacy-screen.md) |
 | 2026-11-22 | pass (update) | [A52 update path: state preserved](a52-update-path.md) |
 | 2026-11-22 | pass (recovery) | [A52 recovery: app reinstall](a52-recovery-reinstall.md) |
+| 2026-11-22 | pass (signing gate) | [A52 release signing config and artifact gate](a52-release-signing-gate.md) |
 | 2026-11-22 | pass (reproducibility) | [A52 release reproduces byte-for-byte](a52-release-reproducibility.md) |
 | 2026-11-22 | pass (release) | [A52 release excludes the privileged relay](a52-release-no-relay.md) |
 | 2026-11-22 | pass (release discovery) | [A52 release observes Apple advertisements only](a52-release-discovery.md) |
