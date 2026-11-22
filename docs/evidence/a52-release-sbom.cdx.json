@@ -63,17 +63,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/aho-corasick@1.1.5",
-      "name": "aho-corasick",
-      "version": "1.1.5",
-      "licenses": [
-        {
-          "expression": "Unlicense OR MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/anstyle@1.0.14",
       "name": "anstyle",
       "version": "1.0.14",
@@ -135,28 +124,6 @@
       "licenses": [
         {
           "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/autocfg@1.5.1",
-      "name": "autocfg",
-      "version": "1.5.1",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 OR MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/base64ct@1.8.3",
-      "name": "base64ct",
-      "version": "1.8.3",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 OR MIT"
         }
       ]
     },
@@ -294,17 +261,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/const-oid@0.9.6",
-      "name": "const-oid",
-      "version": "0.9.6",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 OR MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/cpufeatures@0.2.17",
       "name": "cpufeatures",
       "version": "0.2.17",
@@ -327,34 +283,12 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/curve25519-dalek-derive@0.1.1",
-      "name": "curve25519-dalek-derive",
-      "version": "0.1.1",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/curve25519-dalek@4.1.3",
       "name": "curve25519-dalek",
       "version": "4.1.3",
       "licenses": [
         {
           "expression": "BSD-3-Clause"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/der@0.7.10",
-      "name": "der",
-      "version": "0.7.10",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 OR MIT"
         }
       ]
     },
@@ -393,17 +327,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/either@1.19.0",
-      "name": "either",
-      "version": "1.19.0",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/equivalent@1.0.3",
       "name": "equivalent",
       "version": "1.0.3",
@@ -437,39 +360,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/fiat-crypto@0.2.9",
-      "name": "fiat-crypto",
-      "version": "0.2.9",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0 OR BSD-1-Clause"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/fixedbitset@0.5.9",
-      "name": "fixedbitset",
-      "version": "0.5.9",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/foldhash@0.1.5",
-      "name": "foldhash",
-      "version": "0.1.5",
-      "licenses": [
-        {
-          "expression": "Zlib"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/fs-err@3.3.2",
       "name": "fs-err",
       "version": "3.3.2",
@@ -487,17 +377,6 @@
       "licenses": [
         {
           "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/getrandom@0.2.17",
-      "name": "getrandom",
-      "version": "0.2.17",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
         }
       ]
     },
@@ -536,17 +415,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/hashbrown@0.15.5",
-      "name": "hashbrown",
-      "version": "0.15.5",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/hashbrown@0.17.1",
       "name": "hashbrown",
       "version": "0.17.1",
@@ -580,17 +448,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/itertools@0.15.0",
-      "name": "itertools",
-      "version": "0.15.0",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/itoa@1.0.19",
       "name": "itoa",
       "version": "1.0.19",
@@ -608,17 +465,6 @@
       "licenses": [
         {
           "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/linux-raw-sys@0.12.1",
-      "name": "linux-raw-sys",
-      "version": "0.12.1",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
         }
       ]
     },
@@ -657,17 +503,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/multimap@0.10.1",
-      "name": "multimap",
-      "version": "0.10.1",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/nom@7.1.3",
       "name": "nom",
       "version": "7.1.3",
@@ -685,17 +520,6 @@
       "licenses": [
         {
           "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/opencrown-agent@0.1.0",
-      "name": "opencrown-agent",
-      "version": "0.1.0",
-      "licenses": [
-        {
-          "expression": "MIT"
         }
       ]
     },
@@ -734,53 +558,9 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/percent-encoding@2.3.2",
-      "name": "percent-encoding",
-      "version": "2.3.2",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/petgraph@0.8.3",
-      "name": "petgraph",
-      "version": "0.8.3",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/pkcs8@0.10.2",
-      "name": "pkcs8",
-      "version": "0.10.2",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 OR MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/plain@0.2.3",
       "name": "plain",
       "version": "0.2.3",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/prettyplease@0.3.0",
-      "name": "prettyplease",
-      "version": "0.3.0",
       "licenses": [
         {
           "expression": "MIT OR Apache-2.0"
@@ -800,207 +580,9 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/prost-build@0.14.6",
-      "name": "prost-build",
-      "version": "0.14.6",
-      "licenses": [
-        {
-          "expression": "Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/prost-derive@0.14.6",
-      "name": "prost-derive",
-      "version": "0.14.6",
-      "licenses": [
-        {
-          "expression": "Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/prost-types@0.14.6",
-      "name": "prost-types",
-      "version": "0.14.6",
-      "licenses": [
-        {
-          "expression": "Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/prost@0.14.6",
-      "name": "prost",
-      "version": "0.14.6",
-      "licenses": [
-        {
-          "expression": "Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-linux-aarch_64@3.3.0",
-      "name": "protoc-bin-vendored-linux-aarch_64",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-linux-ppcle_64@3.3.0",
-      "name": "protoc-bin-vendored-linux-ppcle_64",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-linux-s390_64@3.3.0",
-      "name": "protoc-bin-vendored-linux-s390_64",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-linux-x86_32@3.3.0",
-      "name": "protoc-bin-vendored-linux-x86_32",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-linux-x86_64@3.3.0",
-      "name": "protoc-bin-vendored-linux-x86_64",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-macos-aarch_64@3.3.0",
-      "name": "protoc-bin-vendored-macos-aarch_64",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-macos-x86_64@3.3.0",
-      "name": "protoc-bin-vendored-macos-x86_64",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored-win32@3.3.0",
-      "name": "protoc-bin-vendored-win32",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/protoc-bin-vendored@3.3.0",
-      "name": "protoc-bin-vendored",
-      "version": "3.3.0",
-      "licenses": [
-        {
-          "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/quote@1.0.47",
       "name": "quote",
       "version": "1.0.47",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/r-efi@6.0.0",
-      "name": "r-efi",
-      "version": "6.0.0",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0 OR LGPL-2.1-or-later"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/rand_core@0.6.4",
-      "name": "rand_core",
-      "version": "0.6.4",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/regex-automata@0.4.19",
-      "name": "regex-automata",
-      "version": "0.4.19",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/regex-syntax@0.8.12",
-      "name": "regex-syntax",
-      "version": "0.8.12",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/regex@1.13.2",
-      "name": "regex",
-      "version": "1.13.2",
       "licenses": [
         {
           "expression": "MIT OR Apache-2.0"
@@ -1015,17 +597,6 @@
       "licenses": [
         {
           "expression": "Apache-2.0 OR MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/rustc_version@0.4.1",
-      "name": "rustc_version",
-      "version": "0.4.1",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
         }
       ]
     },
@@ -1169,17 +740,6 @@
       "licenses": [
         {
           "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/spki@0.7.3",
-      "name": "spki",
-      "version": "0.7.3",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 OR MIT"
         }
       ]
     },
@@ -1350,17 +910,6 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/unicode-width@0.2.3",
-      "name": "unicode-width",
-      "version": "0.2.3",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/uniffi@0.32.2",
       "name": "uniffi",
       "version": "0.32.2",
@@ -1449,56 +998,12 @@
     },
     {
       "type": "library",
-      "bom-ref": "pkg:cargo/version_check@0.9.5",
-      "name": "version_check",
-      "version": "0.9.5",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/wasi@0.11.1+wasi-snapshot-preview1",
-      "name": "wasi",
-      "version": "0.11.1+wasi-snapshot-preview1",
-      "licenses": [
-        {
-          "expression": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "bom-ref": "pkg:cargo/weedle2@5.0.0",
       "name": "weedle2",
       "version": "5.0.0",
       "licenses": [
         {
           "expression": "MIT"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/windows-link@0.2.1",
-      "name": "windows-link",
-      "version": "0.2.1",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "bom-ref": "pkg:cargo/windows-sys@0.61.2",
-      "name": "windows-sys",
-      "version": "0.61.2",
-      "licenses": [
-        {
-          "expression": "MIT OR Apache-2.0"
         }
       ]
     },

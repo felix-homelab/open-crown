@@ -74,7 +74,7 @@ Not yet met:
 
 - production signing and published certificate;
 - reproducible APK: two clean same-commit builds matched byte-for-byte with the debug key; CI enforcement and the production key are still open;
-- SBOM: a 144-component CycloneDX draft exists; runtime-only narrowing, signing and publication are still open;
+- SBOM: a 99-component runtime-only CycloneDX draft exists; signing and publication are still open;
 - release notes and SBOM;
 - clean-room and licence sign-off;
 - no in-tree payload dependency for normal use;

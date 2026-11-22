@@ -3678,7 +3678,7 @@
         "docs/evidence/a52-release-sbom.md"
       ],
       "physical_verified": false,
-      "notes": "R8 release starts and loads UniFFI on the A52. Environment-based signing and tools/release/verify-artifact.sh enforce signature, minSdk 33 and exclusion of the quarantined relay/payload; CI runs the gate with a throwaway key. Two clean builds at b0c62b0 were byte-identical. Production key custody, SBOM and distribution are not verified."
+      "notes": "R8 release starts and loads UniFFI on the A52. Environment-based signing and tools/release/verify-artifact.sh enforce signature, minSdk 33 and exclusion of the quarantined relay/payload; CI runs the gate with a throwaway key. Two clean builds at b0c62b0 were byte-identical. A runtime-only SBOM is generated; production key custody, SBOM signing/publication and distribution are not verified."
     },
     {
       "id": "ops.negative-tests",

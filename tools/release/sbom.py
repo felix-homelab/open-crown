@@ -44,7 +44,21 @@ def license_entry(value: str | None) -> dict:
     return {"license": {"name": value}}
 
 
-def cargo_packages(metadata_path: pathlib.Path | None) -> list[dict]:
+def parse_cargo_tree(output: str) -> set[tuple[str, str]]:
+    versions: set[tuple[str, str]] = set()
+    for line in output.splitlines():
+        parts = line.split()
+        if len(parts) < 2 or not parts[1].startswith("v"):
+            continue
+        versions.add((parts[0], parts[1][1:]))
+    return versions
+
+
+def cargo_packages(
+    metadata_path: pathlib.Path | None,
+    all_packages: bool,
+    tree_path: pathlib.Path | None,
+) -> list[dict]:
     if metadata_path is not None:
         data = json.loads(metadata_path.read_text(encoding="utf-8"))
     else:
@@ -55,8 +69,23 @@ def cargo_packages(metadata_path: pathlib.Path | None) -> list[dict]:
             text=True,
         )
         data = json.loads(result.stdout)
+    selected: set[tuple[str, str]] | None = None
+    if not all_packages:
+        if tree_path is not None:
+            tree_output = tree_path.read_text(encoding="utf-8")
+        else:
+            tree = subprocess.run(
+                ["cargo", "tree", "-p", "opencrown-ffi", "--edges", "normal", "--prefix", "none"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            tree_output = tree.stdout
+        selected = parse_cargo_tree(tree_output)
     packages = []
     for package in sorted(data["packages"], key=lambda item: (item["name"], item["version"])):
+        if selected is not None and (package["name"], package["version"]) not in selected:
+            continue
         packages.append(
             {
                 "type": "library",
@@ -106,13 +135,23 @@ def main() -> int:
     parser.add_argument("--apk", required=True, type=pathlib.Path)
     parser.add_argument("--out", required=True, type=pathlib.Path)
     parser.add_argument("--cargo-metadata", type=pathlib.Path)
+    parser.add_argument("--cargo-tree", type=pathlib.Path)
+    parser.add_argument(
+        "--all-packages",
+        action="store_true",
+        help="include build/test packages too (workspace-wide draft)",
+    )
     parser.add_argument("--timestamp", help="ISO-8601 UTC timestamp for a reproducible SBOM")
     args = parser.parse_args()
 
     apk_bytes = args.apk.read_bytes()
     apk_hash = sha256(apk_bytes)
     timestamp = args.timestamp or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    components = cargo_packages(args.cargo_metadata) + android_packages() + native_components(args.apk)
+    components = (
+        cargo_packages(args.cargo_metadata, args.all_packages, args.cargo_tree)
+        + android_packages()
+        + native_components(args.apk)
+    )
     deduped = {component["bom-ref"]: component for component in components}
     ordered = [deduped[key] for key in sorted(deduped)]
 

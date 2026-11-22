@@ -20,6 +20,10 @@ class SbomTests(unittest.TestCase):
         )
         self.assertEqual(sbom.license_entry(None)["license"]["name"], "NOASSERTION")
 
+    def test_cargo_tree_parsing(self):
+        output = "opencrown-ffi v0.1.0 (/tmp/x)\nserde v1.0.0\nserde v1.0.0 (*)\n"
+        self.assertEqual(sbom.parse_cargo_tree(output), {("opencrown-ffi", "0.1.0"), ("serde", "1.0.0")})
+
     def test_native_components_hash_entries(self):
         with tempfile.TemporaryDirectory() as tmp:
             apk = pathlib.Path(tmp) / "app.apk"
