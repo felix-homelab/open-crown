@@ -48,6 +48,7 @@
 #define AARCH64_NR_CLOSE  57u
 #define AARCH64_NR_READ   63u
 #define AARCH64_NR_GETUID 174u
+#define AARCH64_NR_REBOOT 142u
 
 static const char *errno_name(int e)
 {
@@ -327,6 +328,20 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    /* Recovery only. The relay can execute arbitrary syscalls as init; when
+     * the property service is already wedged, the reboot syscall is the only
+     * way to clear the relay without a physical power cycle. This does not make
+     * the relay safe and is never used by the app. */
+    if (strcmp(mode, "reboot") == 0) {
+        uint64_t args[6] = { 0xfee1deadULL, 672274793ULL, 0x01234567ULL, 0, 0, 0 };
+        printf("requesting restart through the relay (recovery only)\n");
+        fflush(stdout);
+        (void)rpc(fd, AARCH64_NR_REBOOT, args, 0, resp);
+        printf("restart requested; the connection may close before a reply\n");
+        close(fd);
+        return 0;
+    }
+
     if (strcmp(mode, "readfile") == 0 && path != NULL) {
         int64_t fdv;
         uint8_t reqbuf[REQ_LEN];
@@ -381,7 +396,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    fprintf(stderr, "unknown mode '%s' (use: connect [sock] | getuid [sock] | readfile <path> [sock] | listen <sock>)\n", mode);
+    fprintf(stderr, "unknown mode '%s' (use: connect [sock] | getuid [sock] | readfile <path> [sock] | listen <sock> | reboot)\n", mode);
     close(fd);
     return 5;
 }

@@ -7,8 +7,14 @@ instead of an assumption:
 > init-domain relay that listens on the abstract unix socket `@dfi_init`?
 
 It connects, optionally issues one tiny RPC, prints the errno, and stops.
-It does not patch anything, does not load shellcode, does not write to the
-relay beyond one request frame, and does not escalate privilege by itself.
+It does not patch anything, does not load shellcode, and does not write to the
+relay beyond one request frame. It runs from the shell domain only; the app
+domain is measured separately by the app's own Diagnostics probe.
+
+`reboot` is a recovery escape hatch, not a feature. The relay's design leaves
+the init property thread unusable, so a normal `adb reboot` can hang; the
+relay's own rack of raw syscalls is then the only software way to clear it. Use
+it once, then reboot normally and verify the relay is gone.
 
 ## Build
 
@@ -56,6 +62,7 @@ measured under `runas_app` is strong evidence but not proof for
 | `getuid [sock]` | connect, ask the relay for `getuid()`, print the raw return |
 | `readfile <path> [sock]` | connect, `openat` + `read` the path through the relay |
 | `listen <sock>` | bind an abstract socket and accept one connection (calibration target) |
+| `reboot` | **recovery only**: ask the relay to execute `reboot(2)` when the property service is already wedged. Not used by the app; it does not make the relay safe. |
 
 ### Calibration
 
