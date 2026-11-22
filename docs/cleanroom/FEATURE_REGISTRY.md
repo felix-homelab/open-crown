@@ -20,10 +20,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 4 |
-| implemented_unverified | 28 |
+| implemented_unverified | 29 |
 | blocked | 32 |
 | out_of_scope | 0 |
-| unimplemented | 162 |
+| unimplemented | 161 |
 | **total** | **226** |
 
 ## By category
@@ -33,7 +33,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Foundation | 3 | 19 | 3 | 0 | 16 | 41 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
-| Notifications & communication | 1 | 0 | 1 | 0 | 19 | 21 |
+| Notifications & communication | 1 | 1 | 1 | 0 | 18 | 21 |
 | Media & remote | 0 | 0 | 1 | 0 | 10 | 11 |
 | Watch faces & personalization | 0 | 0 | 1 | 0 | 16 | 17 |
 | Time & built-in apps | 0 | 0 | 1 | 0 | 14 | 15 |
@@ -138,7 +138,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | notifications.reply | Inline replies | unimplemented |  | 4 |
 | notifications.attachments | Notification attachments | unimplemented |  | 4 |
 | notifications.sounds | Notification sounds and haptics | unimplemented |  | 4 |
-| notifications.per-app | Per-app notification settings | unimplemented |  | 4 |
+| notifications.per-app | Per-app notification settings | implemented_unverified |  | 4 |
 | notifications.clear-sync | Dismissal synchronisation | unimplemented |  | 4 |
 | comm.calls-incoming | Incoming call relay | unimplemented |  | 5 |
 | comm.calls-outgoing | Outgoing call relay | unimplemented |  | 5 |

@@ -83,4 +83,8 @@ object NotificationIngress {
     fun clear() {
         _items.value = emptyList()
     }
+
+    fun removePackage(packageName: String) {
+        _items.update { current -> current.filterNot { it.packageName == packageName } }
+    }
 }

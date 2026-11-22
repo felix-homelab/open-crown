@@ -1316,14 +1316,20 @@
       "category": "Notifications & communication",
       "title": "Per-app notification settings",
       "iphone_behavior": "The iPhone lets the user choose which apps mirror and whether alerts are delivered quietly.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 4,
-      "implementation": [],
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/notifications/NotificationPolicy.kt",
+        "app/src/main/kotlin/org/opencrown/app/notifications/CrownNotificationListener.kt",
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/FeatureScreens.kt"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/evidence/a52-notification-policy.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Local per-app capture mute/unmute verified on the A52. Watch mirroring and quiet-delivery policy remain blocked by the missing transport."
     },
     {
       "id": "notifications.clear-sync",

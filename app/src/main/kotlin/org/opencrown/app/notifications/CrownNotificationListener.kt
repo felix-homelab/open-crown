@@ -15,6 +15,8 @@ class CrownNotificationListener : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val status = sbn ?: return
         if (status.packageName == packageName) return
+        val graph = (application as? org.opencrown.app.OpenCrownApplication)?.graph ?: return
+        if (!graph.notificationPolicy.isCaptureEnabled(status.packageName)) return
         val notification = status.notification ?: return
         val extras = notification.extras
         val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString()

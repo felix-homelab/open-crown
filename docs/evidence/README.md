@@ -18,6 +18,7 @@ attachments: capture hash, screenshots, logs (redacted)
 | 2026-11-22 | pass (privacy) | [A52 privacy screen: local data and permissions](a52-privacy-screen.md) |
 | 2026-11-22 | pass (recovery) | [A52 recovery: app reinstall](a52-recovery-reinstall.md) |
 | 2026-11-22 | pass (build) | [A52 minified release with UniFFI](a52-release-build.md) |
+| 2026-11-22 | pass (local policy) | [A52 notifications: per-app mute/unmute](a52-notification-policy.md) |
 | 2026-11-22 | pass (local ingress) | [A52 notifications: captured locally, not delivered](a52-notification-ingress.md) |
 | 2026-11-22 | pass (architecture) | [A52 UniFFI: Rust core loaded](a52-uniffi-core.md) |
 | 2026-11-22 | pass (visual) | [A52 design: light appearance and 1.3x text](a52-design-system.md) |

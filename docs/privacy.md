@@ -52,6 +52,8 @@ the app in this build.
 - Revoke Nearby devices in Android app settings.
 - Clear captured notifications from the Notifications screen; content is
   memory-only.
+- Mute individual apps on the Notifications screen; muting removes that app's
+  captured rows and suppresses new ones.
 - Clear all app data or uninstall to remove onboarding and sealed records.
 - There is no selective pair-record deletion yet because unpair is not
   implemented.

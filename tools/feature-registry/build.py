@@ -352,7 +352,10 @@ A(f("notifications.sounds", "Notifications & communication", "Notification sound
     "unimplemented", 4, evidence=["docs/cleanroom/spec/06-notifications.md"]))
 A(f("notifications.per-app", "Notifications & communication", "Per-app notification settings",
     "The iPhone lets the user choose which apps mirror and whether alerts are delivered quietly.",
-    "unimplemented", 4))
+    "implemented_unverified", 4,
+    impl=["app/src/main/kotlin/org/opencrown/app/notifications/NotificationPolicy.kt", "app/src/main/kotlin/org/opencrown/app/notifications/CrownNotificationListener.kt", "app/src/main/kotlin/org/opencrown/app/ui/screens/FeatureScreens.kt"],
+    evidence=["docs/evidence/a52-notification-policy.md"],
+    notes="Local per-app capture mute/unmute verified on the A52. Watch mirroring and quiet-delivery policy remain blocked by the missing transport."))
 A(f("notifications.clear-sync", "Notifications & communication", "Dismissal synchronisation",
     "Clearing a notification on one device clears the other.",
     "unimplemented", 4))

@@ -5,7 +5,7 @@ As of 2026-11-22 (private research build).
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
 is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 226 rows, 4 verified,
-28 built-but-unverified, 32 blocked, 162 not built. The three verified rows are
+29 built-but-unverified, 32 blocked, 161 not built. The three verified rows are
 narrow and do not imply pairing: unprivileged Apple-advertisement observation,
 the Kotlin↔Rust UniFFI seam, and local notification ingress. No watch-scoped
 capability is verified.
@@ -19,6 +19,7 @@ capability is verified.
 | Observation model | Every watch value is `Observation<T>` with origin, verification, time, pair/epoch and unavailable reason | `model/Observation.kt`, unit tests |
 | Rust core seam | Generated UniFFI binding, arm64 library packaged with JNA; Diagnostics renders protocol revision and core rules from Rust | [evidence](evidence/a52-uniffi-core.md) |
 | Notification ingress | Android listener captures sanitised, memory-only notification content; no delivery exists | [evidence](evidence/a52-notification-ingress.md) |
+| Notification policy | Per-app mute/unmute controls local capture; verified on the A52 | [evidence](evidence/a52-notification-policy.md) |
 | Notification claims | Revision-bound actions/replies, tombstones and no-retry outcomes in the Rust core | `core/src/notifications.rs`, host tests |
 | Write confirmation | ACK is not applied; only a matching epoch/target/value observation is | `core/src/write.rs`, host tests |
 | Pairing rules | PIN/optical exclusivity, bounded PIN attempts, downgrade/MAC refusal, bond ordering, replacement safety | `core/src/pairing.rs`, host tests |

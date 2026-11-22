@@ -126,4 +126,5 @@ class AppGraph(context: Context) {
         org.opencrown.ffi.DiscoveryBridge(core.rules?.discoveryTtlMs ?: 10_000UL)
     }.getOrNull()
     val discovery = BleDiscoveryRepository(context, discoveryCore)
+    val notificationPolicy = org.opencrown.app.notifications.NotificationPolicy(context)
 }

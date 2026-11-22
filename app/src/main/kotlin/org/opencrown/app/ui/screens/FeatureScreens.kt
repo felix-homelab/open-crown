@@ -39,6 +39,7 @@ import org.opencrown.app.model.CrownSnapshot
 import org.opencrown.app.model.Observation
 import org.opencrown.app.notifications.CapturedNotification
 import org.opencrown.app.notifications.NotificationIngress
+import org.opencrown.app.notifications.NotificationPolicy
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -55,6 +56,7 @@ import org.opencrown.app.ui.components.CrownScaffold
 import org.opencrown.app.ui.components.CrownSectionHeader
 import org.opencrown.app.ui.components.CrownSheet
 import org.opencrown.app.ui.components.CrownStatusPill
+import org.opencrown.app.ui.components.CrownSwitchRow
 import org.opencrown.app.ui.components.CrownTone
 import org.opencrown.app.ui.components.CrownValueRow
 import org.opencrown.app.ui.navigation.Destination
@@ -163,7 +165,9 @@ fun NotificationsScreen(
 ) {
     val context = LocalContext.current
     val rows = registry?.rows?.filter { it.id.startsWith("notifications.") } ?: emptyList()
+    val policy = remember { NotificationPolicy(context) }
     var access by remember { mutableStateOf(hasNotificationAccess(context)) }
+    var muted by remember { mutableStateOf(policy.mutedPackages()) }
     val captured by NotificationIngress.items.collectAsState()
     val lifecycleOwner = context as? LifecycleOwner
     DisposableEffect(lifecycleOwner, context) {
@@ -226,6 +230,37 @@ fun NotificationsScreen(
                         onClick = { NotificationIngress.clear() },
                         style = CrownButtonStyle.PLAIN,
                     )
+                }
+            }
+        }
+        if (access) {
+            val apps = (
+                captured.map { it.packageName to (it.appLabel ?: it.packageName) } +
+                    muted.map { it to it }
+                ).distinctBy { it.first }
+            if (apps.isNotEmpty()) {
+                item(key = "apps-header") {
+                    Spacer(Modifier.height(24.dp))
+                    CrownSectionHeader("Apps")
+                }
+                item(key = "apps") {
+                    CrownInsetGroup(
+                        footer = "Muting stops new captures immediately and removes that app's captured rows from memory. It does not affect watch delivery, which does not exist in this build.",
+                    ) {
+                        apps.forEachIndexed { index, (packageName, label) ->
+                            CrownSwitchRow(
+                                title = label,
+                                subtitle = if (packageName in muted) "Muted · " + packageName else "Capturing",
+                                checked = packageName !in muted,
+                                onCheckedChange = { enabled ->
+                                    policy.setMuted(packageName, !enabled)
+                                    muted = policy.mutedPackages()
+                                    if (!enabled) NotificationIngress.removePackage(packageName)
+                                },
+                                showDivider = index != apps.lastIndex,
+                            )
+                        }
+                    }
                 }
             }
         }
