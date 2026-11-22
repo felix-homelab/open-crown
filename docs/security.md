@@ -40,8 +40,13 @@ The in-tree page-cache chain is **quarantined research code**:
 - It is consent-gated in Diagnostics and is not run automatically.
 - It yields an unauthenticated init-domain raw-syscall relay that the app cannot
   reach; the relay also destabilises the phone.
-- It is not part of the clean-room product and must not ship in a release until
-  the provenance finding and K2a are resolved.
+- It is not part of the clean-room product. Release builds disable the CMake
+  target and package the payload only in debug assets; the release was
+  inspected on the A52 and contains neither. The Kotlin class and consent UI
+  remain compiled but are gated by BuildConfig and cannot execute without the
+  native library and payload.
+- The provenance finding and K2a still must be resolved before the research
+  chain can be treated as anything other than quarantined.
 
 ## 4. Supply chain
 

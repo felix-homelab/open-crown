@@ -873,9 +873,10 @@ A(f("ops.recovery-drill", "Operations & quality", "Recovery drill",
     notes="App reinstall and reboot tested on the A52: onboarding reset, listener access absent, core loads. Watch unpair/reset and populated-store recovery are not testable without a Watch."))
 A(f("ops.release-build", "Operations & quality", "Release build and install path",
     "The iPhone app ships through the App Store; Open Crown ships an APK with reproducible checks.",
-    "implemented_unverified", 6, impl=["app/proguard-rules.pro"],
-    evidence=["docs/evidence/a52-release-build.md"],
-    notes="R8 minified release builds and loads UniFFI on the A52 when debug-signed for the bench. Production signing, reproducibility and distribution are not verified."))
+    "implemented_unverified", 6,
+    impl=["app/proguard-rules.pro", "app/build.gradle.kts", "app/src/main/cpp/CMakeLists.txt", "app/src/main/kotlin/org/opencrown/app/root/PageCacheRelayChain.kt"],
+    evidence=["docs/evidence/a52-release-build.md", "docs/evidence/a52-release-no-relay.md"],
+    notes="R8 release starts and loads UniFFI on the A52 when bench-signed. The release omits the quarantined relay library and payload asset; debug keeps them. Production signing, reproducibility, SBOM and distribution are not verified."))
 A(f("ops.negative-tests", "Operations & quality", "Fuzz and negative tests",
     "Not user-visible; required for protocol robustness.",
     "unimplemented", 6))

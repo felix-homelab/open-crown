@@ -43,6 +43,7 @@ tools/broker-probe/probe
 app/src/main/jniLibs/
 # Assets copied from catalog/ by the syncCatalogAssets task
 app/src/main/assets/
+app/src/debug/assets/
 
 # Local toolchains (installed inside the repo to stay sandbox-legal)
 .toolchain/

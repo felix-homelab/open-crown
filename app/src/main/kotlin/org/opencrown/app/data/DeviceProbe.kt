@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.LocalSocket
 import android.net.LocalSocketAddress
 import android.os.Build
+import org.opencrown.app.BuildConfig
 import android.provider.Settings
 import android.system.ErrnoException
 import android.system.Os
@@ -168,6 +169,14 @@ object RelayMarkerProbe {
 object PayloadProbe {
     fun probe(context: Context): Observation<String> {
         val now = System.currentTimeMillis()
+        if (!BuildConfig.PRIVILEGED_CHAIN) {
+            return Observation.absent(
+                reason = AvailabilityReason.UNSUPPORTED,
+                detail = "The quarantined privileged payload is not included in this build.",
+                origin = DataOrigin.LOCAL_STORE,
+                nowMillis = now,
+            )
+        }
         val manifest = runCatching { PayloadManifest.load(context) }.getOrElse {
             return Observation.absent(
                 reason = AvailabilityReason.ERROR,

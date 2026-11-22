@@ -15,7 +15,7 @@ data class CheckpointRow(
     val detail: String,
 )
 
-enum class CheckpointState { DONE, ACTIVE, PENDING, BLOCKED, FAILED }
+enum class CheckpointState { DONE, ACTIVE, PENDING, NOT_INCLUDED, BLOCKED, FAILED }
 
 /** A quick action on Home; disabled actions must carry a reason. */
 data class QuickAction(
@@ -91,8 +91,14 @@ object ShellState {
             ),
             CheckpointRow(
                 id = "payload",
-                title = "Payload profile matched",
+                title = if ((priv.payloadCompatible as? Observation.Absent)?.detail?.contains("not included in this build") == true) {
+                    "Payload profile"
+                } else {
+                    "Payload profile matched"
+                },
                 state = when {
+                    (priv.payloadCompatible as? Observation.Absent)?.detail?.contains("not included in this build") == true ->
+                        CheckpointState.NOT_INCLUDED
                     priv.payloadCompatible.valueOrNull == null -> CheckpointState.BLOCKED
                     priv.payloadCompatible.provenance.verification == org.opencrown.app.model.Verification.CONFIRMED -> CheckpointState.DONE
                     else -> CheckpointState.PENDING

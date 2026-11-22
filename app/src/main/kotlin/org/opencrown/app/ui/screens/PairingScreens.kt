@@ -392,7 +392,7 @@ private fun SetupCheckpointRow(checkpoint: CheckpointRow, showDivider: Boolean) 
     val tone = when (checkpoint.state) {
         CheckpointState.DONE -> CrownTone.SUCCESS
         CheckpointState.ACTIVE -> CrownTone.INFO
-        CheckpointState.PENDING -> CrownTone.NEUTRAL
+        CheckpointState.PENDING, CheckpointState.NOT_INCLUDED -> CrownTone.NEUTRAL
         CheckpointState.BLOCKED, CheckpointState.FAILED -> CrownTone.CRITICAL
     }
     CrownRow(
@@ -405,6 +405,7 @@ private fun SetupCheckpointRow(checkpoint: CheckpointRow, showDivider: Boolean) 
                     CheckpointState.DONE -> "Done"
                     CheckpointState.ACTIVE -> "Active"
                     CheckpointState.PENDING -> "Waiting"
+                    CheckpointState.NOT_INCLUDED -> "Not included"
                     CheckpointState.BLOCKED -> "Blocked"
                     CheckpointState.FAILED -> "Failed"
                 },

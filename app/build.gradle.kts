@@ -27,7 +27,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "PRIVILEGED_CHAIN", "true")
+            // Research-only privileged chain. Never enabled for release.
+            externalNativeBuild {
+                cmake {
+                    arguments += "-DOPEN_CROWN_BUILD_RELAY=ON"
+                }
+            }
+        }
         release {
+            buildConfigField("boolean", "PRIVILEGED_CHAIN", "false")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -43,6 +53,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     // UniFFI Kotlin bindings are generated from the Rust surface and committed.
@@ -70,7 +81,8 @@ val syncPayloadAssets = tasks.register<Copy>("syncPayloadAssets") {
     from(rootProject.file("payloads")) {
         include("org.opencrown.payload.pagecache-relay/**")
     }
-    into(layout.projectDirectory.dir("src/main/assets/payloads"))
+    // Debug-only: the quarantined payload must not be packaged in release.
+    into(layout.projectDirectory.dir("src/debug/assets/payloads"))
 }
 
 // The registry is authored in docs/ and validated by its generator. Copying it

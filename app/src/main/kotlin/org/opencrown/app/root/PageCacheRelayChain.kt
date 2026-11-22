@@ -42,6 +42,10 @@ class PageCacheRelayChain(private val context: Context) {
 
     fun run(payload: ByteArray, listener: Listener): Boolean {
         this.listener = listener
+        if (!ensureNativeLoaded()) {
+            listener.onLog("The privileged relay is not included in this build.")
+            return false
+        }
         synchronized(RUN_LOCK) {
             var ipsec: IpSecManager? = null
             var spi: IpSecManager.SecurityParameterIndex? = null
@@ -119,9 +123,17 @@ class PageCacheRelayChain(private val context: Context) {
         private val AES_CBC_KEY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345".toByteArray(Charsets.US_ASCII)
         private val HMAC_SHA256_KEY = "HMACKEY_FOR_DIRTYINIT_CBC_MODE!!".toByteArray(Charsets.US_ASCII)
         private val RUN_LOCK = Any()
+    }
 
-        init {
-            System.loadLibrary("pagecache_relay")
+    @Volatile
+    private var nativeLoaded = false
+
+    private fun ensureNativeLoaded(): Boolean {
+        if (nativeLoaded) return true
+        synchronized(RUN_LOCK) {
+            if (nativeLoaded) return true
+            nativeLoaded = runCatching { System.loadLibrary("pagecache_relay") }.isSuccess
+            return nativeLoaded
         }
     }
 }

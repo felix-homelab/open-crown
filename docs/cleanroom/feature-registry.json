@@ -3663,14 +3663,18 @@
       "blocker": null,
       "phase": 6,
       "implementation": [
-        "app/proguard-rules.pro"
+        "app/proguard-rules.pro",
+        "app/build.gradle.kts",
+        "app/src/main/cpp/CMakeLists.txt",
+        "app/src/main/kotlin/org/opencrown/app/root/PageCacheRelayChain.kt"
       ],
       "tests": [],
       "evidence": [
-        "docs/evidence/a52-release-build.md"
+        "docs/evidence/a52-release-build.md",
+        "docs/evidence/a52-release-no-relay.md"
       ],
       "physical_verified": false,
-      "notes": "R8 minified release builds and loads UniFFI on the A52 when debug-signed for the bench. Production signing, reproducibility and distribution are not verified."
+      "notes": "R8 release starts and loads UniFFI on the A52 when bench-signed. The release omits the quarantined relay library and payload asset; debug keeps them. Production signing, reproducibility, SBOM and distribution are not verified."
     },
     {
       "id": "ops.negative-tests",

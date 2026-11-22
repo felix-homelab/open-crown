@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.opencrown.app.data.AppSecurityProbe
 import org.opencrown.app.data.ChainState
+import org.opencrown.app.BuildConfig
 import org.opencrown.app.data.CoreStatus
 import org.opencrown.app.diagnostics.DiagnosticsExporter
 import org.opencrown.app.data.FeatureRegistry
@@ -223,16 +224,24 @@ private fun LazyListScope.diagnosticsItems(
             )
         }
         Spacer(Modifier.height(12.dp))
-        CrownButton(
-            text = when (chainState) {
-                ChainState.Running -> "Preparing\u2026"
-                ChainState.Patched -> "Re-run for this boot"
-                else -> "Prepare this boot\u2026"
-            },
-            onClick = onPrepareBoot,
-            enabled = chainState != ChainState.Running,
-            style = CrownButtonStyle.TINTED,
-        )
+        if (BuildConfig.PRIVILEGED_CHAIN) {
+            CrownButton(
+                text = when (chainState) {
+                    ChainState.Running -> "Preparing\u2026"
+                    ChainState.Patched -> "Re-run for this boot"
+                    else -> "Prepare this boot\u2026"
+                },
+                onClick = onPrepareBoot,
+                enabled = chainState != ChainState.Running,
+                style = CrownButtonStyle.TINTED,
+            )
+        } else {
+            CrownNote(
+                title = "Privileged chain not included",
+                message = "This release artifact deliberately omits the quarantined payload and relay library. Debug builds carry them for research only.",
+                tone = CrownTone.NEUTRAL,
+            )
+        }
     }
     item(key = "device-header") {
         Spacer(Modifier.height(24.dp))

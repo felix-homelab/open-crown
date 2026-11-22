@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import org.opencrown.app.BuildConfig
 import org.opencrown.app.payload.Compatibility
 import org.opencrown.app.payload.PayloadManifest
 import org.opencrown.app.root.PageCacheRelayChain
@@ -38,6 +39,10 @@ class ChainController(
     val state: StateFlow<ChainState> = _state.asStateFlow()
 
     suspend fun run() {
+        if (!BuildConfig.PRIVILEGED_CHAIN) {
+            _state.value = ChainState.Unavailable("The privileged chain is not included in this build.")
+            return
+        }
         if (_state.value == ChainState.Running) return
         _state.value = ChainState.Running
         withContext(Dispatchers.IO) {

@@ -251,6 +251,7 @@ private fun CheckpointRowView(checkpoint: CheckpointRow, showDivider: Boolean) {
         CheckpointState.DONE -> "Done" to CrownTone.SUCCESS
         CheckpointState.ACTIVE -> "In progress" to CrownTone.INFO
         CheckpointState.PENDING -> "Waiting" to CrownTone.NEUTRAL
+        CheckpointState.NOT_INCLUDED -> "Not included" to CrownTone.NEUTRAL
         CheckpointState.BLOCKED -> "Blocked" to CrownTone.CRITICAL
         CheckpointState.FAILED -> "Failed" to CrownTone.CRITICAL
     }
