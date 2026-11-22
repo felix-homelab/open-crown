@@ -478,7 +478,11 @@ mod tests {
             std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../catalog/payload-index.json");
         let bytes = std::fs::read(path).unwrap();
         let index = PayloadIndex::parse(&bytes).unwrap();
-        assert_eq!(index.payloads().len(), 4);
+        // The committed index currently contains no payloads: the external
+        // bundles were removed and the in-tree A52 chain is not an indexed
+        // bundle (ADR 0014). The invariant below is the one that matters: no
+        // committed target may ever match the A52.
+        assert!(!index.sources().is_empty());
         let a52 = crate::matcher::DeviceFingerprint {
             model: "SM-A528B".into(),
             kernel_release: "5.4.254-qgki-28575149-abA528BXXSBGYI3".into(),

@@ -37,6 +37,7 @@ __pycache__/
 
 # Built probe binaries
 tools/hci-echo/hci-echo
+tools/broker-probe/probe
 
 # Cross-compiled native library (build artifact)
 app/src/main/jniLibs/
@@ -54,3 +55,6 @@ app/src/main/assets/
 
 # Android CMake/NDK build cache
 .cxx/
+
+# Quarantined reference checkout: Lane A/C only, never a build input.
+reference/

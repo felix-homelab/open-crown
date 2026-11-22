@@ -22,6 +22,7 @@ SKIP_DIRS = {
     "build",
     "target",
     "node_modules",
+    "reference",
 }
 
 

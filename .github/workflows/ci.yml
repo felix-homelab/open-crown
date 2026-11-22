@@ -44,14 +44,16 @@ jobs:
       - run: PYTHONPATH=tools/lib python -m unittest discover -s tools/tests -v
       - name: Verify the committed example bundle
         run: python catalog/tooling/verify.py catalog/examples/signed
-      - name: Verify the external futex-timer bundle
-        run: python catalog/tooling/verify.py payloads/external/org.opencrown.payload.futex-timer
       - name: Validate the supported-device list
         run: python catalog/tooling/devices.py validate --list catalog/supported-devices.json
       - name: Validate the payload index
         run: python catalog/tooling/payload_index.py validate --index catalog/payload-index.json
       - name: Check Markdown links
         run: python tools/link-check/cli.py .
+      - name: Validate the feature registry
+        run: python tools/feature-registry/build.py --check
+      - name: Enforce the clean-room reference boundary
+        run: python tools/cleanroom/check-boundary.py
 
   android:
     name: Android
