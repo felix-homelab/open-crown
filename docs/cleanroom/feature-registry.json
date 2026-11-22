@@ -487,6 +487,24 @@
       "notes": "Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."
     },
     {
+      "id": "foundation.notification-claims",
+      "category": "Foundation",
+      "title": "Notification claim journal rules",
+      "iphone_behavior": "The iPhone applies a Watch action only to the exact notification revision it came from, and never twice.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [
+        "core/src/notifications.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/06-notifications.md"
+      ],
+      "physical_verified": false,
+      "notes": "Revision-bound actions and replies, tombstone non-resurrection, terminal no-retry outcomes and 4 KiB content bound; bulletin encoding remains UNKNOWN."
+    },
+    {
       "id": "foundation.setup-rules",
       "category": "Foundation",
       "title": "Provisioning checkpoints and completion rules",

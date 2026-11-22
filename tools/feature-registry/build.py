@@ -161,6 +161,11 @@ A(f("foundation.faces-delta-rules", "Foundation", "Face mutation and read-back r
     "implemented_unverified", 4, impl=["core/src/faces/mod.rs"],
     evidence=["docs/cleanroom/spec/05-faces.md"],
     notes="Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."))
+A(f("foundation.notification-claims", "Foundation", "Notification claim journal rules",
+    "The iPhone applies a Watch action only to the exact notification revision it came from, and never twice.",
+    "implemented_unverified", 4, impl=["core/src/notifications.rs"],
+    evidence=["docs/cleanroom/spec/06-notifications.md"],
+    notes="Revision-bound actions and replies, tombstone non-resurrection, terminal no-retry outcomes and 4 KiB content bound; bulletin encoding remains UNKNOWN."))
 A(f("foundation.setup-rules", "Foundation", "Provisioning checkpoints and completion rules",
     "The iPhone reaches setup completion through activation, PairedSync and either a strict native barrier or an explicitly recorded owner confirmation.",
     "implemented_unverified", 3, impl=["core/src/setup/mod.rs"],
