@@ -20,17 +20,17 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 3 |
-| implemented_unverified | 16 |
+| implemented_unverified | 17 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 169 |
-| **total** | **220** |
+| **total** | **221** |
 
 ## By category
 
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Foundation | 2 | 13 | 3 | 0 | 17 | 35 |
+| Foundation | 2 | 14 | 3 | 0 | 17 | 36 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 1 | 0 | 1 | 0 | 19 | 21 |
@@ -72,6 +72,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | foundation.networkrelay | NetworkRelay / ESP / IPsec | unimplemented |  | 3 |
 | foundation.ids | IDS application session | unimplemented |  | 3 |
 | foundation.faces-delta-rules | Face mutation and read-back rules | implemented_unverified |  | 4 |
+| foundation.write-confirmation | Write-then-observe confirmation | implemented_unverified |  | 1 |
 | foundation.notification-claims | Notification claim journal rules | implemented_unverified |  | 4 |
 | foundation.setup-rules | Provisioning checkpoints and completion rules | implemented_unverified |  | 3 |
 | foundation.ids-session-rules | IDS route, epoch and reconnect rules | implemented_unverified |  | 3 |

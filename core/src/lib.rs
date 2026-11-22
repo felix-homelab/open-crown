@@ -23,6 +23,7 @@ pub mod setup;
 pub mod telephony;
 pub mod transport;
 pub mod wifi;
+pub mod write;
 
 /// Protocol revision this build understands.
 ///

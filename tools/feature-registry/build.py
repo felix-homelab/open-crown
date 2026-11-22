@@ -161,6 +161,11 @@ A(f("foundation.faces-delta-rules", "Foundation", "Face mutation and read-back r
     "implemented_unverified", 4, impl=["core/src/faces/mod.rs"],
     evidence=["docs/cleanroom/spec/05-faces.md"],
     notes="Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."))
+A(f("foundation.write-confirmation", "Foundation", "Write-then-observe confirmation",
+    "The iPhone shows a setting as changed only after the Watch reports the new value.",
+    "implemented_unverified", 1, impl=["core/src/write.rs"],
+    evidence=["docs/design/state-model.md"],
+    notes="Queued, sent, acknowledged, observed; stale epoch/target dropped, mismatch failed, timeout expired. ACK never applies. Host tests only."))
 A(f("foundation.notification-claims", "Foundation", "Notification claim journal rules",
     "The iPhone applies a Watch action only to the exact notification revision it came from, and never twice.",
     "implemented_unverified", 4, impl=["core/src/notifications.rs"],

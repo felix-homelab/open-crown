@@ -30,6 +30,7 @@ unauditable.
 | Provisioning rules | [spec/03-activation-setup.md](cleanroom/spec/03-activation-setup.md) | none (payloads UNKNOWN; no capture) | Lane A spec; reference phase/checkpoint vocabulary as an inventory | phase projection, checkpoint ordinals, dual completion routes | none | lead, 2026-11-22 |
 | Face delta and read-back rules | [spec/05-faces.md](cleanroom/spec/05-faces.md) | none (encoding UNKNOWN; no capture) | Lane A spec; reference operation/limit inventory | staged delta, read-back confirmation, package bounds | none | lead, 2026-11-22 |
 | Notification claim rules | [spec/06-notifications.md](cleanroom/spec/06-notifications.md) | none (bulletin encoding UNKNOWN; no capture) | Lane A spec; reference claim-rule inventory | revision binding, commit-before-effect, at-most-once | none | lead, 2026-11-22 |
+| Write confirmation | [docs/design/state-model.md](design/state-model.md) | none (no wire change; policy model) | own observation rules; Android/agent lifecycle | command lifecycle and no-promotion rule | none | lead, 2026-11-22 |
 
 ## Attestation
 

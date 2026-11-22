@@ -491,6 +491,24 @@
       "notes": "Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."
     },
     {
+      "id": "foundation.write-confirmation",
+      "category": "Foundation",
+      "title": "Write-then-observe confirmation",
+      "iphone_behavior": "The iPhone shows a setting as changed only after the Watch reports the new value.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [
+        "core/src/write.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/design/state-model.md"
+      ],
+      "physical_verified": false,
+      "notes": "Queued, sent, acknowledged, observed; stale epoch/target dropped, mismatch failed, timeout expired. ACK never applies. Host tests only."
+    },
+    {
       "id": "foundation.notification-claims",
       "category": "Foundation",
       "title": "Notification claim journal rules",
