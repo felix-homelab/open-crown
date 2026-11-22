@@ -130,8 +130,8 @@ A(f("foundation.ble-observation", "Foundation", "Unprivileged BLE observation",
     "The iPhone scans for nearby Apple advertisements; an observation alone is never a pairing candidate.",
     "verified", 2,
     impl=["app/src/main/kotlin/org/opencrown/app/data/BleDiscoveryRepository.kt", "app/src/main/kotlin/org/opencrown/app/ui/screens/PairingScreens.kt"],
-    evidence=["docs/evidence/a52-discovery.md"],
-    notes="Verified on SM-A528B: five Apple advertisements listed, all Not selectable. Does not verify Watch detection or FE25 decode."))
+    evidence=["docs/evidence/a52-discovery.md", "docs/evidence/a52-release-discovery.md"],
+    notes="Verified on SM-A528B in debug and in the release artifact: Apple advertisements listed, all Not selectable. Does not verify Watch detection or FE25 decode."))
 A(f("foundation.discovery-lifecycle", "Foundation", "Discovery inventory and selection rules",
     "The iPhone bounds its candidate list, expires stale watches and rechecks a selection before connecting.",
     "implemented_unverified", 2, impl=["core/src/discovery/mod.rs", "ffi/src/lib.rs", "app/src/main/kotlin/org/opencrown/app/data/BleDiscoveryRepository.kt"],

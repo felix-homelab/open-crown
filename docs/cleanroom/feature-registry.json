@@ -350,10 +350,11 @@
       ],
       "tests": [],
       "evidence": [
-        "docs/evidence/a52-discovery.md"
+        "docs/evidence/a52-discovery.md",
+        "docs/evidence/a52-release-discovery.md"
       ],
       "physical_verified": true,
-      "notes": "Verified on SM-A528B: five Apple advertisements listed, all Not selectable. Does not verify Watch detection or FE25 decode."
+      "notes": "Verified on SM-A528B in debug and in the release artifact: Apple advertisements listed, all Not selectable. Does not verify Watch detection or FE25 decode."
     },
     {
       "id": "foundation.discovery-lifecycle",

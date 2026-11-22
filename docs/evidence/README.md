@@ -22,6 +22,7 @@ attachments: capture hash, screenshots, logs (redacted)
 | 2026-11-22 | pass (update) | [A52 update path: state preserved](a52-update-path.md) |
 | 2026-11-22 | pass (recovery) | [A52 recovery: app reinstall](a52-recovery-reinstall.md) |
 | 2026-11-22 | pass (release) | [A52 release excludes the privileged relay](a52-release-no-relay.md) |
+| 2026-11-22 | pass (release discovery) | [A52 release observes Apple advertisements only](a52-release-discovery.md) |
 | 2026-11-22 | pass (build) | [A52 minified release with UniFFI](a52-release-build.md) |
 | 2026-11-22 | pass (local policy) | [A52 notifications: per-app mute/unmute](a52-notification-policy.md) |
 | 2026-11-22 | pass (local ingress) | [A52 notifications: captured locally, not delivered](a52-notification-ingress.md) |
