@@ -258,7 +258,10 @@ A(f("lifecycle.first-run", "Onboarding & lifecycle", "First-run state restoratio
     "unimplemented", 1))
 A(f("lifecycle.reset-app", "Onboarding & lifecycle", "Local reset and re-onboarding",
     "The iPhone can forget a watch and return to the pairing flow.",
-    "unimplemented", 6))
+    "implemented_unverified", 6,
+    impl=["app/src/main/kotlin/org/opencrown/app/data/CrownRepository.kt", "app/src/main/kotlin/org/opencrown/app/ui/screens/FeatureScreens.kt"],
+    evidence=["docs/evidence/a52-local-data-reset.md"],
+    notes="Local erase verified on the A52: onboarding, notification buffer, policy and export cache cleared, Welcome returned. A pair record refuses erasure so a watch cannot be orphaned; that branch is untested without a watch."))
 
 # --------------------------------------------------------------- Pairing & setup
 A(f("pair.discovery", "Pairing & setup", "Discover a pairable Watch",

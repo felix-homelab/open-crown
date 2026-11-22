@@ -895,14 +895,19 @@
       "category": "Onboarding & lifecycle",
       "title": "Local reset and re-onboarding",
       "iphone_behavior": "The iPhone can forget a watch and return to the pairing flow.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 6,
-      "implementation": [],
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/data/CrownRepository.kt",
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/FeatureScreens.kt"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/evidence/a52-local-data-reset.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Local erase verified on the A52: onboarding, notification buffer, policy and export cache cleared, Welcome returned. A pair record refuses erasure so a watch cannot be orphaned; that branch is untested without a watch."
     },
     {
       "id": "pair.discovery",

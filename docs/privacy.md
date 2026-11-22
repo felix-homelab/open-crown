@@ -54,6 +54,9 @@ the app in this build.
   memory-only.
 - Mute individual apps on the Notifications screen; muting removes that app's
   captured rows and suppresses new ones.
+- Erase local app data in Settings -> Data. It clears onboarding, captured
+  notifications, the per-app policy and exported reports; it does not revoke
+  system notification access or unpair a watch.
 - Clear all app data or uninstall to remove onboarding and sealed records.
 - There is no selective pair-record deletion yet because unpair is not
   implemented.

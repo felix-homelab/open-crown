@@ -116,6 +116,7 @@ class CrownRepository(
 
 /** Process-wide graph. Deliberately small; no service locator framework. */
 class AppGraph(context: Context) {
+    private val appContext = context.applicationContext
     val pairStore: PairRecordStore = KeystorePairRecordStore(context)
     val crown = CrownRepository(context, pairStore)
     val chain = ChainController(context)
@@ -127,4 +128,19 @@ class AppGraph(context: Context) {
     }.getOrNull()
     val discovery = BleDiscoveryRepository(context, discoveryCore)
     val notificationPolicy = org.opencrown.app.notifications.NotificationPolicy(context)
+
+    /**
+     * Erases only app-local state. Refuses when a pairing record exists so the
+     * phone cannot silently orphan a watch that still trusts it.
+     */
+    fun clearLocalData(): Boolean {
+        val records = runCatching { pairStore.load() }.getOrDefault(emptyList())
+        if (records.isNotEmpty()) return false
+        pairStore.clear()
+        onboarding.reset()
+        notificationPolicy.clear()
+        org.opencrown.app.notifications.NotificationIngress.clear()
+        appContext.cacheDir.resolve("diagnostics").deleteRecursively()
+        return true
+    }
 }

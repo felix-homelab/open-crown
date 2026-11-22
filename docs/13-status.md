@@ -5,7 +5,7 @@ As of 2026-11-22 (private research build).
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
 is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 226 rows, 4 verified,
-29 built-but-unverified, 32 blocked, 161 not built. The three verified rows are
+30 built-but-unverified, 32 blocked, 160 not built. The three verified rows are
 narrow and do not imply pairing: unprivileged Apple-advertisement observation,
 the Kotlin↔Rust UniFFI seam, and local notification ingress. No watch-scoped
 capability is verified.
@@ -24,6 +24,7 @@ capability is verified.
 | Write confirmation | ACK is not applied; only a matching epoch/target/value observation is | `core/src/write.rs`, host tests |
 | Pairing rules | PIN/optical exclusivity, bounded PIN attempts, downgrade/MAC refusal, bond ordering, replacement safety | `core/src/pairing.rs`, host tests |
 | Recovery drill | App reinstall and reboot tested; onboarding reset and core load verified | [evidence](evidence/a52-recovery-reinstall.md) |
+| Local data reset | Erase returns to Welcome and clears notifications, policy and export cache; refuses when a pair exists | [evidence](evidence/a52-local-data-reset.md) |
 | Health mirror | Bounded transactional mirror with tombstones and no zero substitution | `core/src/health.rs`, host tests |
 | Privacy surface | In-app privacy screen with live permission state, plus normative privacy, security and install documents | [evidence](evidence/a52-privacy-screen.md), [privacy](privacy.md), [security](security.md), [install](install.md) |
 | Diagnostics export | Redacted support report written to cache and shared only by user action | [evidence](evidence/a52-diagnostics-export.md) |

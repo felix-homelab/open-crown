@@ -386,9 +386,12 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onNavigate: (Destination) -> Unit,
     onOpenFeature: (String) -> Unit,
+    onClearLocalData: () -> Boolean,
     onResetOnboarding: () -> Unit,
 ) {
     var confirmReset by remember { mutableStateOf(false) }
+    var confirmErase by remember { mutableStateOf(false) }
+    var eraseBlocked by remember { mutableStateOf(false) }
     val verified = registry?.counts?.get(FeatureStatus.VERIFIED) ?: 0
     CrownScaffold(title = "Settings", subtitle = "Open Crown", onBack = onBack) {
         item(key = "watch") {
@@ -445,12 +448,24 @@ fun SettingsScreen(
             Spacer(Modifier.height(24.dp))
             CrownInsetGroup(
                 title = "Data",
-                footer = "Resetting onboarding does not delete pair records. Pair records are only removed by an explicit unpair.",
+                footer = "Erasing local data removes onboarding, captured notifications, notification policy and exported reports. It never unpairs a watch: if a pair record exists, unpair first.",
             ) {
                 CrownRow(
                     title = "Reset onboarding",
                     destructive = true,
                     onClick = { confirmReset = true },
+                )
+                CrownRow(
+                    title = "Erase local app data",
+                    subtitle = "Keeps a paired watch record intact",
+                    destructive = true,
+                    onClick = {
+                        if ((snapshot?.pairRecords?.size ?: 0) > 0) {
+                            eraseBlocked = true
+                        } else {
+                            confirmErase = true
+                        }
+                    },
                     showDivider = false,
                 )
             }
@@ -461,6 +476,43 @@ fun SettingsScreen(
                 text = "Open Crown " + appVersion + " · registry updated " + (registry?.updated ?: "unknown"),
                 style = CrownTheme.type.caption1,
                 color = CrownTheme.colors.tertiaryLabel,
+            )
+        }
+    }
+    if (eraseBlocked) {
+        CrownSheet(
+            title = "Unpair the watch first",
+            onDismiss = { eraseBlocked = false },
+            primaryLabel = "OK",
+            onPrimary = { eraseBlocked = false },
+            secondaryLabel = "Cancel",
+            onSecondary = { eraseBlocked = false },
+        ) {
+            Text(
+                text = "A pairing record still exists. Erasing it here would orphan a watch that trusts this phone. Unpair is not implemented yet, so local erasure is refused.",
+                style = CrownTheme.type.footnote,
+                color = CrownTheme.colors.secondaryLabel,
+            )
+        }
+    }
+    if (confirmErase) {
+        CrownSheet(
+            title = "Erase local app data?",
+            onDismiss = { confirmErase = false },
+            primaryLabel = "Erase and restart",
+            onPrimary = {
+                confirmErase = false
+                if (!onClearLocalData()) {
+                    eraseBlocked = true
+                }
+            },
+            secondaryLabel = "Cancel",
+            onSecondary = { confirmErase = false },
+        ) {
+            Text(
+                text = "This clears onboarding, captured notifications, the per-app policy and exported diagnostics on this phone. It does not unpair a watch, change the phone, or revoke system notification access; revoke that separately in Android settings.",
+                style = CrownTheme.type.footnote,
+                color = CrownTheme.colors.secondaryLabel,
             )
         }
     }

@@ -155,6 +155,11 @@ fun CrownApp(
                 onBack = back,
                 onNavigate = navigate,
                 onOpenFeature = openFeature,
+                onClearLocalData = {
+                    val cleared = actions.clearLocalData()
+                    if (cleared) navigator.reset(Destination.Welcome)
+                    cleared
+                },
                 onResetOnboarding = {
                     actions.resetOnboarding()
                     navigator.reset(Destination.Welcome)

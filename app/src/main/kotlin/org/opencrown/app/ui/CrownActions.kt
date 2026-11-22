@@ -11,5 +11,6 @@ data class CrownActions(
     val submitPin: (String) -> Unit,
     val completeOnboarding: () -> Unit,
     val resetOnboarding: () -> Unit,
+    val clearLocalData: () -> Boolean,
     val prepareBoot: () -> Unit,
 )

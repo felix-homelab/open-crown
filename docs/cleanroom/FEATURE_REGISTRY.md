@@ -20,10 +20,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 4 |
-| implemented_unverified | 29 |
+| implemented_unverified | 30 |
 | blocked | 32 |
 | out_of_scope | 0 |
-| unimplemented | 161 |
+| unimplemented | 160 |
 | **total** | **226** |
 
 ## By category
@@ -31,7 +31,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Foundation | 3 | 19 | 3 | 0 | 16 | 41 |
-| Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
+| Onboarding & lifecycle | 0 | 1 | 0 | 0 | 5 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 1 | 1 | 1 | 0 | 18 | 21 |
 | Media & remote | 0 | 0 | 1 | 0 | 10 | 11 |
@@ -101,7 +101,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | lifecycle.device-check | Device compatibility check | unimplemented |  | 1 |
 | lifecycle.consent | Privileged-execution consent | unimplemented |  | 2 |
 | lifecycle.first-run | First-run state restoration | unimplemented |  | 1 |
-| lifecycle.reset-app | Local reset and re-onboarding | unimplemented |  | 6 |
+| lifecycle.reset-app | Local reset and re-onboarding | implemented_unverified |  | 6 |
 
 ### Pairing & setup
 

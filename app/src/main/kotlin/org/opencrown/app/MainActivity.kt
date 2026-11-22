@@ -75,6 +75,7 @@ class MainActivity : ComponentActivity() {
                         submitPin = viewModel::submitPin,
                         completeOnboarding = viewModel::completeOnboarding,
                         resetOnboarding = viewModel::resetOnboarding,
+                        clearLocalData = viewModel::clearLocalData,
                         prepareBoot = viewModel::prepareBoot,
                     ),
                 )

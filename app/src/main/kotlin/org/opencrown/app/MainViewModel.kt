@@ -78,4 +78,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         graph.onboarding.reset()
         _onboardingComplete.value = false
     }
+
+    /** Returns false when a pair record exists and must be unpaired first. */
+    fun clearLocalData(): Boolean {
+        if (!graph.clearLocalData()) return false
+        graph.discovery.stop()
+        _onboardingComplete.value = false
+        return true
+    }
 }
