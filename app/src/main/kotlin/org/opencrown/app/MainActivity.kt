@@ -36,7 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -214,7 +216,7 @@ private fun ChainScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            CrownMark()
+            DigitalCrownMark()
             Spacer(Modifier.height(34.dp))
             Text(
                 text = "Open Crown",
@@ -310,27 +312,50 @@ private fun StatusBlock(stage: Stage, detail: String, onRetry: () -> Unit) {
 }
 
 @Composable
-private fun CrownMark() {
-    Canvas(modifier = Modifier.size(58.dp)) {
-        val w = size.width
-        val h = size.height
-        val path = Path().apply {
-            moveTo(w * 0.08f, h * 0.72f)
-            lineTo(w * 0.22f, h * 0.29f)
-            lineTo(w * 0.40f, h * 0.53f)
-            lineTo(w * 0.50f, h * 0.18f)
-            lineTo(w * 0.60f, h * 0.53f)
-            lineTo(w * 0.78f, h * 0.29f)
-            lineTo(w * 0.92f, h * 0.72f)
-            close()
-            moveTo(w * 0.12f, h * 0.84f)
-            lineTo(w * 0.88f, h * 0.84f)
-        }
-        drawPath(
-            path = path,
+private fun DigitalCrownMark() {
+    Canvas(modifier = Modifier.size(66.dp)) {
+        val cx = size.width * 0.45f
+        val cy = size.height * 0.50f
+        val outer = size.width * 0.29f
+        val stemTop = cy - size.height * 0.055f
+
+        // The crown's case-side stem.
+        drawRoundRect(
             color = Ink,
-            style = Stroke(width = w * 0.055f, cap = StrokeCap.Round, join = StrokeJoin.Round),
+            topLeft = Offset(cx + outer - size.width * 0.025f, stemTop),
+            size = Size(size.width * 0.20f, size.height * 0.11f),
+            cornerRadius = CornerRadius(size.height * 0.055f),
         )
+
+        // Knurled rim.
+        drawCircle(
+            color = Ink,
+            radius = outer,
+            center = Offset(cx, cy),
+            style = Stroke(width = size.width * 0.052f),
+        )
+        drawCircle(
+            color = Ink,
+            radius = outer * 0.57f,
+            center = Offset(cx, cy),
+            style = Stroke(width = size.width * 0.042f),
+        )
+
+        // Ridges around the crown.
+        val tickInner = outer * 0.66f
+        val tickOuter = outer * 0.94f
+        for (i in 0 until 12) {
+            val angle = i * Math.PI / 6.0
+            val cos = kotlin.math.cos(angle).toFloat()
+            val sin = kotlin.math.sin(angle).toFloat()
+            drawLine(
+                color = Ink,
+                start = Offset(cx + cos * tickInner, cy + sin * tickInner),
+                end = Offset(cx + cos * tickOuter, cy + sin * tickOuter),
+                strokeWidth = size.width * 0.028f,
+                cap = StrokeCap.Round,
+            )
+        }
     }
 }
 
