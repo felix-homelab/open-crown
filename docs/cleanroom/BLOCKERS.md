@@ -227,7 +227,9 @@ trigger, and it will not pretend an unavailable channel exists.
 real-domain measurement in
 [`docs/evidence/a52-broker-untrusted-app.md`](../evidence/a52-broker-untrusted-app.md).
 The app runs as `u:r:untrusted_app:s0`, the relay socket is live, and the
-connect is denied with EACCES. The relay also never returns to init.
+connect is denied with EACCES. A file-queue alternative was also tested: the
+init-domain relay's openat on a 0644 file owned by the app returned EACCES, so
+app-data files are not a channel either. The relay also never returns to init.
 
 **Would become reachable if:** a probe demonstrates an allowed direction under
 enforcing SELinux, or the product explicitly requires a rooted device and the

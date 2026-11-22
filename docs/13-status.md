@@ -50,6 +50,10 @@ uid 0. The denial is an LSM `connectto` refusal, not a filesystem permission.
 The screenshot and UI dump are in
 [docs/evidence/a52-broker-untrusted-app.md](evidence/a52-broker-untrusted-app.md).
 
+A file-queue broker was also tested: the relay's openat on a 0644 file owned
+by the app returned EACCES, so app-data files are not a channel either. See
+[a52-file-broker-probe.md](evidence/a52-file-broker-probe.md).
+
 Two further findings make the current relay unusable as a production base:
 
 1. It is an **unauthenticated raw-syscall RPC**. After two guards it forks a

@@ -108,7 +108,7 @@ A(f("foundation.privilege", "Foundation", "uid 0 + controller-capable domain",
 A(f("foundation.broker", "Foundation", "App-to-agent broker",
     "The iPhone Watch app talks to the watch through privileged first-party daemons.",
     "blocked", 2, blocker="B-APP-AGENT-BROKER",
-    evidence=["docs/evidence/a52-broker-untrusted-app.md", "docs/evidence/broker-probe-a52.md", "docs/evidence/a52-app-chain.md"],
+    evidence=["docs/evidence/a52-broker-untrusted-app.md", "docs/evidence/a52-file-broker-probe.md", "docs/evidence/broker-probe-a52.md", "docs/evidence/a52-app-chain.md"],
     notes="Measured: shell domain connects to @dfi_init, app-domain runas_app gets EACCES; the relay is unauthenticated raw-syscall root and never returns to init."))
 A(f("foundation.agent-ipc", "Foundation", "Authenticated agent IPC",
     "First-party daemons use private authenticated IPC; a third-party agent must authenticate the app caller.",

@@ -260,6 +260,7 @@
       "tests": [],
       "evidence": [
         "docs/evidence/a52-broker-untrusted-app.md",
+        "docs/evidence/a52-file-broker-probe.md",
         "docs/evidence/broker-probe-a52.md",
         "docs/evidence/a52-app-chain.md"
       ],

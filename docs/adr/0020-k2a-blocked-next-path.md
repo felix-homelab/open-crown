@@ -24,6 +24,9 @@ The A52 chain answers a narrower question and fails K2a:
   within minutes.
 - There is no unprivileged trigger; the app cannot make init log, and it cannot
   connect afterwards.
+- A file-queue broker through the app's private data directory was tested: the
+  relay's openat on a 0644 app-owned file returned EACCES. The denial is not
+  limited to sockets.
 
 Evidence: [broker-probe-a52.md](../evidence/broker-probe-a52.md),
 [a52-broker-untrusted-app.md](../evidence/a52-broker-untrusted-app.md),
