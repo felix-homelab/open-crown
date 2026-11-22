@@ -1,6 +1,7 @@
 package org.opencrown.app.data
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
@@ -187,10 +188,13 @@ class BleDiscoveryRepository(
         }
     }
 
+    @SuppressLint("MissingPermission") // guarded below; stopScan can still throw on revocation
     fun stop() {
         ticker?.cancel()
         ticker = null
-        runCatching { scanner?.stopScan(callback) }
+        if (hasScanPermission()) {
+            runCatching { scanner?.stopScan(callback) }
+        }
         scanning = false
         runCatching { bridge?.stopScan() }
         synchronized(this) {

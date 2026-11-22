@@ -12,7 +12,9 @@ android {
 
     defaultConfig {
         applicationId = "org.opencrown.app"
-        minSdk = 31
+        // UniFFI 0.32 emits java.lang.ref.Cleaner (API 33). Declaring 31 would
+        // promise a runtime the binding cannot provide.
+        minSdk = 33
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"

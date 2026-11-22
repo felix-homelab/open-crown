@@ -15,7 +15,7 @@
 | Apple ID | Role undecided — see ADR 0003 |
 | Build | Gradle (version catalog) + `cargo-ndk`; JDK 21; NDK r27+ |
 | CI | GitHub Actions: Rust tests, Kotlin tests, `cargo-deny`, `ktlint`, SBOM, reproducible APK |
-| Min SDK | 31 (Android 12) |
+| Min SDK | 33 (Android 13) — required by the generated UniFFI Cleaner binding |
 | Licence | MIT |
 
 ## 2. Why this stack

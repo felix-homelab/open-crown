@@ -117,7 +117,7 @@ On the hardware matrix (at least one phone and one Watch, with both named):
 
 ## 8. Constraints
 
-- Android 12+ (planned); a 64-bit arm64 device with a supported kernel build.
+- Android 13+ (planned); a 64-bit arm64 device with a supported kernel build.
 - The payload must match the device and kernel exactly, and a vendor patch can
   retire it.
 - The supported device list is evidence, not intention. It ages.

@@ -147,7 +147,7 @@ reproducible:
     PYTHONPATH=tools/lib python3 -m unittest discover -s tools/tests
     tools/ffi-generate.sh                # regenerate Kotlin bindings
 
-The debug APK is verified: package org.opencrown.app, minSdk 31, targetSdk 36,
+The debug APK is verified: package org.opencrown.app, minSdk 33, targetSdk 36,
 signed with the debug certificate. It contains a skeleton screen and nothing
 else; there is no protocol logic and no payload.
 

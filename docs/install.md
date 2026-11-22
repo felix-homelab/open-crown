@@ -5,7 +5,7 @@ install it expecting a working companion.
 
 ## Requirements
 
-- Android 12+ (SDK 31), arm64-v8a.
+- Android 13+ (SDK 33), arm64-v8a. The generated UniFFI binding uses java.lang.ref.Cleaner, which requires API 33.
 - The current evidence device is a Samsung SM-A528B on Android 14 / SDK 34.
 - No Apple Watch is required to run the app, but no watch feature can be
   verified without one.

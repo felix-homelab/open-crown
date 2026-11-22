@@ -88,7 +88,7 @@ jobs:
       - run: cargo build -p opencrown-ffi
 
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :app:assembleDebug :app:testDebugUnitTest --no-daemon --stacktrace
+      - run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug --no-daemon --stacktrace
 
       - name: APK report
         run: python3 tools/release/apk-report.py app/build/outputs/apk/debug/app-debug.apk --out apk-report.json
