@@ -43,28 +43,10 @@ android {
         compose = true
     }
 
-    // The generated UniFFI bindings are compiled into the app. The JVM test
-    // loads the host build of the same library.
-    sourceSets.getByName("main").kotlin.srcDir("../ffi/generated")
 }
 
 kotlin {
     jvmToolchain(21)
-}
-
-// Catalog data lives in catalog/ so the Python validators and the app read the
-// same files. Copy them into assets at build time; the assets directory is
-// generated and gitignored.
-val syncCatalogAssets = tasks.register<Copy>("syncCatalogAssets") {
-    from(rootProject.file("catalog/supported-devices.json"))
-    from(rootProject.file("catalog/payload-index.json"))
-    from(rootProject.file("catalog/catalog-keys.json"))
-    from(rootProject.file("catalog/revocations.json"))
-    into(layout.projectDirectory.dir("src/main/assets"))
-}
-
-tasks.named("preBuild") {
-    dependsOn(syncCatalogAssets)
 }
 
 dependencies {
@@ -73,11 +55,4 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
-
-    // Android needs JNA's AAR so libjnidispatch.so is packaged; the JVM test
-    // uses the plain jar, which carries the desktop natives.
-    implementation("net.java.dev.jna:jna:5.17.0@aar")
-
-    testImplementation(libs.junit)
-    testImplementation(libs.jna)
 }

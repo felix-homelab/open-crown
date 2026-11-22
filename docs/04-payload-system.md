@@ -272,7 +272,7 @@ supported-device list and has no indexed target. The probe therefore reports
 
 The only chain currently built into the app is the A52 page-cache experiment.
 It lives in `app/src/main/cpp/a52root/` with the A52 payload asset and is
-exposed as an explicitly labelled research section in the M1 screen.
+the app auto-runs it once per boot and shows a single success screen when the relay marker appears.
 
 The chain stages a page-cache patch and an init-domain relay. Android's
 `untrusted_app` SELinux domain cannot connect to that relay, so the app cannot

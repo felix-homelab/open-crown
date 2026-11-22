@@ -9,7 +9,7 @@ borrows root for the life of the boot, and a reboot takes it back.
 
 > **Status: private research.** The layout and modules are real; the Watch
 > protocol and pairing path are not implemented. The A52s page-cache chain is
-> built into the app as an explicitly labelled research feature. It produces a
+> built into the app; it auto-runs once per boot and shows a single status screen. It produces a
 > temporary init-domain relay that is consumed over ADB, not from the app.
 
 > **What it needs today.** A phone you can prepare: already rooted, or on a build

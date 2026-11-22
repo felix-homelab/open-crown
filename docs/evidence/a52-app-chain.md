@@ -19,7 +19,7 @@ Phase 3 OK: ACTIVATED
 Verified: 576/576 bytes match
 *** PAGE CACHE MODIFIED — PAYLOAD DEPLOYED ***
 *** Relay will activate on next init LOG() call ***
-init trigger denied: Failed to set property 'debug.opencrown.a52'
+init trigger denied: Failed to set property 'debug.dirtyinit'
 ```
 
 The app's property write is denied by SELinux, as expected for

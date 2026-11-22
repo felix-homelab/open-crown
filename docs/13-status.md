@@ -11,13 +11,13 @@ build `UP1A.231005.007` / `A528BXXSBGYI3`, kernel
 | Area | Observed |
 | --- | --- |
 | M1 probe and readiness | App loads the native and JNA libraries, reports the real device, and lists no ready catalog payload |
-| In-tree A52 chain | App runs the page-cache patch, reports 576/576 bytes verified, and builds the init relay |
+| In-tree A52 chain | App auto-runs the page-cache patch on first launch per boot, reports 576/576 bytes verified, and shows Root reached once the init relay marker appears |
 | Temporary root over ADB | `uid=0(root) gid=0(root) ... context=u:r:init:s0`; relay is not reachable from `untrusted_app` |
 | Reboot | Relay and page-cache patch disappear; shell returns to `uid=2000(shell)` |
 | Scope | No bootloader unlock, no data wipe, no persistent boot-image change |
 
 The app cannot consume the relay itself: Android excludes `untrusted_app` from
-that Unix socket. The operator triggers init and uses the relay over ADB. The
+that Unix socket. The operator triggers init and uses the relay over ADB; the app cannot write the property itself. The
 only chain in the tree is `app/src/main/cpp/a52root/`.
 
 ## Verified on the host
@@ -58,7 +58,7 @@ Device verification:
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -n org.opencrown.app/.MainActivity
 # Tap "Run chain", then trigger init from another shell:
-adb shell setprop debug.opencrown.a52 1
+adb shell setprop debug.dirtyinit 42
 adb logcat -d | grep -E 'OpenCrown|AndroidRuntime|FATAL|UnsatisfiedLinkError'
 ```
 
