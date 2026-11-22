@@ -31,3 +31,4 @@ python3 tools/link-check/cli.py .
 
 The boundary guard is part of CI. The similarity audit is run at every phase
 gate with the method in [inventory/similarity-plan.md](inventory/similarity-plan.md).
+The latest result is [audit/phase-1-similarity.md](audit/phase-1-similarity.md).

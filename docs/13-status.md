@@ -31,6 +31,7 @@ capability is verified.
 | Preferences and pigments | Unknown-never-false, baseline-bound read-back, complete pigment sets | `core/src/settings.rs`, host tests |
 | Minified release | R8 build keeps UniFFI/JNA; installed debug-signed on the A52 and core loads | [evidence](evidence/a52-release-build.md) |
 | Secret scan | Tracked files scanned for private keys, provider tokens and signing material; CI enforced | tools/cleanroom/secret-scan.py |
+| Clean-room similarity | Phase 1: 94 product files vs 794 reference files, max containment 0.189, zero findings | [report](cleanroom/audit/phase-1-similarity.md) |
 | Feature registry | 226 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
 | BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches. Physically exercised on the A52; the five observed advertisements were all refused as selectable | `data/BleDiscoveryRepository.kt`; [evidence](evidence/a52-discovery.md) |
 | Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |

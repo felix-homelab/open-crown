@@ -3462,11 +3462,14 @@
       "phase": 6,
       "implementation": [
         "docs/cleanroom/audit/phase-0-baseline.md",
-        "tools/cleanroom/check-boundary.py"
+        "docs/cleanroom/audit/phase-1-similarity.md",
+        "tools/cleanroom/check-boundary.py",
+        "tools/cleanroom/similarity-audit.py"
       ],
       "tests": [],
       "evidence": [
-        "docs/cleanroom/inventory/similarity-plan.md"
+        "docs/cleanroom/inventory/similarity-plan.md",
+        "docs/cleanroom/audit/phase-1-similarity.md"
       ],
       "physical_verified": false,
       "notes": ""

@@ -824,8 +824,8 @@ A(f("about.blockers", "About, privacy & evidence", "Blocker transparency",
 # ------------------------------------------------------ Operations & quality
 A(f("ops.cleanroom-audit", "Operations & quality", "Clean-room similarity audit",
     "Not applicable to the iPhone app; required for this reimplementation.",
-    "implemented_unverified", 6, impl=["docs/cleanroom/audit/phase-0-baseline.md", "tools/cleanroom/check-boundary.py"],
-    evidence=["docs/cleanroom/inventory/similarity-plan.md"]))
+    "implemented_unverified", 6, impl=["docs/cleanroom/audit/phase-0-baseline.md", "docs/cleanroom/audit/phase-1-similarity.md", "tools/cleanroom/check-boundary.py", "tools/cleanroom/similarity-audit.py"],
+    evidence=["docs/cleanroom/inventory/similarity-plan.md", "docs/cleanroom/audit/phase-1-similarity.md"]))
 A(f("ops.quarantine-guard", "Operations & quality", "Reference quarantine guard",
     "No iPhone equivalent; keeps the quarantined reference out of tracked files and build inputs.",
     "implemented_unverified", 6, impl=["tools/cleanroom/check-boundary.py"],
