@@ -2,8 +2,8 @@
 
 Date: 2026-11-22 14:33 Europe/Berlin
 Device: Samsung SM-A528B (a52sxq), Android 14 / SDK 34, SELinux enforcing.
-Build: Open Crown debug APK from this tree, versionName 0.1.0.
-Serial: withheld. Boot count at capture: 71.
+Build: final Open Crown debug APK from this tree, versionName 0.1.0.
+Serial: withheld. Boot count at capture: 72.
 
 ## What was done
 
@@ -38,9 +38,17 @@ The app's own probe result, rendered on Home and saved in
 [a52-broker-untrusted-app.png](a52-broker-untrusted-app.png):
 
 ```text
-Agent channel
+Per-boot privilege    Blocked
+The chain ran, but this app cannot use the relay. SELinux or file permissions
+denied the connection (EACCES/EPERM)
+
+Agent channel         Blocked
 SELinux or file permissions denied the connection (EACCES/EPERM)
 ```
+
+This capture is from the final debug build after the checkpoint fix: a present
+relay marker alone no longer renders as "Done"; it is blocked until the app can
+actually use the channel.
 
 The same probe is visible in
 [a52-broker-untrusted-app-ui.xml](a52-broker-untrusted-app-ui.xml), which

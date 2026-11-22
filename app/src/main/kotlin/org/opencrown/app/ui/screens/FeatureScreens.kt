@@ -281,7 +281,7 @@ fun SettingsScreen(
     CrownScaffold(title = "Settings", subtitle = "Open Crown", onBack = onBack) {
         item(key = "watch") {
             CrownInsetGroup(title = "Watch") {
-                CrownDisclosureRow("Status and connection", onClick = { onNavigate(Destination.Home) }, value = "Home")
+                CrownDisclosureRow("Status and connection", onClick = { onNavigate(Destination.Home) })
                 CrownDisclosureRow("Watch faces", onClick = { onNavigate(Destination.Faces) })
                 CrownDisclosureRow("Notifications", onClick = { onNavigate(Destination.Notifications) })
                 CrownDisclosureRow("Health and activity", onClick = { onNavigate(Destination.Health) })

@@ -9,6 +9,7 @@ coreKtx = "1.17.0"
 activityCompose = "1.11.0"
 composeBom = "2025.09.00"
 junit = "4.13.2"
+json = "20240303"
 jna = "5.17.0"
 
 [libraries]
@@ -19,6 +20,7 @@ androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 junit = { module = "junit:junit", version.ref = "junit" }
+json = { module = "org.json:json", version.ref = "json" }
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 
 [plugins]

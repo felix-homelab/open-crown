@@ -88,6 +88,13 @@ class FeatureRegistry private constructor(
 
         fun load(context: Context): LoadResult = try {
             val text = context.assets.open(ASSET_PATH).bufferedReader().use { it.readText() }
+            parse(text)
+        } catch (e: Exception) {
+            LoadResult.Unavailable("Registry asset could not be read: " + e.javaClass.simpleName)
+        }
+
+        /** Pure parser, used by the asset loader and by JVM tests. */
+        fun parse(text: String): LoadResult = try {
             val root = JSONObject(text)
             val features = root.getJSONArray("features")
             val rows = buildList {
