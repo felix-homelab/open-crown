@@ -90,6 +90,24 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug --no-daemon --stacktrace
 
+      - name: Signed release artifact gate
+        run: |
+          KEYSTORE="$RUNNER_TEMP/ci-release.jks"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass ci-password \
+            -keypass ci-password -alias ci -keyalg RSA -keysize 2048 \
+            -validity 1 -dname "CN=Open Crown CI"
+          export OPEN_CROWN_KEYSTORE="$KEYSTORE"
+          export OPEN_CROWN_STORE_PASSWORD=ci-password
+          export OPEN_CROWN_KEY_ALIAS=ci
+          export OPEN_CROWN_KEY_PASSWORD=ci-password
+          ./gradlew :app:assembleRelease --no-daemon
+          ANDROID_SDK_ROOT="$ANDROID_HOME" tools/release/verify-artifact.sh \
+            app/build/outputs/apk/release/app-release.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+
       - name: APK report
         run: python3 tools/release/apk-report.py app/build/outputs/apk/debug/app-debug.apk --out apk-report.json
       - uses: actions/upload-artifact@v4

@@ -18,7 +18,11 @@ for tool in "$BT/apksigner" "$BT/aapt2"; do
 done
 
 echo "== sha256 =="
-shasum -a 256 "$APK"
+if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$APK"
+else
+    shasum -a 256 "$APK"
+fi
 
 echo "== signature =="
 "$BT/apksigner" verify --print-certs "$APK"
