@@ -3531,6 +3531,26 @@
       "notes": "Scans tracked text for private-key blocks, provider tokens and signing-material suffixes without echoing matches; wired into CI. Device serials are not pattern-scanned."
     },
     {
+      "id": "ops.update-path",
+      "category": "Operations & quality",
+      "title": "In-place app update",
+      "iphone_behavior": "A companion must be updatable without losing local state or requiring a new pairing.",
+      "status": "verified",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/data/PairRecordStore.kt",
+        "app/src/main/kotlin/org/opencrown/app/data/OnboardingStore.kt",
+        "app/src/main/kotlin/org/opencrown/app/notifications/NotificationPolicy.kt"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/evidence/a52-update-path.md"
+      ],
+      "physical_verified": true,
+      "notes": "Verified on the A52 with the same debug key: onboarding and per-app mute survived install -r, and a new muted notification was not captured. No pair record existed, so sealed-state preservation is not proven."
+    },
+    {
       "id": "ops.recovery-drill",
       "category": "Operations & quality",
       "title": "Recovery drill",

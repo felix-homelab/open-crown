@@ -36,7 +36,9 @@ release gate below.
 
 Install over the existing app with the same signing key. Pair records and
 onboarding state are preserved. A signing-key change requires uninstall and
-therefore deletes app data.
+therefore deletes app data. The update path has been exercised on the A52 for
+onboarding and per-app notification policy; sealed pair-state preservation with
+a real watch is still untested.
 
 ## Recovery
 

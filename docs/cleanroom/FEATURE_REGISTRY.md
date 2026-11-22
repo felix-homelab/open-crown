@@ -19,12 +19,12 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Status | Count |
 | --- | ---: |
-| verified | 4 |
+| verified | 5 |
 | implemented_unverified | 30 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 160 |
-| **total** | **226** |
+| **total** | **227** |
 
 ## By category
 
@@ -42,7 +42,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Settings & accessibility | 0 | 0 | 0 | 0 | 33 | 33 |
 | Secure & Apple-service | 0 | 0 | 17 | 0 | 0 | 17 |
 | About, privacy & evidence | 0 | 4 | 0 | 0 | 1 | 5 |
-| Operations & quality | 0 | 5 | 0 | 0 | 2 | 7 |
+| Operations & quality | 1 | 5 | 0 | 0 | 2 | 8 |
 
 ## Rows
 
@@ -333,6 +333,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | ops.quarantine-guard | Reference quarantine guard | implemented_unverified |  | 6 |
 | ops.license-audit | Licence audit | unimplemented |  | 6 |
 | ops.secret-scan | Secret and identifier scan | implemented_unverified |  | 6 |
+| ops.update-path | In-place app update | verified |  | 6 |
 | ops.recovery-drill | Recovery drill | implemented_unverified |  | 6 |
 | ops.release-build | Release build and install path | implemented_unverified |  | 6 |
 | ops.negative-tests | Fuzz and negative tests | unimplemented |  | 6 |

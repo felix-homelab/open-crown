@@ -841,6 +841,12 @@ A(f("ops.secret-scan", "Operations & quality", "Secret and identifier scan",
     "implemented_unverified", 6, impl=["tools/cleanroom/secret-scan.py", "tools/lib/opencrown_tools/secrets.py"],
     evidence=["tools/tests/test_secret_scan.py"],
     notes="Scans tracked text for private-key blocks, provider tokens and signing-material suffixes without echoing matches; wired into CI. Device serials are not pattern-scanned."))
+A(f("ops.update-path", "Operations & quality", "In-place app update",
+    "A companion must be updatable without losing local state or requiring a new pairing.",
+    "verified", 6,
+    impl=["app/src/main/kotlin/org/opencrown/app/data/PairRecordStore.kt", "app/src/main/kotlin/org/opencrown/app/data/OnboardingStore.kt", "app/src/main/kotlin/org/opencrown/app/notifications/NotificationPolicy.kt"],
+    evidence=["docs/evidence/a52-update-path.md"],
+    notes="Verified on the A52 with the same debug key: onboarding and per-app mute survived install -r, and a new muted notification was not captured. No pair record existed, so sealed-state preservation is not proven."))
 A(f("ops.recovery-drill", "Operations & quality", "Recovery drill",
     "The iPhone recovers from reboot, unpair, watch reset and app reinstall.",
     "implemented_unverified", 6, impl=["app/src/main/kotlin/org/opencrown/app/MainViewModel.kt", "app/src/main/kotlin/org/opencrown/app/data/OnboardingStore.kt"],
