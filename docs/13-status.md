@@ -35,6 +35,7 @@ capability is verified.
 | Preferences and pigments | Unknown-never-false, baseline-bound read-back, complete pigment sets | `core/src/settings.rs`, host tests |
 | Minified release | R8 build keeps UniFFI/JNA; installed debug-signed on the A52 and core loads | [evidence](evidence/a52-release-build.md) |
 | Release exclusion | Bench-signed release omits the quarantined relay library and payload asset; app starts and reports it absent | [evidence](evidence/a52-release-no-relay.md) |
+| Reproducibility | Two clean builds at b0c62b0 matched byte-for-byte, unsigned and debug-signed | [evidence](evidence/a52-release-reproducibility.md) |
 | Secret scan | Tracked files scanned for private keys, provider tokens and signing material; CI enforced | tools/cleanroom/secret-scan.py |
 | Clean-room similarity | Phase 1: 94 product files vs 794 reference files, max containment 0.189, zero findings | [report](cleanroom/audit/phase-1-similarity.md) |
 | Feature registry | 232 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
