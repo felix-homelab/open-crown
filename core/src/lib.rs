@@ -4,10 +4,11 @@
 //! Android APIs. Everything here must be testable with `cargo test` on the
 //! host, which is what makes the golden-vector suite possible.
 //!
-//! Status: partial. Discovery inventory/selection rules and IDS route/session
-//! rules are implemented and host-tested. Wire codecs, pairing, L2CAP/ERTM,
-//! SMP, NetworkRelay, NWSC and every feature service are still pending. No
-//! protocol revision is claimed until a spec is verified on hardware.
+//! Status: partial. Discovery inventory/selection rules, IDS route/session
+//! rules, provisioning checkpoints/completion and face read-back rules are
+//! implemented and host-tested. Wire codecs, pairing, L2CAP/ERTM, SMP,
+//! NetworkRelay, NWSC and every feature service are still pending. No protocol
+//! revision is claimed until a spec is verified on hardware.
 
 pub mod bytes;
 pub mod checkpoint;

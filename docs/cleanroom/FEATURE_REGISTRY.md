@@ -20,17 +20,17 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 1 |
-| implemented_unverified | 12 |
+| implemented_unverified | 14 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 170 |
-| **total** | **215** |
+| **total** | **217** |
 
 ## By category
 
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Foundation | 1 | 10 | 3 | 0 | 17 | 31 |
+| Foundation | 1 | 12 | 3 | 0 | 17 | 33 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 0 | 0 | 1 | 0 | 19 | 20 |
@@ -70,6 +70,8 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | foundation.link-encryption | Encrypted durable link | unimplemented |  | 3 |
 | foundation.networkrelay | NetworkRelay / ESP / IPsec | unimplemented |  | 3 |
 | foundation.ids | IDS application session | unimplemented |  | 3 |
+| foundation.faces-delta-rules | Face mutation and read-back rules | implemented_unverified |  | 4 |
+| foundation.setup-rules | Provisioning checkpoints and completion rules | implemented_unverified |  | 3 |
 | foundation.ids-session-rules | IDS route, epoch and reconnect rules | implemented_unverified |  | 3 |
 | foundation.nwsc | NWSC and feature services | unimplemented |  | 4 |
 | foundation.keystore-store | Keystore-sealed pair records | unimplemented |  | 3 |

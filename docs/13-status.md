@@ -4,8 +4,8 @@ As of 2026-11-22 (private research build).
 
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
-is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 215 rows, 1 verified,
-12 built-but-unverified, 32 blocked, 170 not built. The one verified row is the
+is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 217 rows, 1 verified,
+14 built-but-unverified, 32 blocked, 170 not built. The one verified row is the
 narrow unprivileged claim: scanning and listing Apple advertisements without
 selecting one.
 
@@ -13,15 +13,17 @@ selecting one.
 
 | Area | State | Evidence |
 | --- | --- | --- |
-| Compose design system | Light/dark tokens, type ramp, grouped lists, controls, sheets, original line icons, reduced motion, haptics | `app/src/main/kotlin/org/opencrown/app/ui/`; unit build passes |
+| Compose design system | Light/dark tokens, type ramp, grouped lists, controls, sheets, original line icons, reduced motion, haptics | `app/src/main/kotlin/org/opencrown/app/ui/`; [light and 1.3x text evidence](evidence/a52-design-system.md) |
 | App shell | Welcome, Home, Discovery, Pairing, Setup, Faces, Notifications, Health, Apps, Settings, Accessibility, Diagnostics, Evidence, About | `CrownApp.kt`, `ui/screens/` |
 | Observation model | Every watch value is `Observation<T>` with origin, verification, time, pair/epoch and unavailable reason | `model/Observation.kt`, unit tests |
-| Feature registry | 215 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
+| Feature registry | 217 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
 | BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches. Physically exercised on the A52; the five observed advertisements were all refused as selectable | `data/BleDiscoveryRepository.kt`; [evidence](evidence/a52-discovery.md) |
 | Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |
 | Sealed pair store | AES-GCM through Android Keystore, corrupt envelope treated as absent | `data/PairRecordStore.kt` |
 | Discovery rules | Bounded inventory, opaque tokens, TTL, stale-token rejection, no metadata means no selection. FE25 decode remains UNKNOWN | `core/src/discovery/mod.rs` |
 | IDS rules | Route catalogue with class checks, epoch-scoped correlation, receipt versus effect, 15/30/60 s reconnect backoff | `core/src/ids/mod.rs` |
+| Provisioning rules | Ordered checkpoints, locale hard stop, activation/sync gating, strict versus owner-confirmed completion | `core/src/setup/mod.rs` |
+| Face delta rules | Complete baseline, operation validation, staged transaction, read-back-only APPLIED, timeout/disconnect UNKNOWN | `core/src/faces/mod.rs` |
 | Consent-gated chain | The in-tree page-cache chain is kept, but only runs from an explicit Diagnostics consent sheet; it is no longer an automatic boot side effect | `data/ChainController.kt` |
 | Clean-room governance | Lanes, quarantine, blocker catalog, inventory, specs, boundary guard | `docs/cleanroom/`, `tools/cleanroom/check-boundary.py` |
 

@@ -448,6 +448,42 @@
       "notes": "Session rules are implemented separately; the IDS envelope and control Hello remain UNKNOWN."
     },
     {
+      "id": "foundation.faces-delta-rules",
+      "category": "Foundation",
+      "title": "Face mutation and read-back rules",
+      "iphone_behavior": "The iPhone applies a face change only after the Watch reports the expected collection; a timeout or disconnect is unknown, not applied.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [
+        "core/src/faces/mod.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/05-faces.md"
+      ],
+      "physical_verified": false,
+      "notes": "Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."
+    },
+    {
+      "id": "foundation.setup-rules",
+      "category": "Foundation",
+      "title": "Provisioning checkpoints and completion rules",
+      "iphone_behavior": "The iPhone reaches setup completion through activation, PairedSync and either a strict native barrier or an explicitly recorded owner confirmation.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [
+        "core/src/setup/mod.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/03-activation-setup.md"
+      ],
+      "physical_verified": false,
+      "notes": "Ordered checkpoints, locale hard stop, ACK-is-not-completion, strict and owner-confirmed routes. PBBridge/NPS payloads remain UNKNOWN."
+    },
+    {
       "id": "foundation.ids-session-rules",
       "category": "Foundation",
       "title": "IDS route, epoch and reconnect rules",

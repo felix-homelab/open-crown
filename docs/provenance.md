@@ -27,6 +27,8 @@ unauditable.
 | Clean-room boundary guard | [docs/cleanroom/REFERENCE_BOUNDARY.md](cleanroom/REFERENCE_BOUNDARY.md) | none | own audit requirements | none | none | lead, 2026-11-22 |
 | Discovery inventory and selection rules | [spec/01-discovery.md](cleanroom/spec/01-discovery.md) | none (FE25 layout UNKNOWN; no capture) | Lane A spec; reference behavioural prose as an inventory; own product policy for TTL | bounded inventory, token selection, freshness recheck | none | lead, 2026-11-22 |
 | IDS route and session rules | [spec/04-ids-session.md](cleanroom/spec/04-ids-session.md) | none (envelope UNKNOWN; no capture) | Lane A spec; public route names observable in the reference inventory | route catalogue, epoch and receipt concepts | none | lead, 2026-11-22 |
+| Provisioning rules | [spec/03-activation-setup.md](cleanroom/spec/03-activation-setup.md) | none (payloads UNKNOWN; no capture) | Lane A spec; reference phase/checkpoint vocabulary as an inventory | phase projection, checkpoint ordinals, dual completion routes | none | lead, 2026-11-22 |
+| Face delta and read-back rules | [spec/05-faces.md](cleanroom/spec/05-faces.md) | none (encoding UNKNOWN; no capture) | Lane A spec; reference operation/limit inventory | staged delta, read-back confirmation, package bounds | none | lead, 2026-11-22 |
 
 ## Attestation
 

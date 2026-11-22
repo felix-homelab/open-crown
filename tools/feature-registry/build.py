@@ -150,6 +150,16 @@ A(f("foundation.ids", "Foundation", "IDS application session",
     "The iPhone exchanges Watch application messages over IDS.",
     "unimplemented", 3, evidence=["docs/cleanroom/spec/04-ids-session.md"],
     notes="Session rules are implemented separately; the IDS envelope and control Hello remain UNKNOWN."))
+A(f("foundation.faces-delta-rules", "Foundation", "Face mutation and read-back rules",
+    "The iPhone applies a face change only after the Watch reports the expected collection; a timeout or disconnect is unknown, not applied.",
+    "implemented_unverified", 4, impl=["core/src/faces/mod.rs"],
+    evidence=["docs/cleanroom/spec/05-faces.md"],
+    notes="Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."))
+A(f("foundation.setup-rules", "Foundation", "Provisioning checkpoints and completion rules",
+    "The iPhone reaches setup completion through activation, PairedSync and either a strict native barrier or an explicitly recorded owner confirmation.",
+    "implemented_unverified", 3, impl=["core/src/setup/mod.rs"],
+    evidence=["docs/cleanroom/spec/03-activation-setup.md"],
+    notes="Ordered checkpoints, locale hard stop, ACK-is-not-completion, strict and owner-confirmed routes. PBBridge/NPS payloads remain UNKNOWN."))
 A(f("foundation.ids-session-rules", "Foundation", "IDS route, epoch and reconnect rules",
     "The iPhone rejects unknown routes, drops replies from an earlier session and backs off between reconnect attempts.",
     "implemented_unverified", 3, impl=["core/src/ids/mod.rs"],
