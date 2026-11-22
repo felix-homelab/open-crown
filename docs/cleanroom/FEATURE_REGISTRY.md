@@ -19,18 +19,18 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Status | Count |
 | --- | ---: |
-| verified | 1 |
+| verified | 2 |
 | implemented_unverified | 14 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 170 |
-| **total** | **217** |
+| **total** | **218** |
 
 ## By category
 
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Foundation | 1 | 12 | 3 | 0 | 17 | 33 |
+| Foundation | 2 | 12 | 3 | 0 | 17 | 34 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 0 | 0 | 1 | 0 | 19 | 20 |
@@ -50,6 +50,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Id | Capability | Status | Blocker | Phase |
 | --- | --- | --- | --- | ---: |
+| foundation.uniffi-seam | Kotlin to Rust protocol seam | verified |  | 1 |
 | foundation.observations | Observation model | implemented_unverified |  | 1 |
 | foundation.feature-registry | Feature registry | implemented_unverified |  | 1 |
 | foundation.device-profile | Exact device profile matching | implemented_unverified |  | 1 |

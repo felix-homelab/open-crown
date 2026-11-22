@@ -11,6 +11,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import org.opencrown.app.data.ChainState
+import org.opencrown.app.data.CoreStatus
 import org.opencrown.app.data.DiscoveryState
 import org.opencrown.app.data.FeatureRegistry
 import org.opencrown.app.data.pairing.PairingStage
@@ -39,6 +40,7 @@ fun CrownApp(
     registryResult: FeatureRegistry.LoadResult,
     discoveryState: DiscoveryState,
     chainState: ChainState,
+    coreStatus: CoreStatus,
     pairingStage: PairingStage,
     selectedWatchName: String?,
     onboardingComplete: Boolean,
@@ -167,6 +169,7 @@ fun CrownApp(
                 appVersion = appVersion,
                 refreshing = refreshing,
                 chainState = chainState,
+                coreStatus = coreStatus,
                 onRefresh = actions.refresh,
                 onRequestPermissions = actions.requestPermissions,
                 onPrepareBoot = actions.prepareBoot,

@@ -96,6 +96,27 @@
   },
   "features": [
     {
+      "id": "foundation.uniffi-seam",
+      "category": "Foundation",
+      "title": "Kotlin to Rust protocol seam",
+      "iphone_behavior": "The iPhone Watch app uses first-party frameworks; Open Crown's portable protocol logic is Rust behind a typed FFI.",
+      "status": "verified",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [
+        "ffi/src/lib.rs",
+        "ffi/generated/org/opencrown/ffi/opencrown.kt",
+        "app/src/main/kotlin/org/opencrown/app/data/RustCore.kt",
+        "app/build.gradle.kts"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/evidence/a52-uniffi-core.md"
+      ],
+      "physical_verified": true,
+      "notes": "Verified on SM-A528B: libopencrown.so and JNA loaded; protocol revision and core rules rendered in Diagnostics."
+    },
+    {
       "id": "foundation.observations",
       "category": "Foundation",
       "title": "Observation model",

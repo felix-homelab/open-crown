@@ -20,6 +20,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val snapshot: StateFlow<CrownSnapshot?> = crown.snapshot
     val refreshing: StateFlow<Boolean> = crown.refreshing
     val registry: FeatureRegistry.LoadResult = graph.featureRegistry
+    val coreStatus = graph.core
     val discoveryState = graph.discovery.state
     val chainState = graph.chain.state
 

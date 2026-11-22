@@ -122,4 +122,5 @@ class AppGraph(context: Context) {
     val chain = ChainController(context)
     val onboarding = OnboardingStore(context)
     val featureRegistry: FeatureRegistry.LoadResult = FeatureRegistry.load(context)
+    val core: CoreStatus = RustCore.probe()
 }

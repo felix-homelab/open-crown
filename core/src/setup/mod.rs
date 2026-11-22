@@ -8,6 +8,10 @@
 
 use std::fmt;
 
+/// The durable checkpoint ordinals defined by the Lane A spec.
+pub const FIRST_CHECKPOINT: u32 = 1;
+pub const LAST_CHECKPOINT: u32 = 18;
+
 /// Phases from the Lane A spec, limited to the provisioning half of the flow.
 /// Discovery, pairing and IDS have their own modules.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -166,7 +170,7 @@ impl Provisioning {
     /// ordinals must strictly increase. Gaps are allowed because a step can be
     /// skipped by policy (for example Wi-Fi on an unsupported network).
     pub fn checkpoint(&mut self, ordinal: u32) -> Result<(), SetupError> {
-        if !(1..=18).contains(&ordinal) {
+        if !(FIRST_CHECKPOINT..=LAST_CHECKPOINT).contains(&ordinal) {
             return Err(SetupError::Checkpoint("ordinal outside 1..=18"));
         }
         if let Some(last) = self.checkpoints.last() {

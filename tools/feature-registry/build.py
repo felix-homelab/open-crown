@@ -67,6 +67,12 @@ F = []
 A = F.append
 
 # ---------------------------------------------------------------- Foundation
+A(f("foundation.uniffi-seam", "Foundation", "Kotlin to Rust protocol seam",
+    "The iPhone Watch app uses first-party frameworks; Open Crown's portable protocol logic is Rust behind a typed FFI.",
+    "verified", 1,
+    impl=["ffi/src/lib.rs", "ffi/generated/org/opencrown/ffi/opencrown.kt", "app/src/main/kotlin/org/opencrown/app/data/RustCore.kt", "app/build.gradle.kts"],
+    evidence=["docs/evidence/a52-uniffi-core.md"],
+    notes="Verified on SM-A528B: libopencrown.so and JNA loaded; protocol revision and core rules rendered in Diagnostics."))
 A(f("foundation.observations", "Foundation", "Observation model",
     "Every value the iPhone Watch app shows reflects a live watch state or a named cached state; nothing is shown as applied before the watch confirms it.",
     "implemented_unverified", 1, impl=["app/src/main/kotlin/org/opencrown/app/model/Observation.kt"],

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.opencrown.app.data.AppSecurityProbe
 import org.opencrown.app.data.ChainState
+import org.opencrown.app.data.CoreStatus
 import org.opencrown.app.data.FeatureRegistry
 import org.opencrown.app.data.FeatureStatus
 import org.opencrown.app.model.AvailabilityReason
@@ -41,6 +42,7 @@ fun DiagnosticsScreen(
     appVersion: String,
     refreshing: Boolean,
     chainState: ChainState,
+    coreStatus: CoreStatus,
     onRefresh: () -> Unit,
     onRequestPermissions: () -> Unit,
     onPrepareBoot: () -> Unit,
@@ -77,6 +79,7 @@ fun DiagnosticsScreen(
                 appVersion = appVersion,
                 refreshing = refreshing,
                 chainState = chainState,
+                coreStatus = coreStatus,
                 onRefresh = onRefresh,
                 onRequestPermissions = onRequestPermissions,
                 onPrepareBoot = { consent = true },
@@ -113,12 +116,68 @@ private fun LazyListScope.diagnosticsItems(
     appVersion: String,
     refreshing: Boolean,
     chainState: ChainState,
+    coreStatus: CoreStatus,
     onRefresh: () -> Unit,
     onRequestPermissions: () -> Unit,
     onPrepareBoot: () -> Unit,
     onBack: () -> Unit,
     time: SimpleDateFormat,
 ) {
+    item(key = "core-header") {
+        Spacer(Modifier.height(24.dp))
+        CrownSectionHeader("Rust core")
+    }
+    item(key = "core") {
+        CrownInsetGroup(
+            footer = "The protocol core is pure Rust behind UniFFI. A missing native library is reported, not replaced with a default.",
+        ) {
+            CrownDiagnosticRow(
+                "UniFFI",
+                if (coreStatus.available) "loaded" else "unavailable",
+                coreStatus.detail,
+                if (coreStatus.available) CrownTone.SUCCESS else CrownTone.CRITICAL,
+            )
+            CrownDiagnosticRow(
+                "Protocol revision",
+                coreStatus.protocolVersion?.toString() ?: "unknown",
+                "0 means no spec has been verified on hardware",
+            )
+            val rules = coreStatus.rules
+            if (rules == null) {
+                CrownDiagnosticRow(
+                    "Rules",
+                    "unavailable",
+                    "The core did not return its limits.",
+                    CrownTone.CRITICAL,
+                    showDivider = false,
+                )
+            } else {
+                CrownDiagnosticRow(
+                    "Discovery rules",
+                    rules.discoveryTtlMs.toString() + " ms · " + rules.discoveryMaxCandidates + " max",
+                    "TTL and inventory bound from opencrown-core",
+                )
+                CrownDiagnosticRow(
+                    "IDS rules",
+                    rules.idsMaxPending.toString() + " pending · backoff " +
+                        rules.idsBackoffSecs.joinToString("/") + " s",
+                    "Correlation bound and reconnect policy from opencrown-core",
+                )
+                CrownDiagnosticRow(
+                    "Face rules",
+                    (rules.faceMaxArchiveBytes / 1024UL / 1024UL).toString() + " MiB · " +
+                        (rules.faceReadbackTimeoutMs / 1000UL) + " s read-back",
+                    "Package and read-back bounds from opencrown-core",
+                )
+                CrownDiagnosticRow(
+                    "Setup checkpoints",
+                    rules.setupCheckpointFirst.toString() + "–" + rules.setupCheckpointLast,
+                    "Durable ordinal range from opencrown-core",
+                    showDivider = false,
+                )
+            }
+        }
+    }
     item(key = "chain-header") {
         Spacer(Modifier.height(24.dp))
         CrownSectionHeader("Per-boot relay")

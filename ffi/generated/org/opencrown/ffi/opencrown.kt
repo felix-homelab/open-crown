@@ -674,6 +674,8 @@ internal object IntegrityCheckingUniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_opencrown_checksum_func_core_rules(
+    ): Int
     external fun uniffi_opencrown_checksum_func_device_status(
     ): Int
     external fun uniffi_opencrown_checksum_func_evaluate_readiness(
@@ -705,6 +707,8 @@ internal object UniffiLib {
     }
 
     internal fun ensureInitialized() = Unit
+    external fun uniffi_opencrown_fn_func_core_rules(uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_device_status(`json`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     external fun uniffi_opencrown_fn_func_evaluate_readiness(`indexJson`: RustBuffer.ByValue,`bundlesDir`: RustBuffer.ByValue,`model`: RustBuffer.ByValue,`kernelRelease`: RustBuffer.ByValue,`abi`: RustBuffer.ByValue,`androidSdk`: Int,`buildId`: RustBuffer.ByValue,`agentVersion`: RustBuffer.ByValue,`pinnedKeysHex`: RustBuffer.ByValue,`revocationsJson`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -840,6 +844,9 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
+    if ((lib.uniffi_opencrown_checksum_func_core_rules() and 0xFFFF) != 17530) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if ((lib.uniffi_opencrown_checksum_func_device_status() and 0xFFFF) != 47251) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -977,6 +984,29 @@ public object FfiConverterUInt: FfiConverter<UInt, Int> {
 
     override fun write(value: UInt, buf: ByteBuffer) {
         buf.putInt(value.toInt())
+    }
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterULong: FfiConverter<ULong, Long> {
+    override fun lift(value: Long): ULong {
+        return value.toULong()
+    }
+
+    override fun read(buf: ByteBuffer): ULong {
+        return lift(buf.getLong())
+    }
+
+    override fun lower(value: ULong): Long {
+        return value.toLong()
+    }
+
+    override fun allocationSize(value: ULong) = 8UL
+
+    override fun write(value: ULong, buf: ByteBuffer) {
+        buf.putLong(value.toLong())
     }
 }
 
@@ -1142,6 +1172,78 @@ public object FfiConverterTypeBundleInfo: FfiConverterRustBuffer<BundleInfo> {
             FfiConverterString.write(value.`persistence`, buf)
             FfiConverterString.write(value.`digest`, buf)
             FfiConverterUInt.write(value.`targets`, buf)
+    }
+}
+
+
+
+/**
+ * Protocol rules the app may display or validate against. These are read from
+ * the core modules, not duplicated in Kotlin.
+ */
+data class CoreRules (
+    var `discoveryTtlMs`: kotlin.ULong
+    , 
+    var `discoveryMaxCandidates`: kotlin.UInt
+    , 
+    var `idsMaxPending`: kotlin.UInt
+    , 
+    var `idsBackoffSecs`: List<kotlin.UInt>
+    , 
+    var `faceReadbackTimeoutMs`: kotlin.ULong
+    , 
+    var `faceMaxArchiveBytes`: kotlin.ULong
+    , 
+    var `setupCheckpointFirst`: kotlin.UInt
+    , 
+    var `setupCheckpointLast`: kotlin.UInt
+    
+){
+    
+
+    
+
+    
+    companion object
+}
+
+/**
+ * @suppress
+ */
+public object FfiConverterTypeCoreRules: FfiConverterRustBuffer<CoreRules> {
+    override fun read(buf: ByteBuffer): CoreRules {
+        return CoreRules(
+            FfiConverterULong.read(buf),
+            FfiConverterUInt.read(buf),
+            FfiConverterUInt.read(buf),
+            FfiConverterSequenceUInt.read(buf),
+            FfiConverterULong.read(buf),
+            FfiConverterULong.read(buf),
+            FfiConverterUInt.read(buf),
+            FfiConverterUInt.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: CoreRules) = (
+            FfiConverterULong.allocationSize(value.`discoveryTtlMs`) +
+            FfiConverterUInt.allocationSize(value.`discoveryMaxCandidates`) +
+            FfiConverterUInt.allocationSize(value.`idsMaxPending`) +
+            FfiConverterSequenceUInt.allocationSize(value.`idsBackoffSecs`) +
+            FfiConverterULong.allocationSize(value.`faceReadbackTimeoutMs`) +
+            FfiConverterULong.allocationSize(value.`faceMaxArchiveBytes`) +
+            FfiConverterUInt.allocationSize(value.`setupCheckpointFirst`) +
+            FfiConverterUInt.allocationSize(value.`setupCheckpointLast`)
+    )
+
+    override fun write(value: CoreRules, buf: ByteBuffer) {
+            FfiConverterULong.write(value.`discoveryTtlMs`, buf)
+            FfiConverterUInt.write(value.`discoveryMaxCandidates`, buf)
+            FfiConverterUInt.write(value.`idsMaxPending`, buf)
+            FfiConverterSequenceUInt.write(value.`idsBackoffSecs`, buf)
+            FfiConverterULong.write(value.`faceReadbackTimeoutMs`, buf)
+            FfiConverterULong.write(value.`faceMaxArchiveBytes`, buf)
+            FfiConverterUInt.write(value.`setupCheckpointFirst`, buf)
+            FfiConverterUInt.write(value.`setupCheckpointLast`, buf)
     }
 }
 
@@ -1548,6 +1650,34 @@ public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?>
 /**
  * @suppress
  */
+public object FfiConverterSequenceUInt: FfiConverterRustBuffer<List<kotlin.UInt>> {
+    override fun read(buf: ByteBuffer): List<kotlin.UInt> {
+        val len = buf.getInt()
+        return List<kotlin.UInt>(len) {
+            FfiConverterUInt.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<kotlin.UInt>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterUInt.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<kotlin.UInt>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterUInt.write(it, buf)
+        }
+    }
+}
+
+
+
+
+/**
+ * @suppress
+ */
 public object FfiConverterSequenceString: FfiConverterRustBuffer<List<kotlin.String>> {
     override fun read(buf: ByteBuffer): List<kotlin.String> {
         val len = buf.getInt()
@@ -1624,7 +1754,17 @@ public object FfiConverterSequenceTypeSupportedDevice: FfiConverterRustBuffer<Li
             FfiConverterTypeSupportedDevice.write(it, buf)
         }
     }
+} fun `coreRules`(): CoreRules {
+            return FfiConverterTypeCoreRules.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.uniffi_opencrown_fn_func_core_rules(
+    
+        _status)
 }
+    )
+    }
+    
+
         /**
          * One of supported, example, retired, unknown.
          */

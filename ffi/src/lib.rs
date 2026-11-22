@@ -354,6 +354,37 @@ pub fn device_status(
     Ok(list.status_for(&device).to_string())
 }
 
+/// Protocol rules the app may display or validate against. These are read from
+/// the core modules, not duplicated in Kotlin.
+#[derive(Debug, uniffi::Record)]
+pub struct CoreRules {
+    pub discovery_ttl_ms: u64,
+    pub discovery_max_candidates: u32,
+    pub ids_max_pending: u32,
+    pub ids_backoff_secs: Vec<u32>,
+    pub face_readback_timeout_ms: u64,
+    pub face_max_archive_bytes: u64,
+    pub setup_checkpoint_first: u32,
+    pub setup_checkpoint_last: u32,
+}
+
+#[uniffi::export]
+pub fn core_rules() -> CoreRules {
+    CoreRules {
+        discovery_ttl_ms: opencrown_core::discovery::CANDIDATE_TTL_MS,
+        discovery_max_candidates: opencrown_core::discovery::MAX_CANDIDATES as u32,
+        ids_max_pending: opencrown_core::ids::MAX_PENDING_REQUESTS as u32,
+        ids_backoff_secs: opencrown_core::ids::RECONNECT_BACKOFF_SECS
+            .iter()
+            .map(|value| *value as u32)
+            .collect(),
+        face_readback_timeout_ms: opencrown_core::faces::READBACK_TIMEOUT_MS,
+        face_max_archive_bytes: opencrown_core::faces::MAX_ARCHIVE_BYTES as u64,
+        setup_checkpoint_first: opencrown_core::setup::FIRST_CHECKPOINT,
+        setup_checkpoint_last: opencrown_core::setup::LAST_CHECKPOINT,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -481,6 +512,17 @@ mod tests {
 
         assert!(error.to_string().contains("revoked"));
     }
+    #[test]
+    fn core_rules_come_from_the_core() {
+        let rules = core_rules();
+        assert_eq!(rules.discovery_ttl_ms, 10_000);
+        assert_eq!(rules.discovery_max_candidates, 32);
+        assert_eq!(rules.ids_backoff_secs, vec![15, 30, 60]);
+        assert_eq!(rules.face_readback_timeout_ms, 180_000);
+        assert_eq!(rules.setup_checkpoint_first, 1);
+        assert_eq!(rules.setup_checkpoint_last, 18);
+    }
+
     fn example_root(tag: &str) -> PathBuf {
         let source = example_bundle();
         let root = std::env::temp_dir().join(format!("opencrown-ffi-{tag}-{}", std::process::id()));

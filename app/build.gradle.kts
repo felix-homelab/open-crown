@@ -43,6 +43,14 @@ android {
         compose = true
     }
 
+    // UniFFI Kotlin bindings are generated from the Rust surface and committed.
+    // They live outside app/ so the Rust and Kotlin sides have one source file.
+    sourceSets {
+        getByName("main") {
+            java.srcDir(rootProject.file("ffi/generated"))
+        }
+    }
+
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
@@ -83,6 +91,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
+    implementation("net.java.dev.jna:jna:${libs.versions.jna.get()}@aar")
     testImplementation(libs.junit)
     testImplementation(libs.json)
 }

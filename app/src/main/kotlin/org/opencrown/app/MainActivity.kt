@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
                     registryResult = viewModel.registry,
                     discoveryState = discoveryState,
                     chainState = chainState,
+                    coreStatus = viewModel.coreStatus,
                     pairingStage = pairingStage,
                     selectedWatchName = selectedWatchName,
                     onboardingComplete = onboarding,
