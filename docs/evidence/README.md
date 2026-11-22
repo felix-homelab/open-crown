@@ -14,6 +14,7 @@ attachments: capture hash, screenshots, logs (redacted)
 
 | Session | Result | Note |
 | --- | --- | --- |
+| 2026-11-22 | pass (visual) | [A52 design: light appearance and 1.3x text](a52-design-system.md) |
 | 2026-11-22 | pass (narrow) | [A52 discovery: ads observed, none selectable](a52-discovery.md) |
 | 2026-11-22 | blocked | [A52 broker: real untrusted_app denial](a52-broker-untrusted-app.md) |
 | 2026-11-22 | blocked | [Broker probe and relay protocol decode](broker-probe-a52.md) |
