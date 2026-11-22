@@ -3429,14 +3429,19 @@
       "category": "About, privacy & evidence",
       "title": "Open-source licences",
       "iphone_behavior": "The iPhone Settings app shows software licences.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 6,
-      "implementation": [],
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/LicencesScreen.kt",
+        "docs/THIRD_PARTY.md"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/evidence/a52-licences.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Physical screen and inventory match. Licence texts and a release SBOM are explicitly still open gates."
     },
     {
       "id": "about.blockers",

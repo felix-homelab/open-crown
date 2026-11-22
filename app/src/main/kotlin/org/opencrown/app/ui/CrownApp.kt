@@ -27,6 +27,7 @@ import org.opencrown.app.ui.screens.EvidenceScreen
 import org.opencrown.app.ui.screens.FacesScreen
 import org.opencrown.app.ui.screens.FeatureDetailScreen
 import org.opencrown.app.ui.screens.HealthScreen
+import org.opencrown.app.ui.screens.LicencesScreen
 import org.opencrown.app.ui.screens.HomeScreen
 import org.opencrown.app.ui.screens.NotificationsScreen
 import org.opencrown.app.ui.screens.PairingScreen
@@ -172,6 +173,8 @@ fun CrownApp(
                 onRequestPermissions = actions.requestPermissions,
             )
 
+            Destination.Licences -> LicencesScreen(onBack = back)
+
             Destination.Accessibility -> AccessibilityScreen(onBack = back)
 
             Destination.Diagnostics -> DiagnosticsScreen(
@@ -202,6 +205,7 @@ fun CrownApp(
                 onBack = back,
                 onOpenEvidence = { navigator.push(Destination.Evidence) },
                 onOpenPrivacy = { navigator.push(Destination.Privacy) },
+                onOpenLicences = { navigator.push(Destination.Licences) },
                 onResetOnboarding = {
                     actions.resetOnboarding()
                     navigator.reset(Destination.Welcome)

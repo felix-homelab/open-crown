@@ -441,7 +441,12 @@ fun SettingsScreen(
         item(key = "about") {
             Spacer(Modifier.height(24.dp))
             CrownInsetGroup(title = "About") {
-                CrownDisclosureRow("About Open Crown", onClick = { onNavigate(Destination.About) }, showDivider = false)
+                CrownDisclosureRow("About Open Crown", onClick = { onNavigate(Destination.About) })
+                CrownDisclosureRow(
+                    "Open-source licences",
+                    onClick = { onNavigate(Destination.Licences) },
+                    showDivider = false,
+                )
             }
         }
         item(key = "data") {
@@ -589,6 +594,7 @@ fun AboutScreen(
     onBack: () -> Unit,
     onOpenEvidence: () -> Unit,
     onOpenPrivacy: () -> Unit,
+    onOpenLicences: () -> Unit,
     onResetOnboarding: () -> Unit,
 ) {
     val colors = CrownTheme.colors
@@ -649,6 +655,11 @@ fun AboutScreen(
                 CrownRow(
                     title = "Clean-room provenance",
                     subtitle = "Two-lane process; reference never ships",
+                    showDivider = true,
+                )
+                CrownDisclosureRow(
+                    "Open-source licences",
+                    onClick = onOpenLicences,
                     showDivider = false,
                 )
             }

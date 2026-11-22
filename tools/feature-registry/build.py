@@ -818,7 +818,10 @@ A(f("about.evidence", "About, privacy & evidence", "Evidence and blockers",
     evidence=["docs/cleanroom/FEATURE_REGISTRY.md"], notes="Registry browser with filters, blocker detail and feature rows; physically exercised on the A52."))
 A(f("about.open-source", "About, privacy & evidence", "Open-source licences",
     "The iPhone Settings app shows software licences.",
-    "unimplemented", 6))
+    "implemented_unverified", 6,
+    impl=["app/src/main/kotlin/org/opencrown/app/ui/screens/LicencesScreen.kt", "docs/THIRD_PARTY.md"],
+    evidence=["docs/evidence/a52-licences.md"],
+    notes="Physical screen and inventory match. Licence texts and a release SBOM are explicitly still open gates."))
 A(f("about.blockers", "About, privacy & evidence", "Blocker transparency",
     "No equivalent; the product must not hide blocked iPhone parity behind a generic error.",
     "implemented_unverified", 1, impl=["docs/cleanroom/BLOCKERS.md", "app/src/main/kotlin/org/opencrown/app/ui/screens/EvidenceScreens.kt"],

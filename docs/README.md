@@ -19,6 +19,7 @@
 | [Privacy policy](privacy.md) | What data exists, where it lives, permissions and user controls |
 | [Security notes](security.md) | Trust boundaries, secrets, privileged payload, supply chain and gaps |
 | [Install and recovery](install.md) | Requirements, build, permissions, update, recovery and release gate |
+| [Third-party software](THIRD_PARTY.md) | Runtime licences, MPL/LGPL notes and open notice gates |
 | [Provenance log](provenance.md) | Per-feature clean-room record |
 | [Clean-room provenance](cleanroom/PROVENANCE.md) | Lanes, custody, Apple-origin policy, payload-boundary finding |
 | [Reference boundary](cleanroom/REFERENCE_BOUNDARY.md) | What Lane B may and may not read; build independence |

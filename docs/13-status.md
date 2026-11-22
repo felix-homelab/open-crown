@@ -5,7 +5,7 @@ As of 2026-11-22 (private research build).
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
 is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 227 rows, 5 verified,
-30 built-but-unverified, 32 blocked, 160 not built. The three verified rows are
+31 built-but-unverified, 32 blocked, 159 not built. The three verified rows are
 narrow and do not imply pairing: unprivileged Apple-advertisement observation,
 the Kotlin↔Rust UniFFI seam, and local notification ingress. No watch-scoped
 capability is verified.
@@ -28,6 +28,7 @@ capability is verified.
 | Update path | install -r preserved onboarding and per-app policy; new muted notification stayed out | [evidence](evidence/a52-update-path.md) |
 | Health mirror | Bounded transactional mirror with tombstones and no zero substitution | `core/src/health.rs`, host tests |
 | Privacy surface | In-app privacy screen with live permission state, plus normative privacy, security and install documents | [evidence](evidence/a52-privacy-screen.md), [privacy](privacy.md), [security](security.md), [install](install.md) |
+| Licences | In-app inventory matches the documented runtime licences; notice texts/SBOM still open | [inventory](THIRD_PARTY.md), [evidence](evidence/a52-licences.md) |
 | Diagnostics export | Redacted support report written to cache and shared only by user action | [evidence](evidence/a52-diagnostics-export.md) |
 | Wi-Fi guards | One archive per setup generation, expiry/retry bounds, ACK is delivery not join | `core/src/wifi.rs`, host tests |
 | Preferences and pigments | Unknown-never-false, baseline-bound read-back, complete pigment sets | `core/src/settings.rs`, host tests |

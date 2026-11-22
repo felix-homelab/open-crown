@@ -17,6 +17,7 @@ attachments: capture hash, screenshots, logs (redacted)
 | 2026-11-22 | pass (support) | [A52 diagnostics export: redacted report](a52-diagnostics-export.md) |
 | 2026-11-22 | pass (local reset) | [A52 local app-data reset](a52-local-data-reset.md) |
 | 2026-11-22 | pass (accessibility) | [A52 Dynamic Type: 200% row reflow](a52-large-text-200.md) |
+| 2026-11-22 | pass (licences) | [A52 open-source licence screen](a52-licences.md) |
 | 2026-11-22 | pass (privacy) | [A52 privacy screen: local data and permissions](a52-privacy-screen.md) |
 | 2026-11-22 | pass (update) | [A52 update path: state preserved](a52-update-path.md) |
 | 2026-11-22 | pass (recovery) | [A52 recovery: app reinstall](a52-recovery-reinstall.md) |
