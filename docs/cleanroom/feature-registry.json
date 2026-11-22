@@ -3427,14 +3427,19 @@
       "category": "Operations & quality",
       "title": "Recovery drill",
       "iphone_behavior": "The iPhone recovers from reboot, unpair, watch reset and app reinstall.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 6,
-      "implementation": [],
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/MainViewModel.kt",
+        "app/src/main/kotlin/org/opencrown/app/data/OnboardingStore.kt"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/evidence/a52-recovery-reinstall.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "App reinstall and reboot tested on the A52: onboarding reset, listener access absent, core loads. Watch unpair/reset and populated-store recovery are not testable without a Watch."
     },
     {
       "id": "ops.release-build",

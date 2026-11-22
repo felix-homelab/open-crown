@@ -14,6 +14,7 @@ attachments: capture hash, screenshots, logs (redacted)
 
 | Session | Result | Note |
 | --- | --- | --- |
+| 2026-11-22 | pass (recovery) | [A52 recovery: app reinstall](a52-recovery-reinstall.md) |
 | 2026-11-22 | pass (build) | [A52 minified release with UniFFI](a52-release-build.md) |
 | 2026-11-22 | pass (local ingress) | [A52 notifications: captured locally, not delivered](a52-notification-ingress.md) |
 | 2026-11-22 | pass (architecture) | [A52 UniFFI: Rust core loaded](a52-uniffi-core.md) |

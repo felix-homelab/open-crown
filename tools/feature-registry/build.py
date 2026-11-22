@@ -809,7 +809,9 @@ A(f("ops.secret-scan", "Operations & quality", "Secret and identifier scan",
     notes="Scans tracked text for private-key blocks, provider tokens and signing-material suffixes without echoing matches; wired into CI. Device serials are not pattern-scanned."))
 A(f("ops.recovery-drill", "Operations & quality", "Recovery drill",
     "The iPhone recovers from reboot, unpair, watch reset and app reinstall.",
-    "unimplemented", 6))
+    "implemented_unverified", 6, impl=["app/src/main/kotlin/org/opencrown/app/MainViewModel.kt", "app/src/main/kotlin/org/opencrown/app/data/OnboardingStore.kt"],
+    evidence=["docs/evidence/a52-recovery-reinstall.md"],
+    notes="App reinstall and reboot tested on the A52: onboarding reset, listener access absent, core loads. Watch unpair/reset and populated-store recovery are not testable without a Watch."))
 A(f("ops.release-build", "Operations & quality", "Release build and install path",
     "The iPhone app ships through the App Store; Open Crown ships an APK with reproducible checks.",
     "implemented_unverified", 6, impl=["app/proguard-rules.pro"],

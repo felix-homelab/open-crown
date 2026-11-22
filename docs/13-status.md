@@ -5,7 +5,7 @@ As of 2026-11-22 (private research build).
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
 is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 222 rows, 3 verified,
-19 built-but-unverified, 32 blocked, 168 not built. The three verified rows are
+20 built-but-unverified, 32 blocked, 167 not built. The three verified rows are
 narrow and do not imply pairing: unprivileged Apple-advertisement observation,
 the Kotlin↔Rust UniFFI seam, and local notification ingress. No watch-scoped
 capability is verified.
