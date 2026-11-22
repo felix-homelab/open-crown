@@ -113,7 +113,7 @@ fun CrownRow(
                 Text(
                     text = title,
                     style = CrownTheme.type.body,
-                    color = if (destructive) colors.destructive else colors.label,
+                    color = if (destructive) colors.destructiveText else colors.label,
                 )
                 if (subtitle != null) {
                     Spacer(Modifier.height(2.dp))
@@ -325,7 +325,9 @@ fun CrownStatusPill(
                 .clip(CrownTheme.shapes.pill)
                 .background(color)
         )
-        Text(text = text, style = CrownTheme.type.caption2, color = color)
+        // The capsule's tone is carried by the dot and background; the label
+        // stays high-contrast instead of using the accent colour as small text.
+        Text(text = text, style = CrownTheme.type.caption2, color = colors.label)
     }
 }
 

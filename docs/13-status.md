@@ -28,6 +28,7 @@ capability is verified.
 | Update path | install -r preserved onboarding and per-app policy; new muted notification stayed out | [evidence](evidence/a52-update-path.md) |
 | Health mirror | Bounded transactional mirror with tombstones and no zero substitution | `core/src/health.rs`, host tests |
 | Privacy surface | In-app privacy screen with live permission state, plus normative privacy, security and install documents | [evidence](evidence/a52-privacy-screen.md), [privacy](privacy.md), [security](security.md), [install](install.md) |
+| Contrast audit | Required text contrast passes in light/dark; status pills and destructive text fixed | [audit](design/contrast.md), [evidence](evidence/a52-contrast-audit.md) |
 | Licences | In-app inventory matches the documented runtime licences; notice texts/SBOM still open | [inventory](THIRD_PARTY.md), [evidence](evidence/a52-licences.md) |
 | Registry coverage | 25 of 26 Lane A groups represented; G15/G19/G22/G23/G24/G26 still have claim gaps | [audit](cleanroom/audit/registry-coverage.md) |
 | Diagnostics export | Redacted support report written to cache and shared only by user action | [evidence](evidence/a52-diagnostics-export.md) |

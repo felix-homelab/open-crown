@@ -109,8 +109,9 @@ secondary label plus a reason, not red.
 - Switches expose toggleable state; segmented controls expose selectable state.
 - Row tap targets are at least 48dp; the whole row is clickable, not just text.
 - Focus order follows visual order.
-- Contrast: label on grouped background >= 4.5:1; tertiary text is not used for
-  essential information.
+- Contrast: label, secondary and destructive text on page/card surfaces >= 4.5:1;
+  status pills use label text with tone carried by dot/surface; tertiary text is
+  not used for essential information. Checked by tools/design/contrast.py.
 - No information is conveyed by colour alone.
 - Text wraps; no fixed-height rows for body text.
 

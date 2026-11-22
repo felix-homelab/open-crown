@@ -37,6 +37,8 @@ data class CrownColors(
     /** Foreground on a filled tint background. */
     val onTint: Color = Color(0xFFFFFFFF),
     val destructive: Color = Color(0xFFFF3B30),
+    /** Destructive text on a light surface; the fill token stays Apple-red. */
+    val destructiveText: Color = Color(0xFFC4271C),
     val success: Color = Color(0xFF34C759),
     val warning: Color = Color(0xFFFF9500),
     val info: Color = Color(0xFF007AFF),
@@ -76,6 +78,7 @@ data class CrownColors(
             tint = Color(0xFF0A84FF),
             onTint = Color(0xFFFFFFFF),
             destructive = Color(0xFFFF453A),
+            destructiveText = Color(0xFFFF6961),
             success = Color(0xFF30D158),
             warning = Color(0xFFFF9F0A),
             info = Color(0xFF0A84FF),
