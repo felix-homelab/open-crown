@@ -31,6 +31,7 @@ unauditable.
 | Face delta and read-back rules | [spec/05-faces.md](cleanroom/spec/05-faces.md) | none (encoding UNKNOWN; no capture) | Lane A spec; reference operation/limit inventory | staged delta, read-back confirmation, package bounds | none | lead, 2026-11-22 |
 | Notification claim rules | [spec/06-notifications.md](cleanroom/spec/06-notifications.md) | none (bulletin encoding UNKNOWN; no capture) | Lane A spec; reference claim-rule inventory | revision binding, commit-before-effect, at-most-once | none | lead, 2026-11-22 |
 | Write confirmation | [docs/design/state-model.md](design/state-model.md) | none (no wire change; policy model) | own observation rules; Android/agent lifecycle | command lifecycle and no-promotion rule | none | lead, 2026-11-22 |
+| Pairing rules | [spec/02-pairing-security.md](cleanroom/spec/02-pairing-security.md) | none (uIKE/SPAKE/SMP UNKNOWN; no capture) | Lane A spec; reference phase/branch inventory | branch exclusivity, bond ordering, replacement safety | none | lead, 2026-11-22 |
 
 ## Attestation
 

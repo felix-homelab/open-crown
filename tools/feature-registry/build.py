@@ -161,6 +161,11 @@ A(f("foundation.faces-delta-rules", "Foundation", "Face mutation and read-back r
     "implemented_unverified", 4, impl=["core/src/faces/mod.rs"],
     evidence=["docs/cleanroom/spec/05-faces.md"],
     notes="Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."))
+A(f("foundation.pairing-rules", "Foundation", "Pairing branch and bond ordering rules",
+    "The iPhone pairs through a PIN or optical branch, never both, and reports bonded only after SMP and durable storage succeed.",
+    "implemented_unverified", 3, impl=["core/src/pairing.rs"],
+    evidence=["docs/cleanroom/spec/02-pairing-security.md"],
+    notes="Branch exclusivity, bounded PIN attempts, optical downgrade/MAC refusal, bond-store failure, replacement ordering and optical payload parsing. uIKE/SPAKE2+/SMP wire formats remain UNKNOWN."))
 A(f("foundation.write-confirmation", "Foundation", "Write-then-observe confirmation",
     "The iPhone shows a setting as changed only after the Watch reports the new value.",
     "implemented_unverified", 1, impl=["core/src/write.rs"],

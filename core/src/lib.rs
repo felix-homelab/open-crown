@@ -18,6 +18,7 @@ pub mod faces;
 pub mod health;
 pub mod ids;
 pub mod notifications;
+pub mod pairing;
 pub mod session;
 pub mod setup;
 pub mod telephony;

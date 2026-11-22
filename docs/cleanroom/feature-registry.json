@@ -491,6 +491,24 @@
       "notes": "Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."
     },
     {
+      "id": "foundation.pairing-rules",
+      "category": "Foundation",
+      "title": "Pairing branch and bond ordering rules",
+      "iphone_behavior": "The iPhone pairs through a PIN or optical branch, never both, and reports bonded only after SMP and durable storage succeed.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [
+        "core/src/pairing.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/02-pairing-security.md"
+      ],
+      "physical_verified": false,
+      "notes": "Branch exclusivity, bounded PIN attempts, optical downgrade/MAC refusal, bond-store failure, replacement ordering and optical payload parsing. uIKE/SPAKE2+/SMP wire formats remain UNKNOWN."
+    },
+    {
       "id": "foundation.write-confirmation",
       "category": "Foundation",
       "title": "Write-then-observe confirmation",

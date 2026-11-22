@@ -4,8 +4,8 @@ As of 2026-11-22 (private research build).
 
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
-is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 221 rows, 3 verified,
-18 built-but-unverified, 32 blocked, 168 not built. The three verified rows are
+is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 222 rows, 3 verified,
+19 built-but-unverified, 32 blocked, 168 not built. The three verified rows are
 narrow and do not imply pairing: unprivileged Apple-advertisement observation,
 the Kotlin↔Rust UniFFI seam, and local notification ingress. No watch-scoped
 capability is verified.
@@ -21,9 +21,10 @@ capability is verified.
 | Notification ingress | Android listener captures sanitised, memory-only notification content; no delivery exists | [evidence](evidence/a52-notification-ingress.md) |
 | Notification claims | Revision-bound actions/replies, tombstones and no-retry outcomes in the Rust core | `core/src/notifications.rs`, host tests |
 | Write confirmation | ACK is not applied; only a matching epoch/target/value observation is | `core/src/write.rs`, host tests |
+| Pairing rules | PIN/optical exclusivity, bounded PIN attempts, downgrade/MAC refusal, bond ordering, replacement safety | `core/src/pairing.rs`, host tests |
 | Minified release | R8 build keeps UniFFI/JNA; installed debug-signed on the A52 and core loads | [evidence](evidence/a52-release-build.md) |
 | Secret scan | Tracked files scanned for private keys, provider tokens and signing material; CI enforced | tools/cleanroom/secret-scan.py |
-| Feature registry | 221 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
+| Feature registry | 222 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
 | BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches. Physically exercised on the A52; the five observed advertisements were all refused as selectable | `data/BleDiscoveryRepository.kt`; [evidence](evidence/a52-discovery.md) |
 | Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |
 | Sealed pair store | AES-GCM through Android Keystore, corrupt envelope treated as absent | `data/PairRecordStore.kt` |
