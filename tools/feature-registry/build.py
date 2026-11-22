@@ -795,7 +795,9 @@ A(f("ops.recovery-drill", "Operations & quality", "Recovery drill",
     "unimplemented", 6))
 A(f("ops.release-build", "Operations & quality", "Release build and install path",
     "The iPhone app ships through the App Store; Open Crown ships an APK with reproducible checks.",
-    "unimplemented", 6))
+    "implemented_unverified", 6, impl=["app/proguard-rules.pro"],
+    evidence=["docs/evidence/a52-release-build.md"],
+    notes="R8 minified release builds and loads UniFFI on the A52 when debug-signed for the bench. Production signing, reproducibility and distribution are not verified."))
 A(f("ops.negative-tests", "Operations & quality", "Fuzz and negative tests",
     "Not user-visible; required for protocol robustness.",
     "unimplemented", 6))

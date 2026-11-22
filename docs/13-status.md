@@ -5,7 +5,7 @@ As of 2026-11-22 (private research build).
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
 is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 219 rows, 3 verified,
-14 built-but-unverified, 32 blocked, 170 not built. The three verified rows are
+15 built-but-unverified, 32 blocked, 169 not built. The three verified rows are
 narrow and do not imply pairing: unprivileged Apple-advertisement observation,
 the Kotlin↔Rust UniFFI seam, and local notification ingress. No watch-scoped
 capability is verified.
@@ -19,6 +19,7 @@ capability is verified.
 | Observation model | Every watch value is `Observation<T>` with origin, verification, time, pair/epoch and unavailable reason | `model/Observation.kt`, unit tests |
 | Rust core seam | Generated UniFFI binding, arm64 library packaged with JNA; Diagnostics renders protocol revision and core rules from Rust | [evidence](evidence/a52-uniffi-core.md) |
 | Notification ingress | Android listener captures sanitised, memory-only notification content; no delivery exists | [evidence](evidence/a52-notification-ingress.md) |
+| Minified release | R8 build keeps UniFFI/JNA; installed debug-signed on the A52 and core loads | [evidence](evidence/a52-release-build.md) |
 | Feature registry | 219 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
 | BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches. Physically exercised on the A52; the five observed advertisements were all refused as selectable | `data/BleDiscoveryRepository.kt`; [evidence](evidence/a52-discovery.md) |
 | Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |

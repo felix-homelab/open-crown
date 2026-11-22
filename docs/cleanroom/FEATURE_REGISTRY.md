@@ -20,10 +20,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 3 |
-| implemented_unverified | 14 |
+| implemented_unverified | 15 |
 | blocked | 32 |
 | out_of_scope | 0 |
-| unimplemented | 170 |
+| unimplemented | 169 |
 | **total** | **219** |
 
 ## By category
@@ -42,7 +42,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Settings & accessibility | 0 | 0 | 0 | 0 | 33 | 33 |
 | Secure & Apple-service | 0 | 0 | 17 | 0 | 0 | 17 |
 | About, privacy & evidence | 0 | 0 | 0 | 0 | 5 | 5 |
-| Operations & quality | 0 | 2 | 0 | 0 | 5 | 7 |
+| Operations & quality | 0 | 3 | 0 | 0 | 4 | 7 |
 
 ## Rows
 
@@ -327,7 +327,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | ops.license-audit | Licence audit | unimplemented |  | 6 |
 | ops.secret-scan | Secret and identifier scan | unimplemented |  | 6 |
 | ops.recovery-drill | Recovery drill | unimplemented |  | 6 |
-| ops.release-build | Release build and install path | unimplemented |  | 6 |
+| ops.release-build | Release build and install path | implemented_unverified |  | 6 |
 | ops.negative-tests | Fuzz and negative tests | unimplemented |  | 6 |
 
 ## Blocked rows and why

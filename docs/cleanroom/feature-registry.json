@@ -3378,14 +3378,18 @@
       "category": "Operations & quality",
       "title": "Release build and install path",
       "iphone_behavior": "The iPhone app ships through the App Store; Open Crown ships an APK with reproducible checks.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 6,
-      "implementation": [],
+      "implementation": [
+        "app/proguard-rules.pro"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/evidence/a52-release-build.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "R8 minified release builds and loads UniFFI on the A52 when debug-signed for the bench. Production signing, reproducibility and distribution are not verified."
     },
     {
       "id": "ops.negative-tests",
