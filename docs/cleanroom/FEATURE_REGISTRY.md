@@ -19,18 +19,18 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Status | Count |
 | --- | ---: |
-| verified | 3 |
+| verified | 4 |
 | implemented_unverified | 28 |
 | blocked | 32 |
 | out_of_scope | 0 |
-| unimplemented | 163 |
+| unimplemented | 162 |
 | **total** | **226** |
 
 ## By category
 
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Foundation | 2 | 19 | 3 | 0 | 17 | 41 |
+| Foundation | 3 | 19 | 3 | 0 | 16 | 41 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 1 | 0 | 1 | 0 | 19 | 21 |
@@ -90,7 +90,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | foundation.multi-watch | Multiple paired watches | unimplemented |  | 3 |
 | foundation.recovery | Recovery after reboot, disconnect and reset | unimplemented |  | 6 |
 | foundation.diagnostics | On-device diagnostics | unimplemented |  | 1 |
-| foundation.evidence-export | Evidence export | unimplemented |  | 1 |
+| foundation.evidence-export | Evidence export | verified |  | 1 |
 
 ### Onboarding & lifecycle
 

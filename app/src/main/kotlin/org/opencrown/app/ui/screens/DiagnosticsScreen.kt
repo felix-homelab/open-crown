@@ -1,5 +1,7 @@
 package org.opencrown.app.ui.screens
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyListScope
@@ -10,10 +12,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.opencrown.app.data.AppSecurityProbe
 import org.opencrown.app.data.ChainState
 import org.opencrown.app.data.CoreStatus
+import org.opencrown.app.diagnostics.DiagnosticsExporter
 import org.opencrown.app.data.FeatureRegistry
 import org.opencrown.app.data.FeatureStatus
 import org.opencrown.app.model.AvailabilityReason
@@ -49,6 +53,7 @@ fun DiagnosticsScreen(
     onBack: () -> Unit,
 ) {
     val time = remember { SimpleDateFormat("HH:mm:ss", Locale.getDefault()) }
+    val context = LocalContext.current
     var consent by remember { mutableStateOf(false) }
     CrownScaffold(
         title = "Diagnostics",
@@ -85,6 +90,7 @@ fun DiagnosticsScreen(
                 onPrepareBoot = { consent = true },
                 onBack = onBack,
                 time = time,
+                context = context,
             )
         }
     }
@@ -122,6 +128,7 @@ private fun LazyListScope.diagnosticsItems(
     onPrepareBoot: () -> Unit,
     onBack: () -> Unit,
     time: SimpleDateFormat,
+    context: Context,
 ) {
     item(key = "core-header") {
         Spacer(Modifier.height(24.dp))
@@ -359,6 +366,27 @@ private fun LazyListScope.diagnosticsItems(
             )
             Spacer(Modifier.height(8.dp))
         }
+        CrownButton(
+            text = "Export diagnostics",
+            onClick = {
+                val now = System.currentTimeMillis()
+                val report = DiagnosticsExporter.buildReport(
+                    nowMillis = now,
+                    appVersion = appVersion,
+                    snapshot = snapshot,
+                    core = coreStatus,
+                    registry = registry,
+                )
+                val file = DiagnosticsExporter.write(context, report, now)
+                val chooser = Intent.createChooser(
+                    DiagnosticsExporter.shareIntent(context, file),
+                    "Export diagnostics",
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                runCatching { context.startActivity(chooser) }
+            },
+            style = CrownButtonStyle.TINTED,
+        )
+        Spacer(Modifier.height(8.dp))
         CrownButton(
             text = "Close",
             onClick = onBack,

@@ -236,7 +236,9 @@ A(f("foundation.diagnostics", "Foundation", "On-device diagnostics",
     "unimplemented", 1, evidence=["docs/02-architecture.md"]))
 A(f("foundation.evidence-export", "Foundation", "Evidence export",
     "Not a user-facing iPhone feature; required for Open Crown's honesty contract.",
-    "unimplemented", 1, evidence=["docs/cleanroom/PROVENANCE.md"]))
+    "verified", 1, impl=["app/src/main/kotlin/org/opencrown/app/diagnostics/DiagnosticsExporter.kt", "app/src/main/kotlin/org/opencrown/app/ui/screens/DiagnosticsScreen.kt"],
+    evidence=["docs/evidence/a52-diagnostics-export.md"],
+    notes="Verified on the A52: redacted report written to app cache and offered through the share sheet; no serial, pairing key, notification content or health data."))
 
 # ------------------------------------------------------- Onboarding & lifecycle
 A(f("lifecycle.welcome", "Onboarding & lifecycle", "Welcome and onboarding",

@@ -14,6 +14,7 @@ attachments: capture hash, screenshots, logs (redacted)
 
 | Session | Result | Note |
 | --- | --- | --- |
+| 2026-11-22 | pass (support) | [A52 diagnostics export: redacted report](a52-diagnostics-export.md) |
 | 2026-11-22 | pass (privacy) | [A52 privacy screen: local data and permissions](a52-privacy-screen.md) |
 | 2026-11-22 | pass (recovery) | [A52 recovery: app reinstall](a52-recovery-reinstall.md) |
 | 2026-11-22 | pass (build) | [A52 minified release with UniFFI](a52-release-build.md) |

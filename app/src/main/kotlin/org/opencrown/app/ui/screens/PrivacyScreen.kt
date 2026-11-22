@@ -80,7 +80,7 @@ fun PrivacyScreen(
                 )
                 CrownRow(
                     title = "Diagnostics",
-                    subtitle = "Model, Android, kernel and probe results; no serial number or pairing key",
+                    subtitle = "Model, Android, kernel and probes; exportable as a redacted report without serial or pairing key",
                     showDivider = true,
                 )
                 CrownRow(
@@ -173,7 +173,7 @@ fun PrivacyScreen(
         }
         item(key = "limits") {
             CrownNote(
-                message = "There is no data-export or selective-deletion screen yet. Pair records are removed only by an explicit unpair, which is not implemented. Apple account and Health services are documented blockers, not silent omissions.",
+                message = "There is no selective-deletion screen yet; diagnostics can be exported as a redacted report from Diagnostics. Pair records are removed only by an explicit unpair, which is not implemented. Apple account and Health services are documented blockers, not silent omissions.",
                 tone = CrownTone.WARNING,
             )
             Spacer(Modifier.height(16.dp))

@@ -18,7 +18,8 @@ the app in this build.
 | Pairing metadata | App-private store sealed with Android Keystore (AES-GCM) | Until explicit deletion or app data clear | No |
 | Pairing keys | Not implemented yet. When added, sealed in Keystore and never logged | N/A | No |
 | Notification content | In memory only, capped at 40 entries, title 120 chars / text 400 chars | Until process death or Clear | No |
-| Diagnostics | Generated on screen from live probes; not persisted | Per screen session | No; only if the user later exports |
+| Diagnostics | Generated on screen from live probes; not persisted | Per screen session | No, unless the user taps Export |
+| Diagnostics export | Redacted text file in the app cache | Until cache is cleared or evicted | Only to the share target the user chooses |
 | Health data | No sample store exists in this build | N/A | No |
 | Apple account material | Never requested or stored | N/A | No |
 | Device serial | Never read into the app | N/A | No |
@@ -38,7 +39,7 @@ the app in this build.
 - No Apple ID, iCloud, Find My, iMessage, FaceTime or Siri credential entry.
 - No health sample collection, inference or upload.
 - No notification content in logs, crashes or diagnostics.
-- No advertising identifiers, analytics identifiers or device serials.
+- No advertising identifiers, analytics identifiers or device serials in the app or the exported report.
 - No Activation Lock bypass, stolen-device support, or operation of a watch the
   user cannot activate with their own account.
 - No silent background collection: the notification listener must be granted in
@@ -54,6 +55,8 @@ the app in this build.
 - Clear all app data or uninstall to remove onboarding and sealed records.
 - There is no selective pair-record deletion yet because unpair is not
   implemented.
+- Diagnostics can be exported from the Diagnostics screen. The report is
+  redacted and only leaves the app through a share target the user picks.
 
 ## 6. Security contact
 
@@ -62,5 +65,5 @@ Apple account material or raw notification content in a report.
 
 ## 7. Changes
 
-This policy will change when pairing, health import or diagnostics export land.
+This policy will change when pairing, health import or the export format changes.
 Those changes must update this file and the in-app Privacy screen together.

@@ -804,16 +804,19 @@
       "category": "Foundation",
       "title": "Evidence export",
       "iphone_behavior": "Not a user-facing iPhone feature; required for Open Crown's honesty contract.",
-      "status": "unimplemented",
+      "status": "verified",
       "blocker": null,
       "phase": 1,
-      "implementation": [],
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/diagnostics/DiagnosticsExporter.kt",
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/DiagnosticsScreen.kt"
+      ],
       "tests": [],
       "evidence": [
-        "docs/cleanroom/PROVENANCE.md"
+        "docs/evidence/a52-diagnostics-export.md"
       ],
-      "physical_verified": false,
-      "notes": ""
+      "physical_verified": true,
+      "notes": "Verified on the A52: redacted report written to app cache and offered through the share sheet; no serial, pairing key, notification content or health data."
     },
     {
       "id": "lifecycle.welcome",
