@@ -161,6 +161,11 @@ A(f("foundation.faces-delta-rules", "Foundation", "Face mutation and read-back r
     "implemented_unverified", 4, impl=["core/src/faces/mod.rs"],
     evidence=["docs/cleanroom/spec/05-faces.md"],
     notes="Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."))
+A(f("foundation.wifi-guards", "Foundation", "Wi-Fi provisioning guards",
+    "The iPhone dispatches one encrypted network archive per setup generation and never treats an ACK as a Wi-Fi join.",
+    "implemented_unverified", 6, impl=["core/src/wifi.rs"],
+    evidence=["docs/cleanroom/spec/07-settings-wifi-health.md"],
+    notes="WPA2-PSK/CCMP only, three reads five seconds apart, ten-second archive lifetime, one dispatch per generation and delivery-versus-join separation. Archive layout remains UNKNOWN; no passphrase is held by the guard."))
 A(f("foundation.health-mirror", "Foundation", "Health defaults mirror rules",
     "The iPhone validates and merges Watch health defaults without turning missing data into zero.",
     "implemented_unverified", 5, impl=["core/src/health.rs"],

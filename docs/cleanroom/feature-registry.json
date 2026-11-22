@@ -491,6 +491,24 @@
       "notes": "Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."
     },
     {
+      "id": "foundation.wifi-guards",
+      "category": "Foundation",
+      "title": "Wi-Fi provisioning guards",
+      "iphone_behavior": "The iPhone dispatches one encrypted network archive per setup generation and never treats an ACK as a Wi-Fi join.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [
+        "core/src/wifi.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": "WPA2-PSK/CCMP only, three reads five seconds apart, ten-second archive lifetime, one dispatch per generation and delivery-versus-join separation. Archive layout remains UNKNOWN; no passphrase is held by the guard."
+    },
+    {
       "id": "foundation.health-mirror",
       "category": "Foundation",
       "title": "Health defaults mirror rules",
