@@ -14,6 +14,7 @@ attachments: capture hash, screenshots, logs (redacted)
 
 | Session | Result | Note |
 | --- | --- | --- |
+| 2026-11-22 | pass (local ingress) | [A52 notifications: captured locally, not delivered](a52-notification-ingress.md) |
 | 2026-11-22 | pass (architecture) | [A52 UniFFI: Rust core loaded](a52-uniffi-core.md) |
 | 2026-11-22 | pass (visual) | [A52 design: light appearance and 1.3x text](a52-design-system.md) |
 | 2026-11-22 | pass (narrow) | [A52 discovery: ads observed, none selectable](a52-discovery.md) |

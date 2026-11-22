@@ -19,12 +19,12 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Status | Count |
 | --- | ---: |
-| verified | 2 |
+| verified | 3 |
 | implemented_unverified | 14 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 170 |
-| **total** | **218** |
+| **total** | **219** |
 
 ## By category
 
@@ -33,7 +33,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Foundation | 2 | 12 | 3 | 0 | 17 | 34 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
-| Notifications & communication | 0 | 0 | 1 | 0 | 19 | 20 |
+| Notifications & communication | 1 | 0 | 1 | 0 | 19 | 21 |
 | Media & remote | 0 | 0 | 1 | 0 | 10 | 11 |
 | Watch faces & personalization | 0 | 0 | 1 | 0 | 16 | 17 |
 | Time & built-in apps | 0 | 0 | 1 | 0 | 14 | 15 |
@@ -126,6 +126,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Id | Capability | Status | Blocker | Phase |
 | --- | --- | --- | --- | ---: |
 | notifications.mirror | Notification mirroring | unimplemented |  | 4 |
+| notifications.ingress | Local notification ingress | verified |  | 4 |
 | notifications.actions | Notification actions | unimplemented |  | 4 |
 | notifications.reply | Inline replies | unimplemented |  | 4 |
 | notifications.attachments | Notification attachments | unimplemented |  | 4 |

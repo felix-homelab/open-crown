@@ -1092,7 +1092,27 @@
         "docs/cleanroom/spec/06-notifications.md"
       ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Local Android ingress is verified separately; watch delivery has no transport."
+    },
+    {
+      "id": "notifications.ingress",
+      "category": "Notifications & communication",
+      "title": "Local notification ingress",
+      "iphone_behavior": "The iPhone captures notification content from selected apps before mirroring it.",
+      "status": "verified",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/notifications/CapturedNotification.kt",
+        "app/src/main/kotlin/org/opencrown/app/notifications/CrownNotificationListener.kt",
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/FeatureScreens.kt"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/evidence/a52-notification-ingress.md"
+      ],
+      "physical_verified": true,
+      "notes": "Verified on SM-A528B with a synthetic notification: sanitised, memory-only, never delivered or persisted. Does not verify mirroring, actions or replies."
     },
     {
       "id": "notifications.actions",

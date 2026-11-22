@@ -293,7 +293,14 @@ A(f("pair.identity-epoch", "Pairing & setup", "Pair identity and epoch",
 # ------------------------------------------- Notifications & communication
 A(f("notifications.mirror", "Notifications & communication", "Notification mirroring",
     "The iPhone mirrors selected app notifications to the Watch.",
-    "unimplemented", 4, evidence=["docs/cleanroom/spec/06-notifications.md"]))
+    "unimplemented", 4, evidence=["docs/cleanroom/spec/06-notifications.md"],
+    notes="Local Android ingress is verified separately; watch delivery has no transport."))
+A(f("notifications.ingress", "Notifications & communication", "Local notification ingress",
+    "The iPhone captures notification content from selected apps before mirroring it.",
+    "verified", 4,
+    impl=["app/src/main/kotlin/org/opencrown/app/notifications/CapturedNotification.kt", "app/src/main/kotlin/org/opencrown/app/notifications/CrownNotificationListener.kt", "app/src/main/kotlin/org/opencrown/app/ui/screens/FeatureScreens.kt"],
+    evidence=["docs/evidence/a52-notification-ingress.md"],
+    notes="Verified on SM-A528B with a synthetic notification: sanitised, memory-only, never delivered or persisted. Does not verify mirroring, actions or replies."))
 A(f("notifications.actions", "Notifications & communication", "Notification actions",
     "The iPhone exposes app actions on the Watch and executes the chosen action.",
     "unimplemented", 4, evidence=["docs/cleanroom/spec/06-notifications.md"]))

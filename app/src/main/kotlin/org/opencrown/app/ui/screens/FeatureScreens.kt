@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,12 +27,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.compose.ui.unit.dp
 import org.opencrown.app.data.FeatureRegistry
 import org.opencrown.app.data.FeatureRow
 import org.opencrown.app.data.FeatureStatus
 import org.opencrown.app.model.CrownSnapshot
 import org.opencrown.app.model.Observation
+import org.opencrown.app.notifications.CapturedNotification
+import org.opencrown.app.notifications.NotificationIngress
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import org.opencrown.app.ui.components.CrownBrandMark
 import org.opencrown.app.ui.components.CrownButton
 import org.opencrown.app.ui.components.CrownButtonStyle
@@ -150,35 +161,81 @@ fun NotificationsScreen(
     onBack: () -> Unit,
     onOpenFeature: (String) -> Unit,
 ) {
+    val context = LocalContext.current
     val rows = registry?.rows?.filter { it.id.startsWith("notifications.") } ?: emptyList()
+    var access by remember { mutableStateOf(hasNotificationAccess(context)) }
+    val captured by NotificationIngress.items.collectAsState()
+    val lifecycleOwner = context as? LifecycleOwner
+    DisposableEffect(lifecycleOwner, context) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                access = hasNotificationAccess(context)
+            }
+        }
+        lifecycleOwner?.lifecycle?.addObserver(observer)
+        onDispose { lifecycleOwner?.lifecycle?.removeObserver(observer) }
+    }
+
     CrownScaffold(
         title = "Notifications",
-        subtitle = "Mirroring and replies",
+        subtitle = "Local ingress, no delivery",
         onBack = onBack,
     ) {
-        item(key = "note") {
-            CrownNote(
-                title = "No notification session",
-                message = unavailableReason(snapshot) + " Android notification access is not requested in this build.",
-                tone = CrownTone.WARNING,
-            )
-            Spacer(Modifier.height(20.dp))
-        }
-        item(key = "permissions") {
-            CrownInsetGroup(title = "Prerequisites", footer = "Both rows are required before a single notification can be mirrored.") {
-                CrownRow(
+        item(key = "access") {
+            if (!access) {
+                CrownEmptyState(
+                    glyph = CrownGlyph.BELL,
                     title = "Notification access",
-                    subtitle = "Not requested yet",
-                    showDivider = true,
-                    trailing = { CrownStatusPill("Not built", CrownTone.NEUTRAL) },
+                    message = "Android requires an explicit grant before an app can read notification content. Nothing is captured until you allow it.",
+                    actionLabel = "Open notification access",
+                    onAction = {
+                        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        runCatching { context.startActivity(intent) }
+                    },
                 )
-                CrownRow(
-                    title = "Secure watch link",
-                    subtitle = unavailableReason(snapshot),
-                    showDivider = false,
-                    trailing = { CrownStatusPill("Blocked", CrownTone.CRITICAL) },
+            } else {
+                CrownNote(
+                    title = "Captured locally",
+                    message = "Notifications are held in memory on this phone. Nothing is delivered to a watch: no transport exists in this build.",
+                    tone = CrownTone.INFO,
                 )
             }
+            Spacer(Modifier.height(20.dp))
+        }
+        if (access) {
+            item(key = "captured-header") {
+                CrownSectionHeader("Captured · " + captured.size)
+            }
+            item(key = "captured") {
+                if (captured.isEmpty()) {
+                    CrownEmptyState(
+                        glyph = CrownGlyph.BELL,
+                        title = "No notifications yet",
+                        message = "Post a notification from any app and it will appear here, in memory only. It is not sent to a watch.",
+                    )
+                } else {
+                    CrownInsetGroup {
+                        captured.forEachIndexed { index, item ->
+                            CapturedRow(item, index != captured.lastIndex)
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    CrownButton(
+                        text = "Clear captured notifications",
+                        onClick = { NotificationIngress.clear() },
+                        style = CrownButtonStyle.PLAIN,
+                    )
+                }
+            }
+        }
+        item(key = "transport") {
+            Spacer(Modifier.height(20.dp))
+            CrownNote(
+                title = "Delivery is still blocked",
+                message = unavailableReason(snapshot) + " Local ingress is not mirroring; the watch link is the missing half.",
+                tone = CrownTone.WARNING,
+            )
         }
         if (rows.isNotEmpty()) {
             item(key = "header") {
@@ -188,6 +245,26 @@ fun NotificationsScreen(
             item(key = "rows") { FeatureRowsGroup(rows, onOpenFeature) }
         }
     }
+}
+
+private fun hasNotificationAccess(context: android.content.Context): Boolean =
+    NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
+
+@Composable
+private fun CapturedRow(item: CapturedNotification, showDivider: Boolean) {
+    val time = remember(item.postedAtMillis) {
+        SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(item.postedAtMillis))
+    }
+    CrownRow(
+        title = item.title ?: item.appLabel ?: "Notification",
+        subtitle = listOfNotNull(
+            item.appLabel,
+            item.text,
+            time,
+        ).joinToString(" · "),
+        showDivider = showDivider,
+        trailing = { CrownStatusPill("Local", CrownTone.NEUTRAL) },
+    )
 }
 
 @Composable
