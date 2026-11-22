@@ -16,6 +16,7 @@ attachments: capture hash, screenshots, logs (redacted)
 | --- | --- | --- |
 | 2026-11-22 | pass (support) | [A52 diagnostics export: redacted report](a52-diagnostics-export.md) |
 | 2026-11-22 | pass (local reset) | [A52 local app-data reset](a52-local-data-reset.md) |
+| 2026-11-22 | pass (labels) | [A52 buttons and rows expose accessibility labels](a52-accessibility-labels.md) |
 | 2026-11-22 | pass (contrast) | [A52 required contrast and status-pill fix](a52-contrast-audit.md) |
 | 2026-11-22 | pass (accessibility) | [A52 Dynamic Type: 200% row reflow](a52-large-text-200.md) |
 | 2026-11-22 | pass (licences) | [A52 open-source licence screen](a52-licences.md) |

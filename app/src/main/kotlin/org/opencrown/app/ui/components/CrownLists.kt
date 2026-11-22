@@ -26,6 +26,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.opencrown.app.ui.theme.CrownTheme
@@ -77,6 +83,7 @@ fun CrownRow(
     destructive: Boolean = false,
     showDivider: Boolean = true,
     onClick: (() -> Unit)? = null,
+    mergeSemantics: Boolean = true,
     trailing: @Composable RowScope.() -> Unit = {},
 ) {
     val colors = CrownTheme.colors
@@ -89,6 +96,20 @@ fun CrownRow(
                 .then(
                     if (onClick != null) {
                         Modifier.clickable(role = Role.Button, onClick = onClick)
+                    } else {
+                        Modifier
+                    }
+                )
+                .then(
+                    if (onClick != null && mergeSemantics) {
+                        Modifier.clearAndSetSemantics {
+                            this.contentDescription = listOfNotNull(title, subtitle).joinToString(". ")
+                            this.role = Role.Button
+                            onClick(label = "Activate") {
+                                onClick()
+                                true
+                            }
+                        }
                     } else {
                         Modifier
                     }
@@ -170,13 +191,19 @@ fun CrownSwitchRow(
         subtitle = subtitle,
         modifier = modifier,
         showDivider = showDivider,
-        onClick = if (enabled) {
-            { onCheckedChange(!checked) }
-        } else {
-            null
-        },
+        onClick = null,
+        mergeSemantics = false,
         trailing = {
             Switch(
+                modifier = Modifier.clearAndSetSemantics {
+                    this.contentDescription = listOfNotNull(title, subtitle).joinToString(". ")
+                    this.role = Role.Switch
+                    this.stateDescription = if (checked) "On" else "Off"
+                    onClick(label = "Toggle") {
+                        onCheckedChange(!checked)
+                        true
+                    }
+                },
                 checked = checked,
                 onCheckedChange = if (enabled) onCheckedChange else null,
                 enabled = enabled,

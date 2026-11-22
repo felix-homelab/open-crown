@@ -44,6 +44,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -97,6 +103,18 @@ fun CrownButton(
             ) {
                 haptics.tap()
                 onClick()
+            }
+            .clearAndSetSemantics {
+                this.contentDescription = text
+                this.role = Role.Button
+                if (enabled) {
+                    onClick(label = "Activate") {
+                        onClick()
+                        true
+                    }
+                } else {
+                    disabled()
+                }
             },
         contentAlignment = Alignment.Center,
     ) {
@@ -131,10 +149,11 @@ fun CrownIconButton(
         modifier = modifier
             .size(44.dp)
             .clip(CircleShape)
+            .semantics(mergeDescendants = true) { this.contentDescription = contentDescription }
             .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        CrownIcon(glyph, tint = resolvedTint, contentDescription = contentDescription)
+        CrownIcon(glyph, tint = resolvedTint, contentDescription = null)
     }
 }
 
