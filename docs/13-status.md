@@ -4,8 +4,10 @@ As of 2026-11-22 (private research build).
 
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
-is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 214 rows, 0 verified,
-12 built-but-unverified, 32 blocked, 170 not built.
+is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 215 rows, 1 verified,
+12 built-but-unverified, 32 blocked, 170 not built. The one verified row is the
+narrow unprivileged claim: scanning and listing Apple advertisements without
+selecting one.
 
 ## What is now real
 
@@ -14,8 +16,8 @@ is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 214 rows, 0 verified,
 | Compose design system | Light/dark tokens, type ramp, grouped lists, controls, sheets, original line icons, reduced motion, haptics | `app/src/main/kotlin/org/opencrown/app/ui/`; unit build passes |
 | App shell | Welcome, Home, Discovery, Pairing, Setup, Faces, Notifications, Health, Apps, Settings, Accessibility, Diagnostics, Evidence, About | `CrownApp.kt`, `ui/screens/` |
 | Observation model | Every watch value is `Observation<T>` with origin, verification, time, pair/epoch and unavailable reason | `model/Observation.kt`, unit tests |
-| Feature registry | 214 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
-| BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches | `data/BleDiscoveryRepository.kt` |
+| Feature registry | 215 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
+| BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches. Physically exercised on the A52; the five observed advertisements were all refused as selectable | `data/BleDiscoveryRepository.kt`; [evidence](evidence/a52-discovery.md) |
 | Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |
 | Sealed pair store | AES-GCM through Android Keystore, corrupt envelope treated as absent | `data/PairRecordStore.kt` |
 | Discovery rules | Bounded inventory, opaque tokens, TTL, stale-token rejection, no metadata means no selection. FE25 decode remains UNKNOWN | `core/src/discovery/mod.rs` |

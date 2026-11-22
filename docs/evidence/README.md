@@ -14,6 +14,7 @@ attachments: capture hash, screenshots, logs (redacted)
 
 | Session | Result | Note |
 | --- | --- | --- |
+| 2026-11-22 | pass (narrow) | [A52 discovery: ads observed, none selectable](a52-discovery.md) |
 | 2026-11-22 | blocked | [A52 broker: real untrusted_app denial](a52-broker-untrusted-app.md) |
 | 2026-11-22 | blocked | [Broker probe and relay protocol decode](broker-probe-a52.md) |
 | 2026-11-22 | pass (partial) | [A52 chain in the app](a52-app-chain.md) |

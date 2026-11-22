@@ -120,6 +120,12 @@ A(f("foundation.ble-discovery", "Foundation", "BLE discovery and advertisement d
     "The iPhone discovers a nearby Watch and shows it with model and pairing state.",
     "unimplemented", 2, evidence=["docs/cleanroom/spec/01-discovery.md"],
     notes="Android scanning is implemented, but FE25 setup-metadata decode is UNKNOWN, so no advertisement is selectable."))
+A(f("foundation.ble-observation", "Foundation", "Unprivileged BLE observation",
+    "The iPhone scans for nearby Apple advertisements; an observation alone is never a pairing candidate.",
+    "verified", 2,
+    impl=["app/src/main/kotlin/org/opencrown/app/data/BleDiscoveryRepository.kt", "app/src/main/kotlin/org/opencrown/app/ui/screens/PairingScreens.kt"],
+    evidence=["docs/evidence/a52-discovery.md"],
+    notes="Verified on SM-A528B: five Apple advertisements listed, all Not selectable. Does not verify Watch detection or FE25 decode."))
 A(f("foundation.discovery-lifecycle", "Foundation", "Discovery inventory and selection rules",
     "The iPhone bounds its candidate list, expires stale watches and rechecks a selection before connecting.",
     "implemented_unverified", 2, impl=["core/src/discovery/mod.rs"],

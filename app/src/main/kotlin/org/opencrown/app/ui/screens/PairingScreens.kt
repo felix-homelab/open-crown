@@ -164,7 +164,7 @@ private fun AdvertisementRow(
 ) {
     val colors = CrownTheme.colors
     CrownRow(
-        title = advertisement.displayName ?: "Unnamed Apple advertisement",
+        title = advertisement.displayName ?: "Apple advertisement",
         subtitle = "Type 0x" + (advertisement.appleManufacturerType?.toString(16)?.padStart(2, '0') ?: "??") +
             " \u00b7 RSSI " + advertisement.rssi + " dBm \u00b7 seen " + advertisement.seenCount + "\u00d7",
         showDivider = showDivider,

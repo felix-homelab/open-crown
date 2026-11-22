@@ -315,6 +315,25 @@
       "notes": "Android scanning is implemented, but FE25 setup-metadata decode is UNKNOWN, so no advertisement is selectable."
     },
     {
+      "id": "foundation.ble-observation",
+      "category": "Foundation",
+      "title": "Unprivileged BLE observation",
+      "iphone_behavior": "The iPhone scans for nearby Apple advertisements; an observation alone is never a pairing candidate.",
+      "status": "verified",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/data/BleDiscoveryRepository.kt",
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/PairingScreens.kt"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/evidence/a52-discovery.md"
+      ],
+      "physical_verified": true,
+      "notes": "Verified on SM-A528B: five Apple advertisements listed, all Not selectable. Does not verify Watch detection or FE25 decode."
+    },
+    {
       "id": "foundation.discovery-lifecycle",
       "category": "Foundation",
       "title": "Discovery inventory and selection rules",

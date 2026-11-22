@@ -19,18 +19,18 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Status | Count |
 | --- | ---: |
-| verified | 0 |
+| verified | 1 |
 | implemented_unverified | 12 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 170 |
-| **total** | **214** |
+| **total** | **215** |
 
 ## By category
 
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Foundation | 0 | 10 | 3 | 0 | 17 | 30 |
+| Foundation | 1 | 10 | 3 | 0 | 17 | 31 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 0 | 0 | 1 | 0 | 19 | 20 |
@@ -62,6 +62,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | foundation.agent-session | Resident agent lifecycle | unimplemented |  | 2 |
 | foundation.controller-owner | Bluetooth controller ownership | blocked | [B-HCI-OWNERSHIP](BLOCKERS.md#b-hci-ownership) | 2 |
 | foundation.ble-discovery | BLE discovery and advertisement decoding | unimplemented |  | 2 |
+| foundation.ble-observation | Unprivileged BLE observation | verified |  | 2 |
 | foundation.discovery-lifecycle | Discovery inventory and selection rules | implemented_unverified |  | 2 |
 | foundation.ble-connect | BR/EDR + BLE link establishment | unimplemented |  | 2 |
 | foundation.l2cap | L2CAP / ERTM channels | unimplemented |  | 2 |
