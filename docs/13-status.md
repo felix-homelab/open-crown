@@ -4,8 +4,8 @@ As of 2026-11-22 (private research build).
 
 This revision replaces the single-screen probe shell with an observation-first
 companion shell. It does **not** claim that pairing works. The trusted status
-is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 232 rows, 5 verified,
-31 built-but-unverified, 37 blocked, 159 not built. The three verified rows are
+is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 245 rows, 5 verified,
+31 built-but-unverified, 48 blocked, 161 not built. The three verified rows are
 narrow and do not imply pairing: unprivileged Apple-advertisement observation,
 the Kotlin↔Rust UniFFI seam, and local notification ingress. No watch-scoped
 capability is verified.
@@ -31,7 +31,7 @@ capability is verified.
 | Contrast audit | Required text contrast passes in light/dark; status pills and destructive text fixed | [audit](design/contrast.md), [evidence](evidence/a52-contrast-audit.md) |
 | Accessibility labels | Home/Settings clickable nodes are labeled; icon buttons and rows expose merged descriptions | [evidence](evidence/a52-accessibility-labels.md) |
 | Licences | In-app inventory matches the documented runtime licences; notice texts/SBOM still open | [inventory](THIRD_PARTY.md), [evidence](evidence/a52-licences.md) |
-| Registry coverage | 25 of 26 Lane A groups represented; G15/G19/G22/G23/G24/G26 still have claim gaps | [audit](cleanroom/audit/registry-coverage.md) |
+| Registry coverage | 26 of 26 Lane A groups represented; G15/G19/G22 still have claim-level gaps | [audit](cleanroom/audit/registry-coverage.md) |
 | Diagnostics export | Redacted support report written to cache and shared only by user action | [evidence](evidence/a52-diagnostics-export.md) |
 | Wi-Fi guards | One archive per setup generation, expiry/retry bounds, ACK is delivery not join | `core/src/wifi.rs`, host tests |
 | Preferences and pigments | Unknown-never-false, baseline-bound read-back, complete pigment sets | `core/src/settings.rs`, host tests |
@@ -42,7 +42,7 @@ capability is verified.
 | SBOM | 99-component runtime-only CycloneDX draft for the exact APK, with native hashes; signing open | [evidence](evidence/a52-release-sbom.md) |
 | Secret scan | Tracked files scanned for private keys, provider tokens and signing material; CI enforced | tools/cleanroom/secret-scan.py |
 | Clean-room similarity | Phase 1: 94 product files vs 794 reference files, max containment 0.189, zero findings | [report](cleanroom/audit/phase-1-similarity.md) |
-| Feature registry | 232 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
+| Feature registry | 245 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
 | BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches. Physically exercised on the A52; the five observed advertisements were all refused as selectable | `data/BleDiscoveryRepository.kt`; [evidence](evidence/a52-discovery.md) |
 | Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |
 | Sealed pair store | AES-GCM through Android Keystore, corrupt envelope treated as absent | `data/PairRecordStore.kt` |

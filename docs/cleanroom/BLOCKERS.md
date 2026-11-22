@@ -98,7 +98,7 @@ without provisioning would be a fake feature.
   non-Apple companion. https://developer.apple.com/apple-pay/
 
 **Affected capabilities:** `secure.apple-pay`, `secure.wallet`,
-`secure.transit`, `secure.secure-element`.
+`secure.transit`, `secure.secure-element`, `wallet.keys`, `wallet.bank`.
 
 ---
 
@@ -118,7 +118,9 @@ The exact page is not load-bearing: the provisioning boundary is Apple/carrier
 contractual and cannot be bypassed by a protocol implementation.
 
 **Affected capabilities:** `secure.cellular-provisioning`,
-`daily.cellular-status` (status read may be possible; provisioning is not).
+`settings.cellular-status` (status read may be possible; provisioning is
+not), `cellular.plan`, `cellular.number-sharing`, `cellular.dual-sim`,
+`cellular.calls`, `cellular.data`, `cellular.modem`.
 
 ---
 
@@ -168,7 +170,7 @@ watchOS updates a non-goal.
 https://support.apple.com/en-us/108926
 
 **Affected capabilities:** `apps.watchos-update`,
-`apps.watchos-update-install`.
+`apps.watchos-update-install`, `ops.ota-verify`.
 
 ---
 

@@ -21,10 +21,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | --- | ---: |
 | verified | 5 |
 | implemented_unverified | 31 |
-| blocked | 37 |
+| blocked | 48 |
 | out_of_scope | 0 |
-| unimplemented | 159 |
-| **total** | **232** |
+| unimplemented | 161 |
+| **total** | **245** |
 
 ## By category
 
@@ -40,9 +40,9 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Health & fitness | 0 | 0 | 0 | 0 | 20 | 20 |
 | Apps & software | 0 | 0 | 7 | 0 | 6 | 13 |
 | Settings & accessibility | 0 | 0 | 0 | 0 | 33 | 33 |
-| Secure & Apple-service | 0 | 0 | 22 | 0 | 0 | 22 |
+| Secure & Apple-service | 0 | 0 | 32 | 0 | 0 | 32 |
 | About, privacy & evidence | 0 | 5 | 0 | 0 | 0 | 5 |
-| Operations & quality | 1 | 5 | 0 | 0 | 2 | 8 |
+| Operations & quality | 1 | 5 | 1 | 0 | 4 | 11 |
 
 ## Rows
 
@@ -304,8 +304,18 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | secure.apple-pay | Apple Pay | blocked | [B-APPLE-PAY](BLOCKERS.md#b-apple-pay) | 5 |
 | secure.wallet | Wallet passes | blocked | [B-APPLE-PAY](BLOCKERS.md#b-apple-pay) | 5 |
 | secure.transit | Transit cards | blocked | [B-APPLE-PAY](BLOCKERS.md#b-apple-pay) | 5 |
+| wallet.keys | Wallet keys | blocked | [B-APPLE-PAY](BLOCKERS.md#b-apple-pay) | 6 |
+| wallet.cash | Apple Cash | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| wallet.card | Apple Card | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| wallet.bank | Bank card provisioning | blocked | [B-APPLE-PAY](BLOCKERS.md#b-apple-pay) | 6 |
 | secure.secure-element | Secure element provisioning | blocked | [B-APPLE-PAY](BLOCKERS.md#b-apple-pay) | 5 |
 | secure.cellular-provisioning | Cellular plan provisioning | blocked | [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning) | 5 |
+| cellular.plan | Cellular plan | blocked | [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning) | 6 |
+| cellular.number-sharing | Number sharing | blocked | [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning) | 6 |
+| cellular.dual-sim | Dual SIM state | blocked | [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning) | 6 |
+| cellular.calls | Calls without the phone | blocked | [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning) | 6 |
+| cellular.data | Data without the phone | blocked | [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning) | 6 |
+| cellular.modem | Modem state | blocked | [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning) | 6 |
 | secure.appstore | App Store account | blocked | [B-APP-STORE-DRM](BLOCKERS.md#b-app-store-drm) | 5 |
 | secure.imessage | iMessage | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
 | secure.facetime | FaceTime | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
@@ -339,6 +349,9 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | ops.license-audit | Licence audit | unimplemented |  | 6 |
 | ops.secret-scan | Secret and identifier scan | implemented_unverified |  | 6 |
 | ops.update-path | In-place app update | verified |  | 6 |
+| ops.watch-backup | Watch backup | unimplemented |  | 6 |
+| ops.watch-restore | Watch restore | unimplemented |  | 6 |
+| ops.ota-verify | watchOS update verification | blocked | [B-WATCHOS-UPDATE](BLOCKERS.md#b-watchos-update) | 6 |
 | ops.recovery-drill | Recovery drill | implemented_unverified |  | 6 |
 | ops.release-build | Release build and install path | implemented_unverified |  | 6 |
 | ops.negative-tests | Fuzz and negative tests | unimplemented |  | 6 |
@@ -367,8 +380,18 @@ row is verified, blocked, or out_of_scope with recorded approval.
 - secure.apple-pay - [B-APPLE-PAY](BLOCKERS.md#b-apple-pay): The iPhone provisions and manages Apple Pay cards for the Watch.
 - secure.wallet - [B-APPLE-PAY](BLOCKERS.md#b-apple-pay): The iPhone adds and manages passes shown on the Watch.
 - secure.transit - [B-APPLE-PAY](BLOCKERS.md#b-apple-pay): The iPhone provisions transit cards and express travel state.
+- wallet.keys - [B-APPLE-PAY](BLOCKERS.md#b-apple-pay): Requires issuer and Apple Wallet provisioning; no key material is invented.
+- wallet.cash - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone shows and operates an Apple Cash account on the Watch.
+- wallet.card - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone shows and operates an Apple Card account on the Watch.
+- wallet.bank - [B-APPLE-PAY](BLOCKERS.md#b-apple-pay): The iPhone completes issuer verification and provisions a bank card.
 - secure.secure-element - [B-APPLE-PAY](BLOCKERS.md#b-apple-pay): The iPhone provisions Apple-controlled applets into the Watch secure element.
 - secure.cellular-provisioning - [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning): The iPhone activates a Watch eSIM with the carrier.
+- cellular.plan - [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning): The iPhone shows and manages the Watch's carrier plan.
+- cellular.number-sharing - [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning): The iPhone enables calls and SMS on the Watch through the phone's number.
+- cellular.dual-sim - [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning): The iPhone selects and reports the Watch's cellular line.
+- cellular.calls - [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning): The iPhone supports a cellular Watch call with no phone nearby.
+- cellular.data - [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning): The iPhone supports Watch internet access with no phone nearby.
+- cellular.modem - [B-CELLULAR-PROVISIONING](BLOCKERS.md#b-cellular-provisioning): The iPhone reports the Watch modem, operator and roaming state.
 - secure.appstore - [B-APP-STORE-DRM](BLOCKERS.md#b-app-store-drm): The iPhone authorises Watch App Store account access.
 - secure.imessage - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone relays iMessage conversations to the Watch.
 - secure.facetime - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone relays FaceTime calls to the Watch.
@@ -382,3 +405,4 @@ row is verified, blocked, or out_of_scope with recorded approval.
 - family.reports - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone shows authorised activity and location reports for a family member.
 - family.limits - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone applies contacts, communication and content restrictions.
 - family.services - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone enables family-scoped Apple services on the Watch.
+- ops.ota-verify - [B-WATCHOS-UPDATE](BLOCKERS.md#b-watchos-update): The iPhone verifies a watchOS update before installation.

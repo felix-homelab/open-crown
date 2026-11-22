@@ -2,7 +2,7 @@
 
 Date: 2026-11-22
 Inventory: 253 capability claims in 26 groups
-Registry: 232 capability rows after this pass
+Registry: 245 capability rows after this pass
 
 ## Method
 
@@ -42,19 +42,20 @@ added before the registry can be called exhaustive.
 | G20 Finding devices | 8 | comm.find-phone, comm.find-watch, secure.findmy-network | Covered |
 | G21 Security and accessibility | 14 | settings.voiceover, zoom, reduce-motion/transparency, text-size, bold-text, accessibility-other, passcode-status | Covered |
 | G22 Apple account and cloud | 11 | secure.apple-id, icloud-sync, health-icloud, account-2fa, continuity-unlock | **Grouped**: keychain/cloud-backup claims lack rows |
-| G23 Wallet and payments | 8 | secure.wallet, transit, apple-pay, secure-element | **Gap**: passes, keys, cash, card and bank provisioning lack rows |
-| G24 Cellular | 8 | secure.cellular-provisioning, settings.cellular-status/carrier | **Gap**: plan, number sharing, dual SIM, calls, data and modem state lack rows |
+| G23 Wallet and payments | 8 | secure.wallet, transit, apple-pay, secure-element, wallet.keys, wallet.cash, wallet.card, wallet.bank | Covered (blocked rows) |
+| G24 Cellular | 8 | secure.cellular-provisioning, settings.cellular-status/carrier, cellular.plan, number-sharing, dual-sim, calls, data, modem | Covered (blocked rows) |
 | G25 Family modes | 5 | family.setup, schooltime, reports, limits, services | Covered (all blocked by B-APPLE-ACCOUNT) |
-| G26 Maintenance | 9 | ops.recovery-drill, foundation.recovery/diagnostics/evidence-export, pair.unpair, settings.erase, apps.watchos-update | **Gap**: backup, restore and OTA verify lack rows |
+| G26 Maintenance | 9 | ops.recovery-drill, foundation.recovery/diagnostics/evidence-export, pair.unpair, settings.erase, apps.watchos-update, ops.watch-backup, ops.watch-restore, ops.ota-verify | Covered (backup/restore unimplemented, OTA verify blocked) |
 
 ## Result
 
-- 25 of 26 claim groups are represented at least once.
-- The Family group was completely absent before this pass; five rows were added
-  as documented Apple-account blockers.
-- Five groups still contain claims without an owning row: G15, G19, G22, G23,
-  G24, G26 (G19/G22 are grouped rather than absent).
-- 253 claims do not equal 232 rows because of grouping. That is a deliberate
+- 26 of 26 claim groups are represented at least once.
+- The Family group was completely absent before the first coverage pass; five
+  rows were added as documented Apple-account blockers.
+- The wallet, cellular and maintenance gaps are closed with blocked or
+  unimplemented rows. G15, G19 and G22 still contain claim-level gaps: Ultra
+  specifics, Siri breadth, and account/cloud services.
+- 253 claims do not equal 245 rows because of grouping. That is a deliberate
   granularity choice, not proof of coverage.
 
 This report does **not** discharge the exhaustive-registry gate. The next

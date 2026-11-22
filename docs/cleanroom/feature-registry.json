@@ -3210,6 +3210,70 @@
       "notes": ""
     },
     {
+      "id": "wallet.keys",
+      "category": "Secure & Apple-service",
+      "title": "Wallet keys",
+      "iphone_behavior": "The iPhone provisions supported digital keys for use on the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-PAY",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": "Requires issuer and Apple Wallet provisioning; no key material is invented."
+    },
+    {
+      "id": "wallet.cash",
+      "category": "Secure & Apple-service",
+      "title": "Apple Cash",
+      "iphone_behavior": "The iPhone shows and operates an Apple Cash account on the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "wallet.card",
+      "category": "Secure & Apple-service",
+      "title": "Apple Card",
+      "iphone_behavior": "The iPhone shows and operates an Apple Card account on the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "wallet.bank",
+      "category": "Secure & Apple-service",
+      "title": "Bank card provisioning",
+      "iphone_behavior": "The iPhone completes issuer verification and provisions a bank card.",
+      "status": "blocked",
+      "blocker": "B-APPLE-PAY",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
       "id": "secure.secure-element",
       "category": "Secure & Apple-service",
       "title": "Secure element provisioning",
@@ -3233,6 +3297,102 @@
       "status": "blocked",
       "blocker": "B-CELLULAR-PROVISIONING",
       "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cellular.plan",
+      "category": "Secure & Apple-service",
+      "title": "Cellular plan",
+      "iphone_behavior": "The iPhone shows and manages the Watch's carrier plan.",
+      "status": "blocked",
+      "blocker": "B-CELLULAR-PROVISIONING",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cellular.number-sharing",
+      "category": "Secure & Apple-service",
+      "title": "Number sharing",
+      "iphone_behavior": "The iPhone enables calls and SMS on the Watch through the phone's number.",
+      "status": "blocked",
+      "blocker": "B-CELLULAR-PROVISIONING",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cellular.dual-sim",
+      "category": "Secure & Apple-service",
+      "title": "Dual SIM state",
+      "iphone_behavior": "The iPhone selects and reports the Watch's cellular line.",
+      "status": "blocked",
+      "blocker": "B-CELLULAR-PROVISIONING",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cellular.calls",
+      "category": "Secure & Apple-service",
+      "title": "Calls without the phone",
+      "iphone_behavior": "The iPhone supports a cellular Watch call with no phone nearby.",
+      "status": "blocked",
+      "blocker": "B-CELLULAR-PROVISIONING",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cellular.data",
+      "category": "Secure & Apple-service",
+      "title": "Data without the phone",
+      "iphone_behavior": "The iPhone supports Watch internet access with no phone nearby.",
+      "status": "blocked",
+      "blocker": "B-CELLULAR-PROVISIONING",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cellular.modem",
+      "category": "Secure & Apple-service",
+      "title": "Modem state",
+      "iphone_behavior": "The iPhone reports the Watch modem, operator and roaming state.",
+      "status": "blocked",
+      "blocker": "B-CELLULAR-PROVISIONING",
+      "phase": 6,
       "implementation": [],
       "tests": [],
       "evidence": [
@@ -3635,6 +3795,54 @@
       ],
       "physical_verified": true,
       "notes": "Verified on the A52 with the same debug key: onboarding and per-app mute survived install -r, and a new muted notification was not captured. No pair record existed, so sealed-state preservation is not proven."
+    },
+    {
+      "id": "ops.watch-backup",
+      "category": "Operations & quality",
+      "title": "Watch backup",
+      "iphone_behavior": "The iPhone backs up Watch state so it can be restored.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/inventory/reference-features.md"
+      ],
+      "physical_verified": false,
+      "notes": "No backup format or consistency proof; destructive and untested."
+    },
+    {
+      "id": "ops.watch-restore",
+      "category": "Operations & quality",
+      "title": "Watch restore",
+      "iphone_behavior": "The iPhone restores a backed-up Watch identity and data.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/inventory/reference-features.md"
+      ],
+      "physical_verified": false,
+      "notes": "Requires a verified backup set first; no restore path exists."
+    },
+    {
+      "id": "ops.ota-verify",
+      "category": "Operations & quality",
+      "title": "watchOS update verification",
+      "iphone_behavior": "The iPhone verifies a watchOS update before installation.",
+      "status": "blocked",
+      "blocker": "B-WATCHOS-UPDATE",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
     },
     {
       "id": "ops.recovery-drill",

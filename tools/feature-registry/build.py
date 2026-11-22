@@ -769,12 +769,43 @@ A(f("secure.wallet", "Secure & Apple-service", "Wallet passes",
 A(f("secure.transit", "Secure & Apple-service", "Transit cards",
     "The iPhone provisions transit cards and express travel state.",
     "blocked", 5, blocker="B-APPLE-PAY", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("wallet.keys", "Secure & Apple-service", "Wallet keys",
+    "The iPhone provisions supported digital keys for use on the Watch.",
+    "blocked", 6, blocker="B-APPLE-PAY", evidence=["docs/cleanroom/BLOCKERS.md"],
+    notes="Requires issuer and Apple Wallet provisioning; no key material is invented."))
+A(f("wallet.cash", "Secure & Apple-service", "Apple Cash",
+    "The iPhone shows and operates an Apple Cash account on the Watch.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("wallet.card", "Secure & Apple-service", "Apple Card",
+    "The iPhone shows and operates an Apple Card account on the Watch.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("wallet.bank", "Secure & Apple-service", "Bank card provisioning",
+    "The iPhone completes issuer verification and provisions a bank card.",
+    "blocked", 6, blocker="B-APPLE-PAY", evidence=["docs/cleanroom/BLOCKERS.md"]))
 A(f("secure.secure-element", "Secure & Apple-service", "Secure element provisioning",
     "The iPhone provisions Apple-controlled applets into the Watch secure element.",
     "blocked", 5, blocker="B-APPLE-PAY", evidence=["docs/cleanroom/BLOCKERS.md"]))
 A(f("secure.cellular-provisioning", "Secure & Apple-service", "Cellular plan provisioning",
     "The iPhone activates a Watch eSIM with the carrier.",
     "blocked", 5, blocker="B-CELLULAR-PROVISIONING", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cellular.plan", "Secure & Apple-service", "Cellular plan",
+    "The iPhone shows and manages the Watch's carrier plan.",
+    "blocked", 6, blocker="B-CELLULAR-PROVISIONING", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cellular.number-sharing", "Secure & Apple-service", "Number sharing",
+    "The iPhone enables calls and SMS on the Watch through the phone's number.",
+    "blocked", 6, blocker="B-CELLULAR-PROVISIONING", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cellular.dual-sim", "Secure & Apple-service", "Dual SIM state",
+    "The iPhone selects and reports the Watch's cellular line.",
+    "blocked", 6, blocker="B-CELLULAR-PROVISIONING", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cellular.calls", "Secure & Apple-service", "Calls without the phone",
+    "The iPhone supports a cellular Watch call with no phone nearby.",
+    "blocked", 6, blocker="B-CELLULAR-PROVISIONING", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cellular.data", "Secure & Apple-service", "Data without the phone",
+    "The iPhone supports Watch internet access with no phone nearby.",
+    "blocked", 6, blocker="B-CELLULAR-PROVISIONING", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cellular.modem", "Secure & Apple-service", "Modem state",
+    "The iPhone reports the Watch modem, operator and roaming state.",
+    "blocked", 6, blocker="B-CELLULAR-PROVISIONING", evidence=["docs/cleanroom/BLOCKERS.md"]))
 A(f("secure.appstore", "Secure & Apple-service", "App Store account",
     "The iPhone authorises Watch App Store account access.",
     "blocked", 5, blocker="B-APP-STORE-DRM", evidence=["docs/cleanroom/BLOCKERS.md"]))
@@ -866,6 +897,17 @@ A(f("ops.update-path", "Operations & quality", "In-place app update",
     impl=["app/src/main/kotlin/org/opencrown/app/data/PairRecordStore.kt", "app/src/main/kotlin/org/opencrown/app/data/OnboardingStore.kt", "app/src/main/kotlin/org/opencrown/app/notifications/NotificationPolicy.kt"],
     evidence=["docs/evidence/a52-update-path.md"],
     notes="Verified on the A52 with the same debug key: onboarding and per-app mute survived install -r, and a new muted notification was not captured. No pair record existed, so sealed-state preservation is not proven."))
+A(f("ops.watch-backup", "Operations & quality", "Watch backup",
+    "The iPhone backs up Watch state so it can be restored.",
+    "unimplemented", 6, evidence=["docs/cleanroom/inventory/reference-features.md"],
+    notes="No backup format or consistency proof; destructive and untested."))
+A(f("ops.watch-restore", "Operations & quality", "Watch restore",
+    "The iPhone restores a backed-up Watch identity and data.",
+    "unimplemented", 6, evidence=["docs/cleanroom/inventory/reference-features.md"],
+    notes="Requires a verified backup set first; no restore path exists."))
+A(f("ops.ota-verify", "Operations & quality", "watchOS update verification",
+    "The iPhone verifies a watchOS update before installation.",
+    "blocked", 6, blocker="B-WATCHOS-UPDATE", evidence=["docs/cleanroom/BLOCKERS.md"]))
 A(f("ops.recovery-drill", "Operations & quality", "Recovery drill",
     "The iPhone recovers from reboot, unpair, watch reset and app reinstall.",
     "implemented_unverified", 6, impl=["app/src/main/kotlin/org/opencrown/app/MainViewModel.kt", "app/src/main/kotlin/org/opencrown/app/data/OnboardingStore.kt"],
