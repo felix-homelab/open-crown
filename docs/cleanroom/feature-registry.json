@@ -312,7 +312,25 @@
         "docs/cleanroom/spec/01-discovery.md"
       ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Android scanning is implemented, but FE25 setup-metadata decode is UNKNOWN, so no advertisement is selectable."
+    },
+    {
+      "id": "foundation.discovery-lifecycle",
+      "category": "Foundation",
+      "title": "Discovery inventory and selection rules",
+      "iphone_behavior": "The iPhone bounds its candidate list, expires stale watches and rechecks a selection before connecting.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [
+        "core/src/discovery/mod.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/01-discovery.md"
+      ],
+      "physical_verified": false,
+      "notes": "Bounded inventory, opaque tokens, TTL, stale-token rejection and the no-metadata-means-no-selection rule; host tests only."
     },
     {
       "id": "foundation.ble-connect",
@@ -408,7 +426,25 @@
         "docs/cleanroom/spec/04-ids-session.md"
       ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Session rules are implemented separately; the IDS envelope and control Hello remain UNKNOWN."
+    },
+    {
+      "id": "foundation.ids-session-rules",
+      "category": "Foundation",
+      "title": "IDS route, epoch and reconnect rules",
+      "iphone_behavior": "The iPhone rejects unknown routes, drops replies from an earlier session and backs off between reconnect attempts.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [
+        "core/src/ids/mod.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/04-ids-session.md"
+      ],
+      "physical_verified": false,
+      "notes": "Route catalogue, class checks, epoch correlation, receipt-versus-effect split and 15/30/60 s backoff; no wire codec."
     },
     {
       "id": "foundation.nwsc",

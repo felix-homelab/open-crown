@@ -4,9 +4,10 @@
 //! Android APIs. Everything here must be testable with `cargo test` on the
 //! host, which is what makes the golden-vector suite possible.
 //!
-//! Status: skeleton. The modules record the intended shape; no protocol logic
-//! is implemented. Specs and vectors land in `protocol/` first
-//! (see docs/03-clean-room.md).
+//! Status: partial. Discovery inventory/selection rules and IDS route/session
+//! rules are implemented and host-tested. Wire codecs, pairing, L2CAP/ERTM,
+//! SMP, NetworkRelay, NWSC and every feature service are still pending. No
+//! protocol revision is claimed until a spec is verified on hardware.
 
 pub mod bytes;
 pub mod checkpoint;

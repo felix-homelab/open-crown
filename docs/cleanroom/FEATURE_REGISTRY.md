@@ -20,17 +20,17 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 0 |
-| implemented_unverified | 10 |
+| implemented_unverified | 12 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 170 |
-| **total** | **212** |
+| **total** | **214** |
 
 ## By category
 
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Foundation | 0 | 8 | 3 | 0 | 17 | 28 |
+| Foundation | 0 | 10 | 3 | 0 | 17 | 30 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 0 | 0 | 1 | 0 | 19 | 20 |
@@ -62,12 +62,14 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | foundation.agent-session | Resident agent lifecycle | unimplemented |  | 2 |
 | foundation.controller-owner | Bluetooth controller ownership | blocked | [B-HCI-OWNERSHIP](BLOCKERS.md#b-hci-ownership) | 2 |
 | foundation.ble-discovery | BLE discovery and advertisement decoding | unimplemented |  | 2 |
+| foundation.discovery-lifecycle | Discovery inventory and selection rules | implemented_unverified |  | 2 |
 | foundation.ble-connect | BR/EDR + BLE link establishment | unimplemented |  | 2 |
 | foundation.l2cap | L2CAP / ERTM channels | unimplemented |  | 2 |
 | foundation.smp | SMP / OOB security | unimplemented |  | 2 |
 | foundation.link-encryption | Encrypted durable link | unimplemented |  | 3 |
 | foundation.networkrelay | NetworkRelay / ESP / IPsec | unimplemented |  | 3 |
 | foundation.ids | IDS application session | unimplemented |  | 3 |
+| foundation.ids-session-rules | IDS route, epoch and reconnect rules | implemented_unverified |  | 3 |
 | foundation.nwsc | NWSC and feature services | unimplemented |  | 4 |
 | foundation.keystore-store | Keystore-sealed pair records | unimplemented |  | 3 |
 | foundation.epoch-replay | Pair identity, epoch and replay protection | unimplemented |  | 3 |

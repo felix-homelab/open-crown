@@ -118,7 +118,13 @@ A(f("foundation.controller-owner", "Foundation", "Bluetooth controller ownership
     evidence=["docs/02-architecture.md"]))
 A(f("foundation.ble-discovery", "Foundation", "BLE discovery and advertisement decoding",
     "The iPhone discovers a nearby Watch and shows it with model and pairing state.",
-    "unimplemented", 2, evidence=["docs/cleanroom/spec/01-discovery.md"]))
+    "unimplemented", 2, evidence=["docs/cleanroom/spec/01-discovery.md"],
+    notes="Android scanning is implemented, but FE25 setup-metadata decode is UNKNOWN, so no advertisement is selectable."))
+A(f("foundation.discovery-lifecycle", "Foundation", "Discovery inventory and selection rules",
+    "The iPhone bounds its candidate list, expires stale watches and rechecks a selection before connecting.",
+    "implemented_unverified", 2, impl=["core/src/discovery/mod.rs"],
+    evidence=["docs/cleanroom/spec/01-discovery.md"],
+    notes="Bounded inventory, opaque tokens, TTL, stale-token rejection and the no-metadata-means-no-selection rule; host tests only."))
 A(f("foundation.ble-connect", "Foundation", "BR/EDR + BLE link establishment",
     "The iPhone establishes the pairing and normal links automatically.",
     "unimplemented", 2, evidence=["docs/cleanroom/spec/02-pairing-security.md"]))
@@ -136,7 +142,13 @@ A(f("foundation.networkrelay", "Foundation", "NetworkRelay / ESP / IPsec",
     "unimplemented", 3, evidence=["docs/cleanroom/spec/00-overview.md"]))
 A(f("foundation.ids", "Foundation", "IDS application session",
     "The iPhone exchanges Watch application messages over IDS.",
-    "unimplemented", 3, evidence=["docs/cleanroom/spec/04-ids-session.md"]))
+    "unimplemented", 3, evidence=["docs/cleanroom/spec/04-ids-session.md"],
+    notes="Session rules are implemented separately; the IDS envelope and control Hello remain UNKNOWN."))
+A(f("foundation.ids-session-rules", "Foundation", "IDS route, epoch and reconnect rules",
+    "The iPhone rejects unknown routes, drops replies from an earlier session and backs off between reconnect attempts.",
+    "implemented_unverified", 3, impl=["core/src/ids/mod.rs"],
+    evidence=["docs/cleanroom/spec/04-ids-session.md"],
+    notes="Route catalogue, class checks, epoch correlation, receipt-versus-effect split and 15/30/60 s backoff; no wire codec."))
 A(f("foundation.nwsc", "Foundation", "NWSC and feature services",
     "The iPhone uses the Watch feature services for settings, faces, health and apps.",
     "unimplemented", 4, evidence=["docs/cleanroom/spec/00-overview.md"]))
