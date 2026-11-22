@@ -535,11 +535,59 @@ A(f("apps.maps", "Time & built-in apps", "Maps and directions",
 A(f("apps.siri", "Time & built-in apps", "Siri",
     "The Watch invokes Siri through the paired iPhone and Apple account services.",
     "blocked", 5, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("siri.dictation", "Time & built-in apps", "Dictation",
+    "The iPhone configures and receives Watch dictation results.",
+    "unimplemented", 5))
+A(f("siri.translate", "Time & built-in apps", "Translate",
+    "The iPhone uses Watch translate input and results where the OS supports it.",
+    "unimplemented", 5))
+A(f("siri.android-actions", "Time & built-in apps", "Siri to Android actions",
+    "An authorised intent reaches an exact Android action and returns its result.",
+    "unimplemented", 5, notes="No Apple-provided bridge exists; this is a product-specific path, not parity."))
+A(f("siri.network", "Secure & Apple-service", "Siri over the network",
+    "The iPhone serves Siri requests through an Apple account session.",
+    "blocked", 5, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("siri.workout-buddy", "Secure & Apple-service", "Workout Buddy",
+    "The iPhone provides Apple Intelligence workout coaching.",
+    "blocked", 5, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("siri.message-translation", "Secure & Apple-service", "Message translation",
+    "The iPhone translates messages through Apple services.",
+    "blocked", 5, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("siri.summaries", "Secure & Apple-service", "Notification summaries",
+    "The iPhone produces Apple Intelligence notification summaries.",
+    "blocked", 5, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
 A(f("apps.compass", "Time & built-in apps", "Compass and elevation",
     "The iPhone shows compass calibration and elevation data state.",
     "unimplemented", 5))
 A(f("apps.noise", "Time & built-in apps", "Noise app",
     "The iPhone shows noise exposure data and settings.",
+    "unimplemented", 5))
+A(f("ultra.gps", "Time & built-in apps", "GPS fixes and tracks",
+    "The iPhone reads and manages Watch GPS fixes and tracks.",
+    "unimplemented", 5, notes="Requires Watch transport and a sensor session; no GPS state is invented."))
+A(f("ultra.waypoints", "Time & built-in apps", "Waypoints",
+    "The iPhone creates, edits and deletes Watch waypoints.",
+    "unimplemented", 5))
+A(f("ultra.backtrack", "Time & built-in apps", "Backtrack",
+    "The iPhone starts and reads a recorded backtrack route.",
+    "unimplemented", 5))
+A(f("ultra.offline-maps", "Time & built-in apps", "Offline maps",
+    "The iPhone downloads, verifies and deletes offline maps for the Watch.",
+    "unimplemented", 5))
+A(f("ultra.depth", "Time & built-in apps", "Depth",
+    "The iPhone reads depth data from an applicable Watch.",
+    "unimplemented", 5))
+A(f("ultra.water-temperature", "Time & built-in apps", "Water temperature",
+    "The iPhone reads the Watch water-temperature sensor.",
+    "unimplemented", 5))
+A(f("ultra.dive-log", "Time & built-in apps", "Dive log",
+    "The iPhone reads and manages original dive records.",
+    "unimplemented", 5))
+A(f("ultra.action-button", "Time & built-in apps", "Action button",
+    "The iPhone configures the Watch Action button and reads the setting back.",
+    "unimplemented", 5))
+A(f("ultra.siren", "Time & built-in apps", "Siren",
+    "The iPhone configures and triggers the Watch siren only on an approved device.",
     "unimplemented", 5))
 
 # ------------------------------------------------------------- Health & fitness
@@ -753,6 +801,21 @@ A(f("secure.apple-id", "Secure & Apple-service", "Apple ID sign-in",
 A(f("secure.icloud-sync", "Secure & Apple-service", "iCloud sync",
     "The iPhone syncs Watch-scoped data through iCloud.",
     "blocked", 5, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cloud.cloudkit", "Secure & Apple-service", "CloudKit records",
+    "The iPhone reads and writes authorised CloudKit containers.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cloud.home", "Secure & Apple-service", "Home accessories",
+    "The iPhone controls authorised HomeKit accessories from the Watch.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cloud.handoff", "Secure & Apple-service", "Handoff",
+    "The iPhone continues an authorised task between Watch and phone.",
+    "blocked", 6, blocker="B-CONTINUITY-UNLOCK", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cloud.subscriptions", "Secure & Apple-service", "Subscriptions",
+    "The iPhone checks an Apple service entitlement for the account.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("cloud.regional", "Secure & Apple-service", "Regional apps",
+    "The iPhone reports availability of region-limited Apple apps.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
 A(f("secure.activation-lock", "Secure & Apple-service", "Activation Lock status",
     "The iPhone can show whether Activation Lock is enabled for the Watch.",
     "blocked", 5, blocker="B-ACTIVATION-LOCK", evidence=["docs/cleanroom/BLOCKERS.md"]))

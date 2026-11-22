@@ -2128,6 +2128,112 @@
       "notes": ""
     },
     {
+      "id": "siri.dictation",
+      "category": "Time & built-in apps",
+      "title": "Dictation",
+      "iphone_behavior": "The iPhone configures and receives Watch dictation results.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "siri.translate",
+      "category": "Time & built-in apps",
+      "title": "Translate",
+      "iphone_behavior": "The iPhone uses Watch translate input and results where the OS supports it.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "siri.android-actions",
+      "category": "Time & built-in apps",
+      "title": "Siri to Android actions",
+      "iphone_behavior": "An authorised intent reaches an exact Android action and returns its result.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "No Apple-provided bridge exists; this is a product-specific path, not parity."
+    },
+    {
+      "id": "siri.network",
+      "category": "Secure & Apple-service",
+      "title": "Siri over the network",
+      "iphone_behavior": "The iPhone serves Siri requests through an Apple account session.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "siri.workout-buddy",
+      "category": "Secure & Apple-service",
+      "title": "Workout Buddy",
+      "iphone_behavior": "The iPhone provides Apple Intelligence workout coaching.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "siri.message-translation",
+      "category": "Secure & Apple-service",
+      "title": "Message translation",
+      "iphone_behavior": "The iPhone translates messages through Apple services.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "siri.summaries",
+      "category": "Secure & Apple-service",
+      "title": "Notification summaries",
+      "iphone_behavior": "The iPhone produces Apple Intelligence notification summaries.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
       "id": "apps.compass",
       "category": "Time & built-in apps",
       "title": "Compass and elevation",
@@ -2146,6 +2252,132 @@
       "category": "Time & built-in apps",
       "title": "Noise app",
       "iphone_behavior": "The iPhone shows noise exposure data and settings.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.gps",
+      "category": "Time & built-in apps",
+      "title": "GPS fixes and tracks",
+      "iphone_behavior": "The iPhone reads and manages Watch GPS fixes and tracks.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Requires Watch transport and a sensor session; no GPS state is invented."
+    },
+    {
+      "id": "ultra.waypoints",
+      "category": "Time & built-in apps",
+      "title": "Waypoints",
+      "iphone_behavior": "The iPhone creates, edits and deletes Watch waypoints.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.backtrack",
+      "category": "Time & built-in apps",
+      "title": "Backtrack",
+      "iphone_behavior": "The iPhone starts and reads a recorded backtrack route.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.offline-maps",
+      "category": "Time & built-in apps",
+      "title": "Offline maps",
+      "iphone_behavior": "The iPhone downloads, verifies and deletes offline maps for the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.depth",
+      "category": "Time & built-in apps",
+      "title": "Depth",
+      "iphone_behavior": "The iPhone reads depth data from an applicable Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.water-temperature",
+      "category": "Time & built-in apps",
+      "title": "Water temperature",
+      "iphone_behavior": "The iPhone reads the Watch water-temperature sensor.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.dive-log",
+      "category": "Time & built-in apps",
+      "title": "Dive log",
+      "iphone_behavior": "The iPhone reads and manages original dive records.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.action-button",
+      "category": "Time & built-in apps",
+      "title": "Action button",
+      "iphone_behavior": "The iPhone configures the Watch Action button and reads the setting back.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ultra.siren",
+      "category": "Time & built-in apps",
+      "title": "Siren",
+      "iphone_behavior": "The iPhone configures and triggers the Watch siren only on an approved device.",
       "status": "unimplemented",
       "blocker": null,
       "phase": 5,
@@ -3121,6 +3353,86 @@
       "status": "blocked",
       "blocker": "B-APPLE-ACCOUNT",
       "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cloud.cloudkit",
+      "category": "Secure & Apple-service",
+      "title": "CloudKit records",
+      "iphone_behavior": "The iPhone reads and writes authorised CloudKit containers.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cloud.home",
+      "category": "Secure & Apple-service",
+      "title": "Home accessories",
+      "iphone_behavior": "The iPhone controls authorised HomeKit accessories from the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cloud.handoff",
+      "category": "Secure & Apple-service",
+      "title": "Handoff",
+      "iphone_behavior": "The iPhone continues an authorised task between Watch and phone.",
+      "status": "blocked",
+      "blocker": "B-CONTINUITY-UNLOCK",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cloud.subscriptions",
+      "category": "Secure & Apple-service",
+      "title": "Subscriptions",
+      "iphone_behavior": "The iPhone checks an Apple service entitlement for the account.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "cloud.regional",
+      "category": "Secure & Apple-service",
+      "title": "Regional apps",
+      "iphone_behavior": "The iPhone reports availability of region-limited Apple apps.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
       "implementation": [],
       "tests": [],
       "evidence": [

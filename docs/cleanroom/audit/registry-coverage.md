@@ -2,7 +2,7 @@
 
 Date: 2026-11-22
 Inventory: 253 capability claims in 26 groups
-Registry: 245 capability rows after this pass
+Registry: 266 capability rows after this pass
 
 ## Method
 
@@ -34,14 +34,14 @@ added before the registry can be called exhaustive.
 | G12 Activity and workouts | 15 | health.activity-rings, workouts-live, workout-history, awards | Grouped |
 | G13 Health measurements | 15 | health.heart-rate, resting-hr, hrv, ecg, blood-oxygen, temperature, sleep, respiratory, cycle, medications, mindfulness | Covered |
 | G14 Health storage | 10 | health.import/export/anchors/privacy/provenance, foundation.health-mirror | Covered |
-| G15 Ultra and navigation | 11 | apps.maps/compass, health.temperature | **Gap**: Ultra-specific claims are not split out |
+| G15 Ultra and navigation | 11 | apps.maps/compass, health.temperature, ultra.gps/waypoints/backtrack/offline-maps/depth/water-temperature/dive-log/action-button/siren | Covered (unimplemented rows) |
 | G16 Media | 11 | media.now-playing, remote-control, music-library, podcasts, audiobooks, radio, camera-remote/preview, photos-sync, photo-album-select, home-controls | Covered |
 | G17 Camera and remote | 5 | media.camera-remote/preview, comm.find-phone | Covered |
 | G18 Apps | 7 | apps.inventory/install/update/remove/layout/watchos/version/store/drm/complications | Covered |
-| G19 Siri and intelligence | 8 | apps.siri | **Grouped**: only one row owns the group |
+| G19 Siri and intelligence | 8 | apps.siri, siri.dictation/translate/android-actions/network/workout-buddy/message-translation/summaries | Covered |
 | G20 Finding devices | 8 | comm.find-phone, comm.find-watch, secure.findmy-network | Covered |
 | G21 Security and accessibility | 14 | settings.voiceover, zoom, reduce-motion/transparency, text-size, bold-text, accessibility-other, passcode-status | Covered |
-| G22 Apple account and cloud | 11 | secure.apple-id, icloud-sync, health-icloud, account-2fa, continuity-unlock | **Grouped**: keychain/cloud-backup claims lack rows |
+| G22 Apple account and cloud | 11 | secure.apple-id, icloud-sync, health-icloud, account-2fa, continuity-unlock, cloud.cloudkit/home/handoff/subscriptions/regional | Covered |
 | G23 Wallet and payments | 8 | secure.wallet, transit, apple-pay, secure-element, wallet.keys, wallet.cash, wallet.card, wallet.bank | Covered (blocked rows) |
 | G24 Cellular | 8 | secure.cellular-provisioning, settings.cellular-status/carrier, cellular.plan, number-sharing, dual-sim, calls, data, modem | Covered (blocked rows) |
 | G25 Family modes | 5 | family.setup, schooltime, reports, limits, services | Covered (all blocked by B-APPLE-ACCOUNT) |
@@ -52,12 +52,11 @@ added before the registry can be called exhaustive.
 - 26 of 26 claim groups are represented at least once.
 - The Family group was completely absent before the first coverage pass; five
   rows were added as documented Apple-account blockers.
-- The wallet, cellular and maintenance gaps are closed with blocked or
-  unimplemented rows. G15, G19 and G22 still contain claim-level gaps: Ultra
-  specifics, Siri breadth, and account/cloud services.
-- 253 claims do not equal 245 rows because of grouping. That is a deliberate
-  granularity choice, not proof of coverage.
+- The wallet, cellular, maintenance, Ultra, Siri and cloud gaps are closed with
+  blocked or unimplemented rows. No group-level gap remains.
+- 253 claims do not equal 266 rows: the registry adds Foundation/Operations
+  rows and groups some claims. Granularity is deliberate, not one-to-one proof.
 
-This report does **not** discharge the exhaustive-registry gate. The next
-registry revision must split or explicitly alias the gap groups, then update this
-table. No row is promoted by this audit.
+This report discharges the **group-level** coverage check but not the
+exhaustive-registry gate: each remaining row must still be verified or blocked,
+and 173 rows are unimplemented. No row is promoted by this audit.

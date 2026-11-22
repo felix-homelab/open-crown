@@ -56,7 +56,9 @@ expected.
 `secure.findmy-network`, `secure.imessage`, `secure.facetime`,
 `apps.siri`, `comm.walkie-talkie`, `secure.health-icloud`,
 `secure.continuity-unlock`, `family.setup`, `family.schooltime`,
-`family.reports`, `family.limits`, `family.services`.
+`family.reports`, `family.limits`, `family.services`, `siri.network`,
+`siri.workout-buddy`, `siri.message-translation`, `siri.summaries`,
+`cloud.cloudkit`, `cloud.home`, `cloud.subscriptions`, `cloud.regional`.
 
 ---
 
@@ -185,7 +187,7 @@ devices. A non-Apple companion cannot join that trust set.
 **Evidence:** Apple Platform Security, "Continuity" and Auto Unlock:
 https://support.apple.com/guide/security/welcome/web
 
-**Affected capabilities:** `secure.continuity-unlock`.
+**Affected capabilities:** `secure.continuity-unlock`, `cloud.handoff`.
 
 ---
 

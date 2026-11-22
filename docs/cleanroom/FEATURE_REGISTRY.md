@@ -21,10 +21,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | --- | ---: |
 | verified | 5 |
 | implemented_unverified | 31 |
-| blocked | 48 |
+| blocked | 57 |
 | out_of_scope | 0 |
-| unimplemented | 161 |
-| **total** | **245** |
+| unimplemented | 173 |
+| **total** | **266** |
 
 ## By category
 
@@ -36,11 +36,11 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Notifications & communication | 1 | 1 | 1 | 0 | 18 | 21 |
 | Media & remote | 0 | 0 | 1 | 0 | 10 | 11 |
 | Watch faces & personalization | 0 | 0 | 1 | 0 | 16 | 17 |
-| Time & built-in apps | 0 | 0 | 1 | 0 | 14 | 15 |
+| Time & built-in apps | 0 | 0 | 1 | 0 | 26 | 27 |
 | Health & fitness | 0 | 0 | 0 | 0 | 20 | 20 |
 | Apps & software | 0 | 0 | 7 | 0 | 6 | 13 |
 | Settings & accessibility | 0 | 0 | 0 | 0 | 33 | 33 |
-| Secure & Apple-service | 0 | 0 | 32 | 0 | 0 | 32 |
+| Secure & Apple-service | 0 | 0 | 41 | 0 | 0 | 41 |
 | About, privacy & evidence | 0 | 5 | 0 | 0 | 0 | 5 |
 | Operations & quality | 1 | 5 | 1 | 0 | 4 | 11 |
 
@@ -209,8 +209,20 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | apps.notes | Notes | unimplemented |  | 5 |
 | apps.maps | Maps and directions | unimplemented |  | 5 |
 | apps.siri | Siri | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
+| siri.dictation | Dictation | unimplemented |  | 5 |
+| siri.translate | Translate | unimplemented |  | 5 |
+| siri.android-actions | Siri to Android actions | unimplemented |  | 5 |
 | apps.compass | Compass and elevation | unimplemented |  | 5 |
 | apps.noise | Noise app | unimplemented |  | 5 |
+| ultra.gps | GPS fixes and tracks | unimplemented |  | 5 |
+| ultra.waypoints | Waypoints | unimplemented |  | 5 |
+| ultra.backtrack | Backtrack | unimplemented |  | 5 |
+| ultra.offline-maps | Offline maps | unimplemented |  | 5 |
+| ultra.depth | Depth | unimplemented |  | 5 |
+| ultra.water-temperature | Water temperature | unimplemented |  | 5 |
+| ultra.dive-log | Dive log | unimplemented |  | 5 |
+| ultra.action-button | Action button | unimplemented |  | 5 |
+| ultra.siren | Siren | unimplemented |  | 5 |
 
 ### Health & fitness
 
@@ -297,8 +309,17 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Id | Capability | Status | Blocker | Phase |
 | --- | --- | --- | --- | ---: |
+| siri.network | Siri over the network | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
+| siri.workout-buddy | Workout Buddy | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
+| siri.message-translation | Message translation | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
+| siri.summaries | Notification summaries | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
 | secure.apple-id | Apple ID sign-in | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
 | secure.icloud-sync | iCloud sync | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
+| cloud.cloudkit | CloudKit records | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| cloud.home | Home accessories | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| cloud.handoff | Handoff | blocked | [B-CONTINUITY-UNLOCK](BLOCKERS.md#b-continuity-unlock) | 6 |
+| cloud.subscriptions | Subscriptions | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| cloud.regional | Regional apps | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
 | secure.activation-lock | Activation Lock status | blocked | [B-ACTIVATION-LOCK](BLOCKERS.md#b-activation-lock) | 5 |
 | secure.activation-lock-bypass | Activation Lock bypass | blocked | [B-ACTIVATION-LOCK](BLOCKERS.md#b-activation-lock) | 5 |
 | secure.apple-pay | Apple Pay | blocked | [B-APPLE-PAY](BLOCKERS.md#b-apple-pay) | 5 |
@@ -366,6 +387,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 - media.home-controls - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): Apple Home accessory control is account- and first-party-app bound; a local HAP bridge would not appear in the Watch Home app.
 - faces.native-resources - [B-ASSET-APPLERENDER](BLOCKERS.md#b-asset-applerender): Apple-rendered face resources are not redistributable. An original renderer is a separate, unblocked effort.
 - apps.siri - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The Watch invokes Siri through the paired iPhone and Apple account services.
+- siri.network - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone serves Siri requests through an Apple account session.
+- siri.workout-buddy - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone provides Apple Intelligence workout coaching.
+- siri.message-translation - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone translates messages through Apple services.
+- siri.summaries - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone produces Apple Intelligence notification summaries.
 - apps.install - [B-WATCH-APP-SIGNING](BLOCKERS.md#b-watch-app-signing): The iPhone installs a compatible iPhone app's Watch extension.
 - apps.update - [B-WATCH-APP-SIGNING](BLOCKERS.md#b-watch-app-signing): The iPhone updates installed Watch apps.
 - apps.watchos-update - [B-WATCHOS-UPDATE](BLOCKERS.md#b-watchos-update): The iPhone downloads and verifies a watchOS update.
@@ -375,6 +400,11 @@ row is verified, blocked, or out_of_scope with recorded approval.
 - apps.third-party-complications - [B-WATCH-APP-SIGNING](BLOCKERS.md#b-watch-app-signing): The iPhone installs app complications on the Watch.
 - secure.apple-id - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone holds the owner's Apple ID and passes the authorised account state to the Watch.
 - secure.icloud-sync - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone syncs Watch-scoped data through iCloud.
+- cloud.cloudkit - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone reads and writes authorised CloudKit containers.
+- cloud.home - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone controls authorised HomeKit accessories from the Watch.
+- cloud.handoff - [B-CONTINUITY-UNLOCK](BLOCKERS.md#b-continuity-unlock): The iPhone continues an authorised task between Watch and phone.
+- cloud.subscriptions - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone checks an Apple service entitlement for the account.
+- cloud.regional - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone reports availability of region-limited Apple apps.
 - secure.activation-lock - [B-ACTIVATION-LOCK](BLOCKERS.md#b-activation-lock): The iPhone can show whether Activation Lock is enabled for the Watch.
 - secure.activation-lock-bypass - [B-ACTIVATION-LOCK](BLOCKERS.md#b-activation-lock): Refused by policy, never implemented. Listed so the refusal is auditable.
 - secure.apple-pay - [B-APPLE-PAY](BLOCKERS.md#b-apple-pay): The iPhone provisions and manages Apple Pay cards for the Watch.
