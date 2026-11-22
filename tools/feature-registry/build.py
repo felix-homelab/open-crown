@@ -799,7 +799,9 @@ A(f("ops.license-audit", "Operations & quality", "Licence audit",
     "unimplemented", 6))
 A(f("ops.secret-scan", "Operations & quality", "Secret and identifier scan",
     "Not applicable; Open Crown must keep pairing keys and device identifiers out of logs and commits.",
-    "unimplemented", 6))
+    "implemented_unverified", 6, impl=["tools/cleanroom/secret-scan.py", "tools/lib/opencrown_tools/secrets.py"],
+    evidence=["tools/tests/test_secret_scan.py"],
+    notes="Scans tracked text for private-key blocks, provider tokens and signing-material suffixes without echoing matches; wired into CI. Device serials are not pattern-scanned."))
 A(f("ops.recovery-drill", "Operations & quality", "Recovery drill",
     "The iPhone recovers from reboot, unpair, watch reset and app reinstall.",
     "unimplemented", 6))

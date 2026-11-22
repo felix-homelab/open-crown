@@ -3390,14 +3390,19 @@
       "category": "Operations & quality",
       "title": "Secret and identifier scan",
       "iphone_behavior": "Not applicable; Open Crown must keep pairing keys and device identifiers out of logs and commits.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 6,
-      "implementation": [],
+      "implementation": [
+        "tools/cleanroom/secret-scan.py",
+        "tools/lib/opencrown_tools/secrets.py"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "tools/tests/test_secret_scan.py"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Scans tracked text for private-key blocks, provider tokens and signing-material suffixes without echoing matches; wired into CI. Device serials are not pattern-scanned."
     },
     {
       "id": "ops.recovery-drill",
