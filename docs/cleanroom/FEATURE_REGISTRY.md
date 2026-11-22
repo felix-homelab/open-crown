@@ -21,10 +21,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | --- | ---: |
 | verified | 5 |
 | implemented_unverified | 31 |
-| blocked | 32 |
+| blocked | 37 |
 | out_of_scope | 0 |
 | unimplemented | 159 |
-| **total** | **227** |
+| **total** | **232** |
 
 ## By category
 
@@ -40,7 +40,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Health & fitness | 0 | 0 | 0 | 0 | 20 | 20 |
 | Apps & software | 0 | 0 | 7 | 0 | 6 | 13 |
 | Settings & accessibility | 0 | 0 | 0 | 0 | 33 | 33 |
-| Secure & Apple-service | 0 | 0 | 17 | 0 | 0 | 17 |
+| Secure & Apple-service | 0 | 0 | 22 | 0 | 0 | 22 |
 | About, privacy & evidence | 0 | 5 | 0 | 0 | 0 | 5 |
 | Operations & quality | 1 | 5 | 0 | 0 | 2 | 8 |
 
@@ -314,6 +314,11 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | secure.continuity-unlock | Continuity unlock | blocked | [B-CONTINUITY-UNLOCK](BLOCKERS.md#b-continuity-unlock) | 6 |
 | secure.account-2fa | Apple account two-factor authentication | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 5 |
 | secure.stolen-device | Stolen device support | blocked | [B-ACTIVATION-LOCK](BLOCKERS.md#b-activation-lock) | 5 |
+| family.setup | Family Setup | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| family.schooltime | Schooltime | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| family.reports | Family reports | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| family.limits | Family restrictions | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
+| family.services | Family Apple services | blocked | [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account) | 6 |
 
 ### About, privacy & evidence
 
@@ -372,3 +377,8 @@ row is verified, blocked, or out_of_scope with recorded approval.
 - secure.continuity-unlock - [B-CONTINUITY-UNLOCK](BLOCKERS.md#b-continuity-unlock): The Watch unlocks a Mac or contributes to continuity authentication.
 - secure.account-2fa - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone handles account 2FA prompts for the Watch.
 - secure.stolen-device - [B-ACTIVATION-LOCK](BLOCKERS.md#b-activation-lock): Refused by policy. The row exists so the refusal is visible and testable.
+- family.setup - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): Requires a family Apple Account and Apple service authorization; not a bypass path.
+- family.schooltime - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone manages a restricted school-hours mode for a family Watch.
+- family.reports - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone shows authorised activity and location reports for a family member.
+- family.limits - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone applies contacts, communication and content restrictions.
+- family.services - [B-APPLE-ACCOUNT](BLOCKERS.md#b-apple-account): The iPhone enables family-scoped Apple services on the Watch.

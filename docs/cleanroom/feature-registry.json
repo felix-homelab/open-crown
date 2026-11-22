@@ -3369,6 +3369,86 @@
       "notes": "Refused by policy. The row exists so the refusal is visible and testable."
     },
     {
+      "id": "family.setup",
+      "category": "Secure & Apple-service",
+      "title": "Family Setup",
+      "iphone_behavior": "The iPhone can set up a Watch for a family member without that person owning an iPhone.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": "Requires a family Apple Account and Apple service authorization; not a bypass path."
+    },
+    {
+      "id": "family.schooltime",
+      "category": "Secure & Apple-service",
+      "title": "Schooltime",
+      "iphone_behavior": "The iPhone manages a restricted school-hours mode for a family Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "family.reports",
+      "category": "Secure & Apple-service",
+      "title": "Family reports",
+      "iphone_behavior": "The iPhone shows authorised activity and location reports for a family member.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "family.limits",
+      "category": "Secure & Apple-service",
+      "title": "Family restrictions",
+      "iphone_behavior": "The iPhone applies contacts, communication and content restrictions.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "family.services",
+      "category": "Secure & Apple-service",
+      "title": "Family Apple services",
+      "iphone_behavior": "The iPhone enables family-scoped Apple services on the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
       "id": "about.privacy-policy",
       "category": "About, privacy & evidence",
       "title": "Privacy policy",

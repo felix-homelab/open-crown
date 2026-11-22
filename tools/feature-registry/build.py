@@ -800,6 +800,22 @@ A(f("secure.stolen-device", "Secure & Apple-service", "Stolen device support",
     "No legitimate iPhone Watch feature supports operating a device the user does not own.",
     "blocked", 5, blocker="B-ACTIVATION-LOCK", evidence=["docs/cleanroom/BLOCKERS.md"],
     notes="Refused by policy. The row exists so the refusal is visible and testable."))
+A(f("family.setup", "Secure & Apple-service", "Family Setup",
+    "The iPhone can set up a Watch for a family member without that person owning an iPhone.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"],
+    notes="Requires a family Apple Account and Apple service authorization; not a bypass path."))
+A(f("family.schooltime", "Secure & Apple-service", "Schooltime",
+    "The iPhone manages a restricted school-hours mode for a family Watch.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("family.reports", "Secure & Apple-service", "Family reports",
+    "The iPhone shows authorised activity and location reports for a family member.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("family.limits", "Secure & Apple-service", "Family restrictions",
+    "The iPhone applies contacts, communication and content restrictions.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
+A(f("family.services", "Secure & Apple-service", "Family Apple services",
+    "The iPhone enables family-scoped Apple services on the Watch.",
+    "blocked", 6, blocker="B-APPLE-ACCOUNT", evidence=["docs/cleanroom/BLOCKERS.md"]))
 
 # ------------------------------------------------- About, privacy & evidence
 A(f("about.privacy-policy", "About, privacy & evidence", "Privacy policy",

@@ -54,8 +54,9 @@ expected.
 
 **Affected capabilities:** `secure.apple-id`, `secure.icloud-sync`,
 `secure.findmy-network`, `secure.imessage`, `secure.facetime`,
-`daily.siri`, `daily.walkie-talkie`, `health.icloud-sync`,
-`secure.continuity-unlock`.
+`apps.siri`, `comm.walkie-talkie`, `secure.health-icloud`,
+`secure.continuity-unlock`, `family.setup`, `family.schooltime`,
+`family.reports`, `family.limits`, `family.services`.
 
 ---
 

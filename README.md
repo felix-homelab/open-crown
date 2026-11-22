@@ -8,7 +8,7 @@ system partition stays untouched: when the app needs the Bluetooth controller it
 borrows root for the life of the boot, and a reboot takes it back.
 
 > **Status: private research, Phase 1 shell.** The app now has an
-> observation-first Apple-style Compose shell, a 227-row capability registry and
+> observation-first Apple-style Compose shell, a 232-row capability registry and
 > real device diagnostics. The Watch protocol and pairing path are not
 > implemented. The A52s page-cache chain is kept but only runs from an explicit
 > Diagnostics consent sheet; it produces a temporary init-domain relay that the
