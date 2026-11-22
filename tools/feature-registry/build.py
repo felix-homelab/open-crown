@@ -161,6 +161,11 @@ A(f("foundation.faces-delta-rules", "Foundation", "Face mutation and read-back r
     "implemented_unverified", 4, impl=["core/src/faces/mod.rs"],
     evidence=["docs/cleanroom/spec/05-faces.md"],
     notes="Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."))
+A(f("foundation.health-mirror", "Foundation", "Health defaults mirror rules",
+    "The iPhone validates and merges Watch health defaults without turning missing data into zero.",
+    "implemented_unverified", 5, impl=["core/src/health.rs"],
+    evidence=["docs/cleanroom/spec/07-settings-wifi-health.md"],
+    notes="Newer-replaces/equal-or-older-ignored, tombstones keep the prior date, missing domain becomes empty, missing value never becomes zero, bounded 4096 rows/16 MiB, transactional batches. Encryption/anchors/native acceptance remain UNKNOWN."))
 A(f("foundation.pairing-rules", "Foundation", "Pairing branch and bond ordering rules",
     "The iPhone pairs through a PIN or optical branch, never both, and reports bonded only after SMP and durable storage succeed.",
     "implemented_unverified", 3, impl=["core/src/pairing.rs"],

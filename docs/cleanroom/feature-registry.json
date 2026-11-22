@@ -491,6 +491,24 @@
       "notes": "Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."
     },
     {
+      "id": "foundation.health-mirror",
+      "category": "Foundation",
+      "title": "Health defaults mirror rules",
+      "iphone_behavior": "The iPhone validates and merges Watch health defaults without turning missing data into zero.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [
+        "core/src/health.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": "Newer-replaces/equal-or-older-ignored, tombstones keep the prior date, missing domain becomes empty, missing value never becomes zero, bounded 4096 rows/16 MiB, transactional batches. Encryption/anchors/native acceptance remain UNKNOWN."
+    },
+    {
       "id": "foundation.pairing-rules",
       "category": "Foundation",
       "title": "Pairing branch and bond ordering rules",

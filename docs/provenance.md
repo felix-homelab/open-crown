@@ -32,6 +32,7 @@ unauditable.
 | Notification claim rules | [spec/06-notifications.md](cleanroom/spec/06-notifications.md) | none (bulletin encoding UNKNOWN; no capture) | Lane A spec; reference claim-rule inventory | revision binding, commit-before-effect, at-most-once | none | lead, 2026-11-22 |
 | Write confirmation | [docs/design/state-model.md](design/state-model.md) | none (no wire change; policy model) | own observation rules; Android/agent lifecycle | command lifecycle and no-promotion rule | none | lead, 2026-11-22 |
 | Pairing rules | [spec/02-pairing-security.md](cleanroom/spec/02-pairing-security.md) | none (uIKE/SPAKE/SMP UNKNOWN; no capture) | Lane A spec; reference phase/branch inventory | branch exclusivity, bond ordering, replacement safety | none | lead, 2026-11-22 |
+| Health mirror rules | [spec/07-settings-wifi-health.md](cleanroom/spec/07-settings-wifi-health.md) | none (encryption/anchors UNKNOWN; no capture) | Lane A spec; reference merge-rule inventory | newer-wins, tombstones, bounds, transactionality | none | lead, 2026-11-22 |
 
 ## Attestation
 
