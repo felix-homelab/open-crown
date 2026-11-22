@@ -104,10 +104,6 @@ fun CrownApp(
                 onRequestPermissions = actions.requestPermissions,
                 onStartScan = actions.startScan,
                 onStopScan = actions.stopScan,
-                onSelect = { address, name ->
-                    actions.selectWatch(address, name)
-                    navigator.push(Destination.Pairing)
-                },
                 onBack = back,
             )
 

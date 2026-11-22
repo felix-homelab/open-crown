@@ -55,7 +55,6 @@ fun DiscoveryScreen(
     onRequestPermissions: () -> Unit,
     onStartScan: () -> Unit,
     onStopScan: () -> Unit,
-    onSelect: (String, String?) -> Unit,
     onBack: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
@@ -68,7 +67,8 @@ fun DiscoveryScreen(
     ) {
         item(key = "intro") {
             CrownNote(
-                message = "An advertisement is not a watch and not a connection. Model identification and pairing need the transport, which is not available in this build.",
+                title = "Observed, not selectable",
+                message = "An advertisement is not a watch and not a connection. The FE25 setup-metadata layout is UNKNOWN, so this build can list nearby Apple advertisements but cannot identify a pairable Watch or offer a selection.",
                 tone = CrownTone.NEUTRAL,
             )
             Spacer(Modifier.height(20.dp))
@@ -139,7 +139,6 @@ fun DiscoveryScreen(
                                 AdvertisementRow(
                                     advertisement = ad,
                                     showDivider = index != ads.lastIndex,
-                                    onClick = { onSelect(ad.transportAddress, ad.displayName) },
                                 )
                             }
                         }
@@ -162,7 +161,6 @@ fun DiscoveryScreen(
 private fun AdvertisementRow(
     advertisement: NearbyAdvertisement,
     showDivider: Boolean,
-    onClick: () -> Unit,
 ) {
     val colors = CrownTheme.colors
     CrownRow(
@@ -170,8 +168,7 @@ private fun AdvertisementRow(
         subtitle = "Type 0x" + (advertisement.appleManufacturerType?.toString(16)?.padStart(2, '0') ?: "??") +
             " \u00b7 RSSI " + advertisement.rssi + " dBm \u00b7 seen " + advertisement.seenCount + "\u00d7",
         showDivider = showDivider,
-        onClick = onClick,
-        trailing = { CrownStatusPill("Advertisement", CrownTone.NEUTRAL) },
+        trailing = { CrownStatusPill("Not selectable", CrownTone.NEUTRAL) },
     )
 }
 
