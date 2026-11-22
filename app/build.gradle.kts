@@ -63,8 +63,17 @@ val syncPayloadAssets = tasks.register<Copy>("syncPayloadAssets") {
     into(layout.projectDirectory.dir("src/main/assets/payloads"))
 }
 
+// The registry is authored in docs/ and validated by its generator. Copying it
+// at build time keeps the app's Evidence screen and the docs from drifting.
+val syncFeatureRegistry = tasks.register<Copy>("syncFeatureRegistry") {
+    from(rootProject.file("docs/cleanroom")) {
+        include("feature-registry.json")
+    }
+    into(layout.projectDirectory.dir("src/main/assets/cleanroom"))
+}
+
 tasks.named("preBuild") {
-    dependsOn(syncPayloadAssets)
+    dependsOn(syncPayloadAssets, syncFeatureRegistry)
 }
 
 dependencies {
@@ -73,4 +82,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.foundation)
+    testImplementation(libs.junit)
 }
