@@ -27,6 +27,12 @@ because a failure has to say whether the exploit failed or the policy did.
 **Exit:** a written result with stage-level attribution, the denial text, and a
 reproducible procedure.
 
+**Result (2026-11-22):** K2b passes (uid 0 in init, patch verified), but K2a
+is **blocked**: the app's real untrusted_app domain is denied the relay socket,
+and the relay is unauthenticated root that consumes init until the phone resets.
+See [ADR 0020](adr/0020-k2a-blocked-next-path.md) and the
+[evidence](evidence/a52-broker-untrusted-app.md).
+
 **Gate G0 (privilege):** two findings, two fallbacks.
 Stage A failing means no usable payload for this build: the catalog is not
 viable and the project is bring-your-own-root.

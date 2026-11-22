@@ -46,6 +46,7 @@
 | [0017](adr/0017-pagecache-relay-payload.md) | A52 page-cache chain built into the app; ADB-only relay | Accepted for private research |
 | [0018](adr/0018-observation-first-state.md) | Observation-first state; no promotion of stale data | Accepted |
 | [0019](adr/0019-clean-room-lanes.md) | Two-lane clean room with a quarantined reference | Accepted |
+| [0020](adr/0020-k2a-blocked-next-path.md) | K2a blocked on the A52; rooted-device path recommended | Proposed — owner decision |
 
 ## Status
 

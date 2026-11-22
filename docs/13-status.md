@@ -92,6 +92,8 @@ The registry names each one. The major families:
 ## Checks
 
 ```sh
+# Clean-checkout verification on 2026-11-22: with reference/ moved aside,
+# Gradle assemble/unit tests and the Cargo workspace tests passed.
 python3 tools/feature-registry/build.py --check
 python3 tools/cleanroom/check-boundary.py
 JAVA_HOME=.toolchain/jdk/Contents/Home GRADLE_USER_HOME=.gradle-home \
