@@ -2,72 +2,110 @@
 
 As of 2026-11-22 (private research build).
 
-## Verified on the A52
+This revision replaces the single-screen probe shell with an observation-first
+companion shell. It does **not** claim that pairing works. The trusted status
+is the [feature registry](cleanroom/FEATURE_REGISTRY.md): 212 rows, 0 verified,
+10 built-but-unverified, 32 blocked, 170 not built.
 
-The test device is a stock Samsung Galaxy A52s 5G, `SM-A528B` (`a52sxq`),
-build `UP1A.231005.007` / `A528BXXSBGYI3`, kernel
-`5.4.254-qgki-28575149-abA528BXXSBGYI3`, SDK 34, arm64-v8a.
+## What is now real
 
-| Area | Observed |
-| --- | --- |
-| M1 probe and readiness | App loads the native and JNA libraries, reports the real device, and lists no ready catalog payload |
-| In-tree A52 chain | App auto-runs the page-cache patch on first launch per boot, reports 576/576 bytes verified, and shows Root reached once the init relay marker appears |
-| Temporary root over ADB | `uid=0(root) gid=0(root) ... context=u:r:init:s0`; relay is not reachable from `untrusted_app` |
-| Reboot | Relay and page-cache patch disappear; shell returns to `uid=2000(shell)` |
-| Scope | No bootloader unlock, no data wipe, no persistent boot-image change |
+| Area | State | Evidence |
+| --- | --- | --- |
+| Compose design system | Light/dark tokens, type ramp, grouped lists, controls, sheets, original line icons, reduced motion, haptics | `app/src/main/kotlin/org/opencrown/app/ui/`; unit build passes |
+| App shell | Welcome, Home, Discovery, Pairing, Setup, Faces, Notifications, Health, Apps, Settings, Accessibility, Diagnostics, Evidence, About | `CrownApp.kt`, `ui/screens/` |
+| Observation model | Every watch value is `Observation<T>` with origin, verification, time, pair/epoch and unavailable reason | `model/Observation.kt`, unit tests |
+| Feature registry | 212 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |
+| BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches | `data/BleDiscoveryRepository.kt` |
+| Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |
+| Sealed pair store | AES-GCM through Android Keystore, corrupt envelope treated as absent | `data/PairRecordStore.kt` |
+| Consent-gated chain | The in-tree page-cache chain is kept, but only runs from an explicit Diagnostics consent sheet; it is no longer an automatic boot side effect | `data/ChainController.kt` |
+| Clean-room governance | Lanes, quarantine, blocker catalog, inventory, specs, boundary guard | `docs/cleanroom/`, `tools/cleanroom/check-boundary.py` |
 
-The app cannot consume the relay itself: Android excludes `untrusted_app` from
-that Unix socket. The operator triggers init and uses the relay over ADB; the app cannot write the property itself. The
-only chain in the tree is `app/src/main/cpp/pagecache_relay/`.
+## Broker / K2a: measured blocker
 
-## Verified on the host
+The Phase 2 probe produced a definitive result on the A52:
 
-| Area | Evidence |
-| --- | --- |
-| Docs and ADRs | `tools/link-check/cli.py .` passes |
-| App chain build | `libpagecache_relay.so` and the named payload package are built from source; the app matches its manifest |
-| Payload index | `catalog/payload-index.json` is empty; no external target is indexed |
-| Readiness and execution | Host tests cover readiness reasons, signed example bundles, and the consent-gated supervisor |
-| Catalog trust | Ed25519 sign/verify, bundle verify, revocation builder, hash-chained transparency log |
-| Device list | schema, validator, runtime parser, FFI, app rendering, A52 example |
+| Test | Domain | Result |
+| --- | --- | --- |
+| Connect to `@dfi_init` | `u:r:shell:s0`, uid 2000 | **OK**; relay executes `getuid` and returns 0 |
+| Read `/proc/1/attr/current` through relay | init | `u:r:init:s0` |
+| Connect to `@dfi_init` | `u:r:runas_app:s0` (app-UID approximation) | **EACCES (errno 13)**, three times |
+| Same socket absent | shell | `ECONNREFUSED`, so denial and absence are distinguishable |
 
-## Blocked / out of scope
+The socket's peer label was measured with `SO_PEERSEC`: `u:r:init:s0`. The app
+runs as `u:r:untrusted_app:s0:c68,c257,c512,c768`; its own Diagnostics probe
+against the live socket returns **EACCES/EPERM**, while the shell probe returns
+uid 0. The denial is an LSM `connectto` refusal, not a filesystem permission.
+The screenshot and UI dump are in
+[docs/evidence/a52-broker-untrusted-app.md](evidence/a52-broker-untrusted-app.md).
 
-| Work | Needs |
-| --- | --- |
-| App-side root consumption | An SELinux-accessible broker; the app is `untrusted_app` |
-| K2a / controller ownership | A payload that yields the SELinux domain needed for the Bluetooth controller |
-| Protocol and activation | A Watch and a test account |
-| Public release | Licence and signing decisions for the in-tree chain |
+Two further findings make the current relay unusable as a production base:
 
-## Reproduce
+1. It is an **unauthenticated raw-syscall RPC**. After two guards it forks a
+   child per connection, executes `svc #0` with six caller-controlled arguments
+   and writes the result back. Anyone allowed to connect owns arbitrary syscalls
+   as uid 0 in init.
+2. It **never returns to init**. After bind/listen it loops in `accept()`,
+   permanently consuming the init thread that logged. The property service and
+   logd then stop responding, and the phone watchdog-resets within minutes.
+
+There is also no unprivileged trigger: `setprop ctl.start zzz` and
+`debug.dirtyinit` are denied to `untrusted_app`. The chain activates on the next
+init `LOG()` after the patch, which is why launching the old app appeared to arm
+it without ADB.
+
+**K2a is blocked.** The current chain cannot become the shipped broker. See
+`docs/evidence/broker-probe-a52.md` and
+[BLOCKERS.md](cleanroom/BLOCKERS.md#b-app-agent-broker).
+
+## What is still not built
+
+- No transport implementation beyond unprivileged BLE scanning: no ACL, L2CAP,
+  SMP, uIKE, NetworkRelay, IDS or NWSC.
+- No HCI/controller ownership, no resident agent on device.
+- No pairing, activation, setup, face inventory, notification session, health
+  session or watch app management.
+- No protocol frames or vectors beyond the Lane A specs, which still mark many
+  fields UNKNOWN.
+
+## Blocked rows (32)
+
+The registry names each one. The major families:
+
+- **Apple account / iCloud**: Apple ID, iCloud sync, Find My network, iMessage,
+  FaceTime, Siri, Walkie-Talkie, continuity unlock, 2FA, Health iCloud.
+- **Secure element / payments**: Apple Pay, Wallet, transit, secure-element
+  provisioning.
+- **Apple-controlled supply**: Activation Lock, cellular provisioning, App Store
+  purchases and DRM, watchOS updates, third-party watch app signing.
+- **Platform**: HCI ownership (K2a) and the app-to-agent broker.
+- **Assets and evidence**: Apple-rendered face assets, optical-pairing firmware,
+  the reference evidence gap, completion policy.
+
+## Hardware
+
+- Phone: SM-A528B (`a52sxq`), Android 14 / SDK 34, kernel
+  `5.4.254-qgki-2517...`, SELinux enforcing. The exact kernel string and the
+  device serial are kept out of this document.
+- Apple Watch: **not present**. No row can be physically verified yet.
+
+## Checks
 
 ```sh
-tools/dev/bootstrap-toolchain.sh
-tools/build-android-lib.sh
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
+python3 tools/feature-registry/build.py --check
+python3 tools/cleanroom/check-boundary.py
+JAVA_HOME=.toolchain/jdk/Contents/Home GRADLE_USER_HOME=.gradle-home \
+  ./gradlew :app:testDebugUnitTest :app:assembleDebug
 cargo test --workspace
 python3 tools/link-check/cli.py .
-./gradlew :app:assembleDebug :app:testDebugUnitTest
 ```
-
-Device verification:
-
-```sh
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell am start -n org.opencrown.app/.MainActivity
-# Tap "Run chain", then trigger init from another shell:
-adb shell setprop ctl.start zzz
-adb logcat -d | grep -E 'OpenCrown|AndroidRuntime|FATAL|UnsatisfiedLinkError'
-```
-
-The resulting relay is an init-domain command interface, not a general-purpose
-root shell. It is temporary and ends at reboot.
 
 ## Next
 
-Decide whether the app should gain an SELinux-accessible broker for the relay,
-or whether the chain stays an ADB-operated research feature. The A52 chain does
-not satisfy K2a yet; controller ownership and the Watch protocol remain
-unimplemented.
+1. Install and exercise the new shell on the phone; record the real
+   `untrusted_app` broker result in Diagnostics.
+2. Decide whether K2a is a hard stop (rooted-device prerequisite) or whether a
+   different privilege path is worth a time-boxed experiment.
+3. Acquire a physical Watch or record that the physical gate cannot be met.
+4. Begin Lane B protocol implementation only from the Lane A specs, starting
+   with discovery decode and framing tests.

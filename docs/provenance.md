@@ -17,8 +17,14 @@ unauditable.
 ## Entries
 
 | Feature | Spec | Vectors | Sources consulted | Prior ideas used | Code copied | Reviewer |
-| --- | --- | --- | --- | --- | --- | --- |
-| _(none yet)_ | | | | | | |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Observation-first shell | [docs/design/state-model.md](design/state-model.md) | none (UI state) | own product requirements; Android lifecycle/Compose documentation | none | none | lead, 2026-11-22 |
+| Design system | [docs/design/design-system.md](design/design-system.md) | none (visual) | own design brief; public Compose primitives | none | none; original icons and crown mark | lead, 2026-11-22 |
+| Feature registry | [docs/cleanroom/FEATURE_REGISTRY.md](cleanroom/FEATURE_REGISTRY.md) | none | [reference feature inventory](cleanroom/inventory/reference-features.md) as an inventory of what to verify; Apple public support pages for blocker evidence | capability list only; no implementation detail | none | lead, 2026-11-22 |
+| BLE advertisement observation | [spec/01-discovery.md](cleanroom/spec/01-discovery.md) | pending | Android BluetoothLeScanner public API; own scan implementation | discovery concept | none | lead, 2026-11-22 |
+| Pairing UI state machine | [spec/02-pairing-security.md](cleanroom/spec/02-pairing-security.md) | none (no protocol yet) | Lane A spec; own state requirements | pairing phases as a concept | none | lead, 2026-11-22 |
+| App-to-agent broker probe | [docs/evidence/broker-probe-a52.md](evidence/broker-probe-a52.md) | probe source in tools/broker-probe | own physical observation on the A52; Android SELinux/unix-socket public behaviour | none | none; probe is original | lead + broker-probe, 2026-11-22 |
+| Clean-room boundary guard | [docs/cleanroom/REFERENCE_BOUNDARY.md](cleanroom/REFERENCE_BOUNDARY.md) | none | own audit requirements | none | none | lead, 2026-11-22 |
 
 ## Attestation
 

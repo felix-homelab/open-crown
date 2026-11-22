@@ -17,6 +17,12 @@
 | [12 — Decisions](12-decisions.md) | The decision log this revision came from |
 | [13 — Status](13-status.md) | What exists, what is verified, what is blocked |
 | [Provenance log](provenance.md) | Per-feature clean-room record |
+| [Clean-room provenance](cleanroom/PROVENANCE.md) | Lanes, custody, Apple-origin policy, payload-boundary finding |
+| [Reference boundary](cleanroom/REFERENCE_BOUNDARY.md) | What Lane B may and may not read; build independence |
+| [Blocker catalog](cleanroom/BLOCKERS.md) | Named platform/Apple-service blockers with evidence |
+| [Feature registry](cleanroom/FEATURE_REGISTRY.md) | One row per iPhone-paired capability, with honest status |
+| [State model](design/state-model.md) | Observation rules that stop the UI faking success |
+| [Design language](design/design-system.md) | Apple-quality original design system requirements |
 
 ## ADRs
 
@@ -38,12 +44,14 @@
 | [0014](adr/0014-payload-index-and-readiness.md) | Source-level payload index and a data-only readiness engine | Accepted |
 | [0016](adr/0016-consent-gated-execution.md) | Consent-gated execution supervisor | Accepted for private development |
 | [0017](adr/0017-pagecache-relay-payload.md) | A52 page-cache chain built into the app; ADB-only relay | Accepted for private research |
+| [0018](adr/0018-observation-first-state.md) | Observation-first state; no promotion of stale data | Accepted |
+| [0019](adr/0019-clean-room-lanes.md) | Two-lane clean room with a quarantined reference | Accepted |
 
 ## Status
 
-Planning. Build skeleton only — no protocol logic. Two things gate everything:
-
-1. **K2a** — can a payload take the controller under enforcing SELinux?
-2. **Activation** — can the phone hold the Apple ID session, or must the Watch?
-
-Both are experiments, not assumptions. See [06 — Roadmap](06-roadmap.md).
+Phase 1 shell. The design system, observation model, diagnostics, registry and
+clean-room governance are in place; the Watch protocol is not. K2a is **blocked
+on the A52** by a measured app-domain denial, not by an untested assumption.
+The second gate is activation: whether the phone or the Watch holds an Apple
+account session. See [13 — Status](13-status.md) and
+[BLOCKERS.md](cleanroom/BLOCKERS.md).

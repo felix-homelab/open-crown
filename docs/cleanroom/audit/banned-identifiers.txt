@@ -1,0 +1,17 @@
+# Banned identifiers
+
+Status: placeholder. The symbol inventory has not yet been generated.
+
+Lane C generates this file from a symbol inventory of the quarantined reference
+tree. Product code is checked against it at each phase gate. Public protocol
+terms and generic Android/Kotlin/Rust names are allowlisted; see
+[../../REFERENCE_BOUNDARY.md](../../REFERENCE_BOUNDARY.md) section 5.
+
+Generation method and thresholds: [../inventory/similarity-plan.md](../inventory/similarity-plan.md).
+
+Do not paste reference source, comments or signatures into this file. Identifiers
+only, with a short reason when an identifier is a public protocol term.
+
+## Entries
+
+_(none generated yet)_

@@ -1,0 +1,3273 @@
+{
+  "schema": 1,
+  "updated": "2026-11-22",
+  "source_of_truth": "tools/feature-registry/build.py",
+  "status_vocabulary": {
+    "verified": "Physically exercised on the named hardware; all acceptance gates met.",
+    "implemented_unverified": "Code and tests exist, but physical verification is outstanding.",
+    "blocked": "Reachability is prevented by a named blocker with evidence.",
+    "out_of_scope": "Excluded with explicit product-owner approval recorded.",
+    "unimplemented": "Targeted, not built. No claim is made."
+  },
+  "categories": [
+    "Foundation",
+    "Onboarding & lifecycle",
+    "Pairing & setup",
+    "Notifications & communication",
+    "Media & remote",
+    "Watch faces & personalization",
+    "Time & built-in apps",
+    "Health & fitness",
+    "Apps & software",
+    "Settings & accessibility",
+    "Secure & Apple-service",
+    "About, privacy & evidence",
+    "Operations & quality"
+  ],
+  "blockers": {
+    "B-APPLE-ACCOUNT": {
+      "dependency": "Apple ID / iCloud account authentication and the account-bound",
+      "reason": "these services require a session issued by Apple's"
+    },
+    "B-ACTIVATION-LOCK": {
+      "dependency": "Activation Lock / Find My Lock validation.",
+      "reason": "verification is performed by Apple against the device's"
+    },
+    "B-APPLE-PAY": {
+      "dependency": "Apple Pay, Wallet cards, transit cards, and secure-element",
+      "reason": "card provisioning, tokenization, and payment applets are"
+    },
+    "B-CELLULAR-PROVISIONING": {
+      "dependency": "eSIM/cellular plan provisioning for a Watch.",
+      "reason": "carrier plan activation is an operator process mediated"
+    },
+    "B-APP-STORE-DRM": {
+      "dependency": "App Store purchases, FairPlay DRM, and paid content.",
+      "reason": "purchases and DRM playback require Apple account"
+    },
+    "B-WATCH-APP-SIGNING": {
+      "dependency": "installing or updating third-party watch apps and",
+      "reason": "watch apps must be signed and provisioned by Apple for"
+    },
+    "B-WATCHOS-UPDATE": {
+      "dependency": "watchOS software update download, verification, and install.",
+      "reason": "updates are Apple-signed and authorized through Apple's"
+    },
+    "B-CONTINUITY-UNLOCK": {
+      "dependency": "Apple Watch unlock of a Mac / iPhone continuity features.",
+      "reason": "continuity authentication binds an Apple account,"
+    },
+    "B-HCI-OWNERSHIP": {
+      "dependency": "an SELinux domain and HAL ownership that can hold the Bluetooth",
+      "reason": "See docs/cleanroom/BLOCKERS.md."
+    },
+    "B-APP-AGENT-BROKER": {
+      "dependency": "a channel from `untrusted_app` to the resident privileged",
+      "reason": "See docs/cleanroom/BLOCKERS.md."
+    },
+    "B-DEVICE-PROFILE": {
+      "dependency": "an exact device/kernel payload profile for a device other than",
+      "reason": "See docs/cleanroom/BLOCKERS.md."
+    },
+    "B-NO-PHYSICAL-WATCH": {
+      "dependency": "an Apple Watch available on the bench for pairing and",
+      "reason": "See docs/cleanroom/BLOCKERS.md."
+    },
+    "B-ASSET-APPLERENDER": {
+      "dependency": "distribution of Apple-rendered watch-face previews, swatches,",
+      "reason": "the reference tree contains 182,432,179 bytes of"
+    },
+    "B-OPTICAL-FIRMWARE": {
+      "dependency": "a lawful, independent decoder for the watch face's optical",
+      "reason": "the reference's optical path depends on an Apple"
+    },
+    "B-EVIDENCE-GAP": {
+      "dependency": "verifiable evidence for a reference claim.",
+      "reason": "See docs/cleanroom/BLOCKERS.md."
+    },
+    "B-COMPLETION-POLICY": {
+      "dependency": "an agreed definition of \"setup complete\" that can be observed",
+      "reason": "See docs/cleanroom/BLOCKERS.md."
+    },
+    "B-QUARANTINE-CI": {
+      "dependency": "a CI and repository guard that keeps the reference and",
+      "reason": "See docs/cleanroom/BLOCKERS.md."
+    }
+  },
+  "features": [
+    {
+      "id": "foundation.observations",
+      "category": "Foundation",
+      "title": "Observation model",
+      "iphone_behavior": "Every value the iPhone Watch app shows reflects a live watch state or a named cached state; nothing is shown as applied before the watch confirms it.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/model/Observation.kt"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/design/state-model.md"
+      ],
+      "physical_verified": false,
+      "notes": "Carries source, freshness, pair/epoch and confidence. UI must render unavailable states explicitly."
+    },
+    {
+      "id": "foundation.feature-registry",
+      "category": "Foundation",
+      "title": "Feature registry",
+      "iphone_behavior": "The iPhone feature surface is organised by capability with a clear availability state.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [
+        "tools/feature-registry/build.py",
+        "docs/cleanroom/feature-registry.json"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/FEATURE_REGISTRY.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.device-profile",
+      "category": "Foundation",
+      "title": "Exact device profile matching",
+      "iphone_behavior": "The iPhone app is preinstalled; a third-party companion must decide whether its privileged payload matches the exact phone/kernel before acting.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [
+        "runtime/src/matcher.rs",
+        "runtime/src/devices.rs",
+        "runtime/tests/"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/04-payload-system.md"
+      ],
+      "physical_verified": false,
+      "notes": "Host-tested exact model+kernel matching. The app must never hardcode an offset."
+    },
+    {
+      "id": "foundation.payload-verification",
+      "category": "Foundation",
+      "title": "Signed payload verification",
+      "iphone_behavior": "Not applicable to a stock iPhone; required for any borrowed-privilege Android companion.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [
+        "runtime/src/manifest.rs",
+        "runtime/src/stage.rs",
+        "runtime/src/revocation.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "runtime/tests/",
+        "docs/04-payload-system.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.payload-readiness",
+      "category": "Foundation",
+      "title": "Read-only payload readiness",
+      "iphone_behavior": "Not applicable to a stock iPhone; shows whether a payload would be ready without executing it.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [
+        "runtime/src/readiness.rs",
+        "runtime/tests/"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/adr/0014-payload-index-and-readiness.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.payload-execution",
+      "category": "Foundation",
+      "title": "Borrowed-privilege payload execution",
+      "iphone_behavior": "Not applicable to a stock iPhone; Android needs a per-boot privileged process.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [
+        "app/src/main/cpp/pagecache_relay/",
+        "app/src/main/kotlin/org/opencrown/app/root/PageCacheRelayChain.kt"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/evidence/a52-app-chain.md"
+      ],
+      "physical_verified": false,
+      "notes": "The existing A52 chain is quarantined payload code with a provenance review open (PROVENANCE.md section 7)."
+    },
+    {
+      "id": "foundation.privilege",
+      "category": "Foundation",
+      "title": "uid 0 + controller-capable domain",
+      "iphone_behavior": "The iPhone owns the radio through its own frameworks; an Android companion must hold the controller itself.",
+      "status": "blocked",
+      "blocker": "B-HCI-OWNERSHIP",
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/13-status.md"
+      ],
+      "physical_verified": false,
+      "notes": "K2a. The A52 chain gives init-domain uid 0 but has not bound HCI_CHANNEL_USER under enforcing SELinux."
+    },
+    {
+      "id": "foundation.broker",
+      "category": "Foundation",
+      "title": "App-to-agent broker",
+      "iphone_behavior": "The iPhone Watch app talks to the watch through privileged first-party daemons.",
+      "status": "blocked",
+      "blocker": "B-APP-AGENT-BROKER",
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/evidence/a52-broker-untrusted-app.md",
+        "docs/evidence/broker-probe-a52.md",
+        "docs/evidence/a52-app-chain.md"
+      ],
+      "physical_verified": false,
+      "notes": "Measured: shell domain connects to @dfi_init, app-domain runas_app gets EACCES; the relay is unauthenticated raw-syscall root and never returns to init."
+    },
+    {
+      "id": "foundation.agent-ipc",
+      "category": "Foundation",
+      "title": "Authenticated agent IPC",
+      "iphone_behavior": "First-party daemons use private authenticated IPC; a third-party agent must authenticate the app caller.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [
+        "agent/src/ipc.rs",
+        "agent/src/protocol.rs",
+        "agent/tests/"
+      ],
+      "tests": [],
+      "evidence": [
+        "agent/tests/e2e.rs",
+        "docs/adr/0013-agent-ipc-envelope.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.agent-session",
+      "category": "Foundation",
+      "title": "Resident agent lifecycle",
+      "iphone_behavior": "The iPhone has always-on daemons; the Android agent must be visible, watchdogged and gone at reboot.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/adr/0008-resident-agent.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.controller-owner",
+      "category": "Foundation",
+      "title": "Bluetooth controller ownership",
+      "iphone_behavior": "The iPhone Bluetooth stack is the controller owner and exposes link control to the Watch app.",
+      "status": "blocked",
+      "blocker": "B-HCI-OWNERSHIP",
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/02-architecture.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.ble-discovery",
+      "category": "Foundation",
+      "title": "BLE discovery and advertisement decoding",
+      "iphone_behavior": "The iPhone discovers a nearby Watch and shows it with model and pairing state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/01-discovery.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.ble-connect",
+      "category": "Foundation",
+      "title": "BR/EDR + BLE link establishment",
+      "iphone_behavior": "The iPhone establishes the pairing and normal links automatically.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/02-pairing-security.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.l2cap",
+      "category": "Foundation",
+      "title": "L2CAP / ERTM channels",
+      "iphone_behavior": "The iPhone opens the Watch protocol channels over L2CAP.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "protocol/link/README.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.smp",
+      "category": "Foundation",
+      "title": "SMP / OOB security",
+      "iphone_behavior": "The iPhone completes Bluetooth security with out-of-band material during pairing.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/02-pairing-security.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.link-encryption",
+      "category": "Foundation",
+      "title": "Encrypted durable link",
+      "iphone_behavior": "The iPhone reconnects to a paired Watch with an encrypted link and no re-pairing.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/02-pairing-security.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.networkrelay",
+      "category": "Foundation",
+      "title": "NetworkRelay / ESP / IPsec",
+      "iphone_behavior": "The iPhone carries IP traffic to the Watch through NetworkRelay.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/00-overview.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.ids",
+      "category": "Foundation",
+      "title": "IDS application session",
+      "iphone_behavior": "The iPhone exchanges Watch application messages over IDS.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/04-ids-session.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.nwsc",
+      "category": "Foundation",
+      "title": "NWSC and feature services",
+      "iphone_behavior": "The iPhone uses the Watch feature services for settings, faces, health and apps.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/00-overview.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.keystore-store",
+      "category": "Foundation",
+      "title": "Keystore-sealed pair records",
+      "iphone_behavior": "The iPhone stores pairing material in the watch's protected store; Android must seal it at rest.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/02-architecture.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.epoch-replay",
+      "category": "Foundation",
+      "title": "Pair identity, epoch and replay protection",
+      "iphone_behavior": "The iPhone refuses stale pairing material after unpair or reset.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/02-architecture.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.crash-migration",
+      "category": "Foundation",
+      "title": "Crash-safe state migration",
+      "iphone_behavior": "The iPhone upgrades its Watch database in place without losing pairing.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/02-architecture.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.audit-log",
+      "category": "Foundation",
+      "title": "Append-only privileged audit log",
+      "iphone_behavior": "The iPhone's actions are attributable to system services; the agent's actions must be attributable here.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [
+        "agent/src/audit.rs",
+        "agent/tests/"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/02-architecture.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.watchdog",
+      "category": "Foundation",
+      "title": "Agent watchdog and retry budget",
+      "iphone_behavior": "First-party daemons are managed by launchd/init; a borrowed agent must not outlive its owner.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/04-payload-system.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.multi-watch",
+      "category": "Foundation",
+      "title": "Multiple paired watches",
+      "iphone_behavior": "The iPhone Watch app lists and switches between multiple watches.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/03-activation-setup.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.recovery",
+      "category": "Foundation",
+      "title": "Recovery after reboot, disconnect and reset",
+      "iphone_behavior": "The iPhone restores the Watch connection and setup state without user re-pairing where possible.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/08-testing.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.diagnostics",
+      "category": "Foundation",
+      "title": "On-device diagnostics",
+      "iphone_behavior": "The iPhone exposes Watch diagnostics and connection information.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/02-architecture.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "foundation.evidence-export",
+      "category": "Foundation",
+      "title": "Evidence export",
+      "iphone_behavior": "Not a user-facing iPhone feature; required for Open Crown's honesty contract.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/PROVENANCE.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "lifecycle.welcome",
+      "category": "Onboarding & lifecycle",
+      "title": "Welcome and onboarding",
+      "iphone_behavior": "The iPhone shows the Watch app welcome and pairing introduction on first launch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "lifecycle.permissions",
+      "category": "Onboarding & lifecycle",
+      "title": "Permission requests with rationale",
+      "iphone_behavior": "The iPhone requests Bluetooth, notifications, camera (optical pairing) and health access with system prompts.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "lifecycle.device-check",
+      "category": "Onboarding & lifecycle",
+      "title": "Device compatibility check",
+      "iphone_behavior": "The iPhone is the supported device; an Android companion must show supported, compatible-untested or unsupported.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "lifecycle.consent",
+      "category": "Onboarding & lifecycle",
+      "title": "Privileged-execution consent",
+      "iphone_behavior": "Not applicable to a stock iPhone; Android requires an explicit, informed per-boot gesture.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/04-payload-system.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "lifecycle.first-run",
+      "category": "Onboarding & lifecycle",
+      "title": "First-run state restoration",
+      "iphone_behavior": "The iPhone resumes the Watch app where the user left it.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "lifecycle.reset-app",
+      "category": "Onboarding & lifecycle",
+      "title": "Local reset and re-onboarding",
+      "iphone_behavior": "The iPhone can forget a watch and return to the pairing flow.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.discovery",
+      "category": "Pairing & setup",
+      "title": "Discover a pairable Watch",
+      "iphone_behavior": "The iPhone scans for a nearby Watch in pairing mode and presents it.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/01-discovery.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.advertisement-decode",
+      "category": "Pairing & setup",
+      "title": "Advertisement model and state decode",
+      "iphone_behavior": "The iPhone identifies the Watch model, pairing state and capabilities from the advertisement.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/01-discovery.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.selection",
+      "category": "Pairing & setup",
+      "title": "Select the watch",
+      "iphone_behavior": "The iPhone shows the discovered watch and starts pairing on tap.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 2,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.control-security",
+      "category": "Pairing & setup",
+      "title": "Control security association",
+      "iphone_behavior": "The iPhone establishes the pairing control channel security association.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/02-pairing-security.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.pin",
+      "category": "Pairing & setup",
+      "title": "PIN pairing",
+      "iphone_behavior": "The iPhone displays a PIN entry during pairing and verifies the code.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/02-pairing-security.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.optical",
+      "category": "Pairing & setup",
+      "title": "Optical pairing",
+      "iphone_behavior": "The iPhone camera captures the watch face optical code to complete pairing.",
+      "status": "blocked",
+      "blocker": "B-OPTICAL-FIRMWARE",
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/02-pairing-security.md",
+        "docs/cleanroom/inventory/reference-features.md"
+      ],
+      "physical_verified": false,
+      "notes": "No lawful independent decoder exists in the public tree; Apple VisualPairing firmware is absent and not vendorable."
+    },
+    {
+      "id": "pair.security-code",
+      "category": "Pairing & setup",
+      "title": "Security code confirmation",
+      "iphone_behavior": "The iPhone confirms a numeric security code on both devices where required.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.bond-persist",
+      "category": "Pairing & setup",
+      "title": "Durable bond persistence",
+      "iphone_behavior": "The iPhone keeps the pairing after app restart, Bluetooth toggle and phone reboot.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/02-architecture.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.activation",
+      "category": "Pairing & setup",
+      "title": "Activation",
+      "iphone_behavior": "The iPhone activates the Watch against the owner's account during setup.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/03-activation-setup.md"
+      ],
+      "physical_verified": false,
+      "notes": "Owner-authorized activation only. Account services may force a documented blocker; do not fake success."
+    },
+    {
+      "id": "pair.setup-language",
+      "category": "Pairing & setup",
+      "title": "Language and locale selection",
+      "iphone_behavior": "The iPhone sends the chosen language, region and locale to the Watch during setup.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/03-activation-setup.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.setup-wifi",
+      "category": "Pairing & setup",
+      "title": "Wi-Fi handoff",
+      "iphone_behavior": "The iPhone hands Wi-Fi credentials to the Watch during setup and later sync.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/03-activation-setup.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.pairedsync",
+      "category": "Pairing & setup",
+      "title": "PairedSync",
+      "iphone_behavior": "The iPhone runs PairedSync to bring the Watch to a usable state after pairing.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/03-activation-setup.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.setup-completion",
+      "category": "Pairing & setup",
+      "title": "Setup completion",
+      "iphone_behavior": "The iPhone shows setup progress and completes only when the Watch reports ready.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/03-activation-setup.md"
+      ],
+      "physical_verified": false,
+      "notes": "Completion policy is unresolved (B-COMPLETION-POLICY); no reference proof is accepted."
+    },
+    {
+      "id": "pair.face-visible",
+      "category": "Pairing & setup",
+      "title": "Visible native face after setup",
+      "iphone_behavior": "The Watch shows its normal face after setup completes.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/06-roadmap.md"
+      ],
+      "physical_verified": false,
+      "notes": "Requires a live face observation, not owner confirmation. See B-COMPLETION-POLICY."
+    },
+    {
+      "id": "pair.reconnect",
+      "category": "Pairing & setup",
+      "title": "Encrypted reconnect without re-pairing",
+      "iphone_behavior": "The iPhone reconnects to a paired Watch after Bluetooth toggles and reboots.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/06-roadmap.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.unpair",
+      "category": "Pairing & setup",
+      "title": "Unpair",
+      "iphone_behavior": "The iPhone unpairs and erases the watch after user confirmation.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.watch-reset",
+      "category": "Pairing & setup",
+      "title": "Watch reset recovery",
+      "iphone_behavior": "The iPhone detects a reset Watch and requires a fresh pairing rather than resuming stale material.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.cancel-retry",
+      "category": "Pairing & setup",
+      "title": "Cancel and retry",
+      "iphone_behavior": "The iPhone cancels pairing cleanly and offers retry without corrupting state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.multi-watch",
+      "category": "Pairing & setup",
+      "title": "Multiple watches",
+      "iphone_behavior": "The iPhone pairs, lists and switches between several watches.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "pair.identity-epoch",
+      "category": "Pairing & setup",
+      "title": "Pair identity and epoch",
+      "iphone_behavior": "The iPhone treats a reset or re-paired watch as a new identity and never mixes records.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 3,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "notifications.mirror",
+      "category": "Notifications & communication",
+      "title": "Notification mirroring",
+      "iphone_behavior": "The iPhone mirrors selected app notifications to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/06-notifications.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "notifications.actions",
+      "category": "Notifications & communication",
+      "title": "Notification actions",
+      "iphone_behavior": "The iPhone exposes app actions on the Watch and executes the chosen action.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/06-notifications.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "notifications.reply",
+      "category": "Notifications & communication",
+      "title": "Inline replies",
+      "iphone_behavior": "The iPhone relays text and dictation replies from the Watch to the source app.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/06-notifications.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "notifications.attachments",
+      "category": "Notifications & communication",
+      "title": "Notification attachments",
+      "iphone_behavior": "The iPhone forwards supported images and attachments to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/06-notifications.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "notifications.sounds",
+      "category": "Notifications & communication",
+      "title": "Notification sounds and haptics",
+      "iphone_behavior": "The iPhone chooses the Watch notification sound and haptic per app.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/06-notifications.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "notifications.per-app",
+      "category": "Notifications & communication",
+      "title": "Per-app notification settings",
+      "iphone_behavior": "The iPhone lets the user choose which apps mirror and whether alerts are delivered quietly.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "notifications.clear-sync",
+      "category": "Notifications & communication",
+      "title": "Dismissal synchronisation",
+      "iphone_behavior": "Clearing a notification on one device clears the other.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.calls-incoming",
+      "category": "Notifications & communication",
+      "title": "Incoming call relay",
+      "iphone_behavior": "The iPhone rings the Watch for incoming calls and can answer on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Android telephony/audio routing feasibility is unresolved; do not claim until measured."
+    },
+    {
+      "id": "comm.calls-outgoing",
+      "category": "Notifications & communication",
+      "title": "Outgoing call relay",
+      "iphone_behavior": "The iPhone places calls started from the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.sms",
+      "category": "Notifications & communication",
+      "title": "SMS/MMS relay",
+      "iphone_behavior": "The iPhone relays text messages and replies between the Watch and the phone.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Android SMS role and carrier constraints apply."
+    },
+    {
+      "id": "comm.contacts",
+      "category": "Notifications & communication",
+      "title": "Contacts",
+      "iphone_behavior": "The iPhone shares contacts with the Watch for calls and messages.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.voicemail",
+      "category": "Notifications & communication",
+      "title": "Voicemail indicator",
+      "iphone_behavior": "The iPhone signals voicemail availability to the Watch where the carrier supports it.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.walkie-talkie",
+      "category": "Notifications & communication",
+      "title": "Walkie-Talkie",
+      "iphone_behavior": "The iPhone hosts Walkie-Talkie sessions between paired watches.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.find-phone",
+      "category": "Notifications & communication",
+      "title": "Find phone from watch",
+      "iphone_behavior": "The Watch can ping or locate the paired iPhone.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.find-watch",
+      "category": "Notifications & communication",
+      "title": "Find watch from phone",
+      "iphone_behavior": "The iPhone can play a sound or show the last known watch location.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.emergency-sos",
+      "category": "Notifications & communication",
+      "title": "Emergency SOS surfaces",
+      "iphone_behavior": "The iPhone configures Emergency SOS and shows the Watch's SOS state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Android can surface the user-facing part only where the watch reports it."
+    },
+    {
+      "id": "comm.fall-detection",
+      "category": "Notifications & communication",
+      "title": "Fall detection surfaces",
+      "iphone_behavior": "The iPhone configures fall detection and shows its state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.screen-time",
+      "category": "Notifications & communication",
+      "title": "Screen Time",
+      "iphone_behavior": "The iPhone configures Screen Time for the family member's Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Device-management account services may force a blocker; investigate before claiming."
+    },
+    {
+      "id": "comm.schooltime",
+      "category": "Notifications & communication",
+      "title": "Schooltime",
+      "iphone_behavior": "The iPhone enables and schedules Schooltime on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "comm.focus",
+      "category": "Notifications & communication",
+      "title": "Focus / Do Not Disturb",
+      "iphone_behavior": "The iPhone syncs Focus state and mirroring to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.now-playing",
+      "category": "Media & remote",
+      "title": "Now Playing",
+      "iphone_behavior": "The iPhone shows the Watch's now-playing state and controls playback.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.remote-control",
+      "category": "Media & remote",
+      "title": "Playback remote",
+      "iphone_behavior": "The iPhone controls play/pause, skip, volume and output routing.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.music-library",
+      "category": "Media & remote",
+      "title": "Music library sync",
+      "iphone_behavior": "The iPhone syncs selected music and playlists to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "DRM content is blocked by B-APP-STORE-DRM; locally owned media is in scope."
+    },
+    {
+      "id": "media.podcasts",
+      "category": "Media & remote",
+      "title": "Podcasts",
+      "iphone_behavior": "The iPhone syncs podcast episodes and progress to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.audiobooks",
+      "category": "Media & remote",
+      "title": "Audiobooks",
+      "iphone_behavior": "The iPhone syncs audiobooks and position to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.radio",
+      "category": "Media & remote",
+      "title": "Radio",
+      "iphone_behavior": "The iPhone syncs radio stations and playback state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.camera-remote",
+      "category": "Media & remote",
+      "title": "Camera remote",
+      "iphone_behavior": "The Watch previews the iPhone camera and triggers the shutter.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.camera-preview",
+      "category": "Media & remote",
+      "title": "Camera preview stream",
+      "iphone_behavior": "The iPhone streams a live camera preview to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.photos-sync",
+      "category": "Media & remote",
+      "title": "Photos sync",
+      "iphone_behavior": "The iPhone syncs selected photos and albums to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.photo-album-select",
+      "category": "Media & remote",
+      "title": "Photo album selection",
+      "iphone_behavior": "The iPhone lets the user choose which albums mirror to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "media.home-controls",
+      "category": "Media & remote",
+      "title": "Home controls",
+      "iphone_behavior": "The iPhone configures Home accessories that appear on the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": "Apple Home accessory control is account- and first-party-app bound; a local HAP bridge would not appear in the Watch Home app."
+    },
+    {
+      "id": "faces.inventory",
+      "category": "Watch faces & personalization",
+      "title": "Face inventory",
+      "iphone_behavior": "The iPhone reads every face configuration on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/05-faces.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.preview",
+      "category": "Watch faces & personalization",
+      "title": "Face preview rendering",
+      "iphone_behavior": "The iPhone shows a rendered preview of each face.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/05-faces.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.select",
+      "category": "Watch faces & personalization",
+      "title": "Select the active face",
+      "iphone_behavior": "The iPhone changes the face shown on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/05-faces.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.edit",
+      "category": "Watch faces & personalization",
+      "title": "Edit a face",
+      "iphone_behavior": "The iPhone edits colours, complications, styles and options.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/05-faces.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.duplicate",
+      "category": "Watch faces & personalization",
+      "title": "Duplicate a face",
+      "iphone_behavior": "The iPhone duplicates an existing face configuration.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.remove",
+      "category": "Watch faces & personalization",
+      "title": "Remove a face",
+      "iphone_behavior": "The iPhone removes a face from the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.reorder",
+      "category": "Watch faces & personalization",
+      "title": "Reorder faces",
+      "iphone_behavior": "The iPhone changes the order of the face carousel.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.create",
+      "category": "Watch faces & personalization",
+      "title": "Create a face",
+      "iphone_behavior": "The iPhone creates a face from a template and sends it to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.import",
+      "category": "Watch faces & personalization",
+      "title": "Import .watchface",
+      "iphone_behavior": "The iPhone imports a face container and installs its configuration.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Apple face resources are not redistributable; only user-supplied containers may be read."
+    },
+    {
+      "id": "faces.export",
+      "category": "Watch faces & personalization",
+      "title": "Export .watchface",
+      "iphone_behavior": "The iPhone exports a face container for sharing.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.native-resources",
+      "category": "Watch faces & personalization",
+      "title": "Native face resources",
+      "iphone_behavior": "The iPhone ships the Apple face definitions and renders their native resources.",
+      "status": "blocked",
+      "blocker": "B-ASSET-APPLERENDER",
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/inventory/reference-assets.md"
+      ],
+      "physical_verified": false,
+      "notes": "Apple-rendered face resources are not redistributable. An original renderer is a separate, unblocked effort."
+    },
+    {
+      "id": "faces.complications",
+      "category": "Watch faces & personalization",
+      "title": "Complications inventory",
+      "iphone_behavior": "The iPhone lists the complications available for each face slot.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.complication-configure",
+      "category": "Watch faces & personalization",
+      "title": "Complication configuration",
+      "iphone_behavior": "The iPhone sets the complication in a slot.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.widgets",
+      "category": "Watch faces & personalization",
+      "title": "Widgets / Smart Stack",
+      "iphone_behavior": "The iPhone configures the widget stack on newer watchOS.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.monogram",
+      "category": "Watch faces & personalization",
+      "title": "Monogram",
+      "iphone_behavior": "The iPhone edits the monogram used by supported faces.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.pigments",
+      "category": "Watch faces & personalization",
+      "title": "Pigments / add colours",
+      "iphone_behavior": "The iPhone selects and edits face colour pigments.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "faces.photo",
+      "category": "Watch faces & personalization",
+      "title": "Photos face",
+      "iphone_behavior": "The iPhone creates a photo face from synced albums.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "time.alarms",
+      "category": "Time & built-in apps",
+      "title": "Alarms",
+      "iphone_behavior": "The iPhone reads, creates and edits Watch alarms.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "time.timers",
+      "category": "Time & built-in apps",
+      "title": "Timers",
+      "iphone_behavior": "The iPhone reads and controls Watch timers.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "time.stopwatch",
+      "category": "Time & built-in apps",
+      "title": "Stopwatch",
+      "iphone_behavior": "The iPhone reads and controls the Watch stopwatch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "time.world-clock",
+      "category": "Time & built-in apps",
+      "title": "World clock",
+      "iphone_behavior": "The iPhone configures world clock cities on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "time.bedside",
+      "category": "Time & built-in apps",
+      "title": "Bedside mode",
+      "iphone_behavior": "The iPhone configures bedside mode and alarm behaviour.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.weather",
+      "category": "Time & built-in apps",
+      "title": "Weather",
+      "iphone_behavior": "The iPhone supplies weather locations and data to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.stocks",
+      "category": "Time & built-in apps",
+      "title": "Stocks",
+      "iphone_behavior": "The iPhone configures stock watchlist and data.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.calendar",
+      "category": "Time & built-in apps",
+      "title": "Calendar",
+      "iphone_behavior": "The iPhone syncs calendars and upcoming events to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.reminders",
+      "category": "Time & built-in apps",
+      "title": "Reminders",
+      "iphone_behavior": "The iPhone syncs reminders and completion state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.mail",
+      "category": "Time & built-in apps",
+      "title": "Mail",
+      "iphone_behavior": "The iPhone syncs mail notifications and account metadata to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.notes",
+      "category": "Time & built-in apps",
+      "title": "Notes",
+      "iphone_behavior": "The iPhone syncs notes to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.maps",
+      "category": "Time & built-in apps",
+      "title": "Maps and directions",
+      "iphone_behavior": "The iPhone sends map directions and turn-by-turn state to the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.siri",
+      "category": "Time & built-in apps",
+      "title": "Siri",
+      "iphone_behavior": "The Watch invokes Siri through the paired iPhone and Apple account services.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.compass",
+      "category": "Time & built-in apps",
+      "title": "Compass and elevation",
+      "iphone_behavior": "The iPhone shows compass calibration and elevation data state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.noise",
+      "category": "Time & built-in apps",
+      "title": "Noise app",
+      "iphone_behavior": "The iPhone shows noise exposure data and settings.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.activity-rings",
+      "category": "Health & fitness",
+      "title": "Activity rings",
+      "iphone_behavior": "The iPhone shows the Watch activity rings and today's progress.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.workouts-live",
+      "category": "Health & fitness",
+      "title": "Live workout",
+      "iphone_behavior": "The iPhone starts, pauses and ends Watch workouts.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.workout-history",
+      "category": "Health & fitness",
+      "title": "Workout history",
+      "iphone_behavior": "The iPhone lists completed workouts with metrics.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.heart-rate",
+      "category": "Health & fitness",
+      "title": "Heart rate",
+      "iphone_behavior": "The iPhone reads current and historical heart rate samples.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.resting-hr",
+      "category": "Health & fitness",
+      "title": "Resting heart rate",
+      "iphone_behavior": "The iPhone shows resting heart rate.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.hrv",
+      "category": "Health & fitness",
+      "title": "Heart rate variability",
+      "iphone_behavior": "The iPhone shows HRV samples.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.ecg",
+      "category": "Health & fitness",
+      "title": "ECG",
+      "iphone_behavior": "The iPhone records and displays ECG where the hardware and region allow it.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Requires watch-side acquisition and Apple's ECG classification; region/account limits may block."
+    },
+    {
+      "id": "health.blood-oxygen",
+      "category": "Health & fitness",
+      "title": "Blood oxygen",
+      "iphone_behavior": "The iPhone shows blood oxygen samples where hardware and region allow it.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.temperature",
+      "category": "Health & fitness",
+      "title": "Wrist temperature",
+      "iphone_behavior": "The iPhone shows wrist temperature samples.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.sleep",
+      "category": "Health & fitness",
+      "title": "Sleep stages",
+      "iphone_behavior": "The iPhone shows sleep schedule and stage data.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.respiratory",
+      "category": "Health & fitness",
+      "title": "Respiratory rate",
+      "iphone_behavior": "The iPhone shows respiratory rate samples.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.cycle",
+      "category": "Health & fitness",
+      "title": "Cycle tracking",
+      "iphone_behavior": "The iPhone shows cycle tracking entries and predictions.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.medications",
+      "category": "Health & fitness",
+      "title": "Medications",
+      "iphone_behavior": "The iPhone manages medication schedules and logs.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.mindfulness",
+      "category": "Health & fitness",
+      "title": "Mindfulness",
+      "iphone_behavior": "The iPhone shows mindfulness sessions and minutes.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.export",
+      "category": "Health & fitness",
+      "title": "Health export",
+      "iphone_behavior": "The iPhone exports health data on request.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Local-first export only; iCloud sync is blocked by B-APPLE-ACCOUNT."
+    },
+    {
+      "id": "health.import",
+      "category": "Health & fitness",
+      "title": "Health import",
+      "iphone_behavior": "The iPhone imports health data and merges it with watch records.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.anchors",
+      "category": "Health & fitness",
+      "title": "Health sync anchors",
+      "iphone_behavior": "The iPhone synchronises health samples with durable anchors.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.privacy",
+      "category": "Health & fitness",
+      "title": "Health privacy controls",
+      "iphone_behavior": "The iPhone controls per-category sharing and deletion.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.provenance",
+      "category": "Health & fitness",
+      "title": "Health data provenance",
+      "iphone_behavior": "The iPhone Health app labels the source of each sample.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "health.awards",
+      "category": "Health & fitness",
+      "title": "Awards and trends",
+      "iphone_behavior": "The iPhone shows activity awards and trends.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.inventory",
+      "category": "Apps & software",
+      "title": "Installed watch apps",
+      "iphone_behavior": "The iPhone lists the apps installed on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.install",
+      "category": "Apps & software",
+      "title": "Install a watch app",
+      "iphone_behavior": "The iPhone installs a compatible iPhone app's Watch extension.",
+      "status": "blocked",
+      "blocker": "B-WATCH-APP-SIGNING",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.update",
+      "category": "Apps & software",
+      "title": "Update a watch app",
+      "iphone_behavior": "The iPhone updates installed Watch apps.",
+      "status": "blocked",
+      "blocker": "B-WATCH-APP-SIGNING",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.remove",
+      "category": "Apps & software",
+      "title": "Remove a watch app",
+      "iphone_behavior": "The iPhone removes an installed Watch app.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.layout",
+      "category": "Apps & software",
+      "title": "App layout",
+      "iphone_behavior": "The iPhone arranges the Watch app grid or list.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.watchos-version",
+      "category": "Apps & software",
+      "title": "watchOS version and update availability",
+      "iphone_behavior": "The iPhone reports the Watch software version and available updates.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.watchos-update",
+      "category": "Apps & software",
+      "title": "watchOS update download",
+      "iphone_behavior": "The iPhone downloads and verifies a watchOS update.",
+      "status": "blocked",
+      "blocker": "B-WATCHOS-UPDATE",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.watchos-update-install",
+      "category": "Apps & software",
+      "title": "watchOS update install",
+      "iphone_behavior": "The iPhone installs a watchOS update and reports progress.",
+      "status": "blocked",
+      "blocker": "B-WATCHOS-UPDATE",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.store-purchase",
+      "category": "Apps & software",
+      "title": "App Store purchase",
+      "iphone_behavior": "The Watch App Store can purchase apps with the Apple account.",
+      "status": "blocked",
+      "blocker": "B-APP-STORE-DRM",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.drm-playback",
+      "category": "Apps & software",
+      "title": "DRM playback",
+      "iphone_behavior": "The Watch plays protected media authorised by the account.",
+      "status": "blocked",
+      "blocker": "B-APP-STORE-DRM",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.third-party-complications",
+      "category": "Apps & software",
+      "title": "Third-party complications",
+      "iphone_behavior": "The iPhone installs app complications on the Watch.",
+      "status": "blocked",
+      "blocker": "B-WATCH-APP-SIGNING",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.background-refresh",
+      "category": "Apps & software",
+      "title": "Background app refresh",
+      "iphone_behavior": "The iPhone configures background refresh for Watch apps.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "apps.permissions",
+      "category": "Apps & software",
+      "title": "Watch app permissions",
+      "iphone_behavior": "The iPhone reviews and grants per-app permissions on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.wrist",
+      "category": "Settings & accessibility",
+      "title": "Wrist orientation",
+      "iphone_behavior": "The iPhone sets which wrist the Watch is worn on.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.crown-orientation",
+      "category": "Settings & accessibility",
+      "title": "Digital Crown orientation",
+      "iphone_behavior": "The iPhone sets which side the Digital Crown is on.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.24-hour",
+      "category": "Settings & accessibility",
+      "title": "24-hour time",
+      "iphone_behavior": "The iPhone toggles 24-hour time on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.brightness",
+      "category": "Settings & accessibility",
+      "title": "Brightness",
+      "iphone_behavior": "The iPhone sets Watch brightness.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.text-size",
+      "category": "Settings & accessibility",
+      "title": "Text size",
+      "iphone_behavior": "The iPhone sets Watch text size.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.bold-text",
+      "category": "Settings & accessibility",
+      "title": "Bold text",
+      "iphone_behavior": "The iPhone enables bold text on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.reduce-motion",
+      "category": "Settings & accessibility",
+      "title": "Reduce motion",
+      "iphone_behavior": "The iPhone enables reduce motion on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.reduce-transparency",
+      "category": "Settings & accessibility",
+      "title": "Reduce transparency",
+      "iphone_behavior": "The iPhone enables reduce transparency on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.voiceover",
+      "category": "Settings & accessibility",
+      "title": "VoiceOver",
+      "iphone_behavior": "The iPhone enables and configures VoiceOver on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.zoom",
+      "category": "Settings & accessibility",
+      "title": "Zoom",
+      "iphone_behavior": "The iPhone enables and configures Zoom on the Watch.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.haptics",
+      "category": "Settings & accessibility",
+      "title": "Haptics",
+      "iphone_behavior": "The iPhone sets haptic strength and behaviour.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.sounds",
+      "category": "Settings & accessibility",
+      "title": "Sounds and volume",
+      "iphone_behavior": "The iPhone sets alert volume and sound behaviour.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.passcode-status",
+      "category": "Settings & accessibility",
+      "title": "Passcode status",
+      "iphone_behavior": "The iPhone shows whether a Watch passcode is set and configures related behaviour.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Reading status may be possible; setting or extracting a passcode is not."
+    },
+    {
+      "id": "settings.wrist-detection",
+      "category": "Settings & accessibility",
+      "title": "Wrist detection",
+      "iphone_behavior": "The iPhone toggles wrist detection.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.raise-to-wake",
+      "category": "Settings & accessibility",
+      "title": "Raise to wake",
+      "iphone_behavior": "The iPhone toggles raise-to-wake.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.aod",
+      "category": "Settings & accessibility",
+      "title": "Always-On display",
+      "iphone_behavior": "The iPhone toggles Always-On display.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.theater",
+      "category": "Settings & accessibility",
+      "title": "Theater mode",
+      "iphone_behavior": "The iPhone toggles theater mode.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.water-lock",
+      "category": "Settings & accessibility",
+      "title": "Water lock",
+      "iphone_behavior": "The iPhone toggles water lock and ejects water.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.airplane",
+      "category": "Settings & accessibility",
+      "title": "Airplane mode",
+      "iphone_behavior": "The iPhone toggles Watch airplane mode.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.dnd",
+      "category": "Settings & accessibility",
+      "title": "Do Not Disturb",
+      "iphone_behavior": "The iPhone toggles Watch Do Not Disturb.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.cellular-status",
+      "category": "Settings & accessibility",
+      "title": "Cellular status",
+      "iphone_behavior": "The iPhone shows Watch cellular status and signal.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.carrier",
+      "category": "Settings & accessibility",
+      "title": "Carrier information",
+      "iphone_behavior": "The iPhone shows the Watch carrier and plan state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Read-only status if reported; provisioning is B-CELLULAR-PROVISIONING."
+    },
+    {
+      "id": "settings.battery",
+      "category": "Settings & accessibility",
+      "title": "Battery",
+      "iphone_behavior": "The iPhone shows Watch battery percentage and charging state.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.storage",
+      "category": "Settings & accessibility",
+      "title": "Storage",
+      "iphone_behavior": "The iPhone shows Watch storage capacity and usage.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.device-info",
+      "category": "Settings & accessibility",
+      "title": "Device information",
+      "iphone_behavior": "The iPhone shows model, serial, firmware and identifiers.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Identifiers stay on device and out of logs."
+    },
+    {
+      "id": "settings.language",
+      "category": "Settings & accessibility",
+      "title": "Language",
+      "iphone_behavior": "The iPhone sets the Watch language.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.region",
+      "category": "Settings & accessibility",
+      "title": "Region",
+      "iphone_behavior": "The iPhone sets the Watch region.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.return-to-clock",
+      "category": "Settings & accessibility",
+      "title": "Return to clock",
+      "iphone_behavior": "The iPhone configures when the Watch returns to the clock.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.background-refresh",
+      "category": "Settings & accessibility",
+      "title": "Background refresh",
+      "iphone_behavior": "The iPhone configures Watch background refresh.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.privacy",
+      "category": "Settings & accessibility",
+      "title": "Privacy settings",
+      "iphone_behavior": "The iPhone reviews Watch privacy and sensor permissions.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.reset",
+      "category": "Settings & accessibility",
+      "title": "Reset settings",
+      "iphone_behavior": "The iPhone resets Watch settings while keeping pairing where supported.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "settings.erase",
+      "category": "Settings & accessibility",
+      "title": "Erase all content and settings",
+      "iphone_behavior": "The iPhone erases the Watch after confirmation.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": "Owner-authorized erase only."
+    },
+    {
+      "id": "settings.accessibility-other",
+      "category": "Settings & accessibility",
+      "title": "Other accessibility settings",
+      "iphone_behavior": "The iPhone exposes the remaining accessibility options (contrast, tap-to-speak, etc.).",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.apple-id",
+      "category": "Secure & Apple-service",
+      "title": "Apple ID sign-in",
+      "iphone_behavior": "The iPhone holds the owner's Apple ID and passes the authorised account state to the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.icloud-sync",
+      "category": "Secure & Apple-service",
+      "title": "iCloud sync",
+      "iphone_behavior": "The iPhone syncs Watch-scoped data through iCloud.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.activation-lock",
+      "category": "Secure & Apple-service",
+      "title": "Activation Lock status",
+      "iphone_behavior": "The iPhone can show whether Activation Lock is enabled for the Watch.",
+      "status": "blocked",
+      "blocker": "B-ACTIVATION-LOCK",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.activation-lock-bypass",
+      "category": "Secure & Apple-service",
+      "title": "Activation Lock bypass",
+      "iphone_behavior": "No iPhone feature does this; it is a theft/abuse path.",
+      "status": "blocked",
+      "blocker": "B-ACTIVATION-LOCK",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": "Refused by policy, never implemented. Listed so the refusal is auditable."
+    },
+    {
+      "id": "secure.apple-pay",
+      "category": "Secure & Apple-service",
+      "title": "Apple Pay",
+      "iphone_behavior": "The iPhone provisions and manages Apple Pay cards for the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-PAY",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.wallet",
+      "category": "Secure & Apple-service",
+      "title": "Wallet passes",
+      "iphone_behavior": "The iPhone adds and manages passes shown on the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-PAY",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.transit",
+      "category": "Secure & Apple-service",
+      "title": "Transit cards",
+      "iphone_behavior": "The iPhone provisions transit cards and express travel state.",
+      "status": "blocked",
+      "blocker": "B-APPLE-PAY",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.secure-element",
+      "category": "Secure & Apple-service",
+      "title": "Secure element provisioning",
+      "iphone_behavior": "The iPhone provisions Apple-controlled applets into the Watch secure element.",
+      "status": "blocked",
+      "blocker": "B-APPLE-PAY",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.cellular-provisioning",
+      "category": "Secure & Apple-service",
+      "title": "Cellular plan provisioning",
+      "iphone_behavior": "The iPhone activates a Watch eSIM with the carrier.",
+      "status": "blocked",
+      "blocker": "B-CELLULAR-PROVISIONING",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.appstore",
+      "category": "Secure & Apple-service",
+      "title": "App Store account",
+      "iphone_behavior": "The iPhone authorises Watch App Store account access.",
+      "status": "blocked",
+      "blocker": "B-APP-STORE-DRM",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.imessage",
+      "category": "Secure & Apple-service",
+      "title": "iMessage",
+      "iphone_behavior": "The iPhone relays iMessage conversations to the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.facetime",
+      "category": "Secure & Apple-service",
+      "title": "FaceTime",
+      "iphone_behavior": "The iPhone relays FaceTime calls to the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.findmy-network",
+      "category": "Secure & Apple-service",
+      "title": "Find My network",
+      "iphone_behavior": "The iPhone uses Apple's Find My network for Watch location.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.health-icloud",
+      "category": "Secure & Apple-service",
+      "title": "Health iCloud sync",
+      "iphone_behavior": "The iPhone syncs Health data through iCloud.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.continuity-unlock",
+      "category": "Secure & Apple-service",
+      "title": "Continuity unlock",
+      "iphone_behavior": "The Watch unlocks a Mac or contributes to continuity authentication.",
+      "status": "blocked",
+      "blocker": "B-CONTINUITY-UNLOCK",
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.account-2fa",
+      "category": "Secure & Apple-service",
+      "title": "Apple account two-factor authentication",
+      "iphone_behavior": "The iPhone handles account 2FA prompts for the Watch.",
+      "status": "blocked",
+      "blocker": "B-APPLE-ACCOUNT",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "secure.stolen-device",
+      "category": "Secure & Apple-service",
+      "title": "Stolen device support",
+      "iphone_behavior": "No legitimate iPhone Watch feature supports operating a device the user does not own.",
+      "status": "blocked",
+      "blocker": "B-ACTIVATION-LOCK",
+      "phase": 5,
+      "implementation": [],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
+      "physical_verified": false,
+      "notes": "Refused by policy. The row exists so the refusal is visible and testable."
+    },
+    {
+      "id": "about.privacy-policy",
+      "category": "About, privacy & evidence",
+      "title": "Privacy policy",
+      "iphone_behavior": "The iPhone Watch app links privacy information for Health and account data.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "about.security-notes",
+      "category": "About, privacy & evidence",
+      "title": "Security notes",
+      "iphone_behavior": "Not a stock iPhone screen; Open Crown documents its borrowed privilege and agent surface.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "about.evidence",
+      "category": "About, privacy & evidence",
+      "title": "Evidence and blockers",
+      "iphone_behavior": "Not a stock iPhone screen; Open Crown shows what is verified, what is unverified and what is blocked.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "about.open-source",
+      "category": "About, privacy & evidence",
+      "title": "Open-source licences",
+      "iphone_behavior": "The iPhone Settings app shows software licences.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "about.blockers",
+      "category": "About, privacy & evidence",
+      "title": "Blocker transparency",
+      "iphone_behavior": "No equivalent; the product must not hide blocked iPhone parity behind a generic error.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 1,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ops.cleanroom-audit",
+      "category": "Operations & quality",
+      "title": "Clean-room similarity audit",
+      "iphone_behavior": "Not applicable to the iPhone app; required for this reimplementation.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [
+        "docs/cleanroom/audit/phase-0-baseline.md",
+        "tools/cleanroom/check-boundary.py"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/inventory/similarity-plan.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ops.quarantine-guard",
+      "category": "Operations & quality",
+      "title": "Reference quarantine guard",
+      "iphone_behavior": "No iPhone equivalent; keeps the quarantined reference out of tracked files and build inputs.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [
+        "tools/cleanroom/check-boundary.py"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/REFERENCE_BOUNDARY.md"
+      ],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ops.license-audit",
+      "category": "Operations & quality",
+      "title": "Licence audit",
+      "iphone_behavior": "Not applicable; required because the reference has no licence.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ops.secret-scan",
+      "category": "Operations & quality",
+      "title": "Secret and identifier scan",
+      "iphone_behavior": "Not applicable; Open Crown must keep pairing keys and device identifiers out of logs and commits.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ops.recovery-drill",
+      "category": "Operations & quality",
+      "title": "Recovery drill",
+      "iphone_behavior": "The iPhone recovers from reboot, unpair, watch reset and app reinstall.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ops.release-build",
+      "category": "Operations & quality",
+      "title": "Release build and install path",
+      "iphone_behavior": "The iPhone app ships through the App Store; Open Crown ships an APK with reproducible checks.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    },
+    {
+      "id": "ops.negative-tests",
+      "category": "Operations & quality",
+      "title": "Fuzz and negative tests",
+      "iphone_behavior": "Not user-visible; required for protocol robustness.",
+      "status": "unimplemented",
+      "blocker": null,
+      "phase": 6,
+      "implementation": [],
+      "tests": [],
+      "evidence": [],
+      "physical_verified": false,
+      "notes": ""
+    }
+  ]
+}

@@ -7,10 +7,15 @@ Apple Watch without an iPhone in the loop. The bootloader stays locked and the
 system partition stays untouched: when the app needs the Bluetooth controller it
 borrows root for the life of the boot, and a reboot takes it back.
 
-> **Status: private research.** The layout and modules are real; the Watch
-> protocol and pairing path are not implemented. The A52s page-cache chain is
-> built into the app; it auto-runs once per boot and shows a single status screen. It produces a
-> temporary init-domain relay that is consumed over ADB, not from the app.
+> **Status: private research, Phase 1 shell.** The app now has an
+> observation-first Apple-style Compose shell, a 212-row capability registry and
+> real device diagnostics. The Watch protocol and pairing path are not
+> implemented. The A52s page-cache chain is kept but only runs from an explicit
+> Diagnostics consent sheet; it produces a temporary init-domain relay that the
+> app itself cannot connect to. **K2a is measured blocked on the A52**: the real
+> `untrusted_app` domain is refused with EACCES while the shell domain connects.
+> See [the evidence](docs/evidence/a52-broker-untrusted-app.md) and
+> [13 — Status](docs/13-status.md).
 
 > **What it needs today.** A phone you can prepare: already rooted, or on a build
 > with a usable n-day. It is not a universal companion. The supported list is
@@ -39,15 +44,21 @@ Everything else here is inherited work. The new claim is:
 > SELinux, without Magisk's priv-app, hidden-API whitelist, or a persistent
 > module.**
 
-It is unproven. Until it passes, every "stock phone" sentence in these documents
-is a hypothesis. The experiment is [Phase 0](docs/06-roadmap.md), and it runs
-before the scaffolding, not after it.
+It is **not proven**, and the current A52 chain does not satisfy it. The chain
+yields init-domain uid 0, but the app's real `untrusted_app` domain is denied a
+socket connection, and the relay is an unauthenticated raw-syscall RPC that
+consumes an init thread until the phone watchdog-resets. Until a different
+privilege path passes, every "stock phone" sentence in these documents is a
+hypothesis. Evidence:
+[broker-probe-a52](docs/evidence/broker-probe-a52.md),
+[a52-broker-untrusted-app](docs/evidence/a52-broker-untrusted-app.md).
 
 ## What Open Crown is
 
 - A native Android app (Kotlin + Jetpack Compose) with a Rust protocol core.
-- **Borrowed privilege, one boot at a time:** a signed payload raises root, a
-  resident agent uses it, a reboot ends it. Nothing survives the reboot.
+- **Borrowed privilege, one boot at a time:** the in-tree chain is consent-gated
+  and quarantined; a resident agent does not exist yet. Nothing survives the
+  reboot.
 - A **resident agent** behind a visible foreground service for as long as a
   watch is paired. It is a root daemon while the phone is up; we say so.
 - A signed catalog of device-matched payloads and the agent they bootstrap.
