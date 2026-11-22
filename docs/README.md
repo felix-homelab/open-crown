@@ -16,9 +16,6 @@
 | [11 — Glossary](11-glossary.md) | Terms and the real protocol vocabulary |
 | [12 — Decisions](12-decisions.md) | The decision log this revision came from |
 | [13 — Status](13-status.md) | What exists, what is verified, what is blocked |
-| [A52 payload search](research/a52-payload-search.md) | What public payloads were checked for the A52 and why none is ready |
-| [A52 chain research](../research/a52-chain/README.md) | Research branch for an original A52 chain; lab-only, no working root |
-| [A52 chain overview](research/a52-chain-overview.md) | Full works/doesn't map and flowchart for the no-unlock A52 chain attempt |
 | [Provenance log](provenance.md) | Per-feature clean-room record |
 
 ## ADRs
@@ -39,9 +36,8 @@
 | [0012](adr/0012-catalog-key-custody.md) | Offline root, delegated signing keys, revocation, log | Accepted |
 | [0013](adr/0013-agent-ipc-envelope.md) | Protobuf envelope v1 with explicit limits | Accepted |
 | [0014](adr/0014-payload-index-and-readiness.md) | Source-level payload index and a data-only readiness engine | Accepted |
-| [0015](adr/0015-external-payload-quarantine.md) | External payloads quarantined; private-use licence deferred | Accepted for private development |
 | [0016](adr/0016-consent-gated-execution.md) | Consent-gated execution supervisor | Accepted for private development |
-| [0017](adr/0017-a52-chain-research.md) | A52 original-chain research branch; lab-only | Accepted for private research |
+| [0017](adr/0017-a52-own-pagecache-chain.md) | A52 page-cache chain built into the app; ADB-only relay | Accepted for private research |
 
 ## Status
 

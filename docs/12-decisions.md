@@ -114,15 +114,12 @@ signature, artifacts, revocation and agent version.
 and the app's probe/payload screens. Probing never stages, mints a token, runs a
 payload, or requests root.
 
-## 13. External payloads are quarantined
+## 13. External chains are not part of the tree
 
-**Decision:** upstream payload artifacts are extracted unchanged under
-`payloads/external/`, with provenance and licence notices, and are not
-MIT-licensed. Private use only until the licence decision is resolved.
-[ADR 0015](adr/0015-external-payload-quarantine.md).
-
-**Changes:** the first integrated external payload (`futex-timer`), the
-catalog/index entry, and the public-release gate.
+External chain directories, quarantined payload bundles, and the external CLI
+are removed. The only chain built into the app is the A52 page-cache
+experiment under `app/src/main/cpp/a52root/`, described by
+[ADR 0017](adr/0017-a52-own-pagecache-chain.md).
 
 ## 14. Execution is a consent-gated launch contract
 

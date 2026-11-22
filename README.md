@@ -7,9 +7,10 @@ Apple Watch without an iPhone in the loop. The bootloader stays locked and the
 system partition stays untouched: when the app needs the Bluetooth controller it
 borrows root for the life of the boot, and a reboot takes it back.
 
-> **Status: planning.** Design documents and a build skeleton. The layout is
-> real; the modules are stubs. There is no protocol logic, no payload, and no
-> working pairing path in this repository.
+> **Status: private research.** The layout and modules are real; the Watch
+> protocol and pairing path are not implemented. The A52s page-cache chain is
+> built into the app as an explicitly labelled research feature. It produces a
+> temporary init-domain relay that is consumed over ADB, not from the app.
 
 > **What it needs today.** A phone you can prepare: already rooted, or on a build
 > with a usable n-day. It is not a universal companion. The supported list is

@@ -17,7 +17,6 @@ catalog/
 ```
 
 External payload artifacts live outside `catalog/`, under
-`payloads/external/`, because they retain their upstream licences and are not
 part of the MIT tree (ADR 0015).
 
 ## Rules
@@ -39,8 +38,6 @@ and can never be READY (ADR 0014).
 
 `catalog/examples/signed/` is dummy bytes signed with a throwaway key; it
 exists to prove the Python signer and the Rust verifier agree. The first real
-artifact is the quarantined external `futex-timer` bundle under
-`payloads/external/` (ADR 0015). It is signed with a private-development key
 pinned in `catalog-keys.json`; the offline key ceremony in ADR 0012 has not
 happened. The catalog ships when the supply and review gates in
 [ADR 0010](../docs/adr/0010-ship-order.md) pass.

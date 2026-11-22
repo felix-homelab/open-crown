@@ -268,17 +268,17 @@ The M1 A52 (`SM-A528B`, `5.4.254-qgki-…`) is an `example` device in the
 supported-device list and has no indexed target. The probe therefore reports
 "recognised, nothing ready"; no payload is READY on it.
 
-## 17. External payloads (private development)
+## 17. In-tree A52 chain
 
-The supplied upstream payloads are not standalone bundles. They are
-quarantined unchanged under `payloads/external/` with a `PROVENANCE.md`, the
-upstream licence and a descriptive Open Crown catalog name. They are not
-MIT-licensed, and they are not Open Crown-authored code. See
-[ADR 0015](adr/0015-external-payload-quarantine.md).
+The only chain currently built into the app is the A52 page-cache experiment.
+It lives in `app/src/main/cpp/a52root/` with the A52 payload asset and is
+exposed as an explicitly labelled research section in the M1 screen.
 
-The first integrated artifact is `futex-timer`, the SamTimer DZJ3 payload for
-CVE-2026-98260. It is signed, indexed and READY on its exact target by the
-data-on-disk rules, but it has **not** been run or hardware-verified by Open
-Crown, and it needs a Shizuku/shell runner that the app does not have. The A52
-is not a target. Execution is a consent-gated launch contract
-([ADR 0016](adr/0016-consent-gated-execution.md)), not a root escalation.
+The chain stages a page-cache patch and an init-domain relay. Android's
+`untrusted_app` SELinux domain cannot connect to that relay, so the app cannot
+consume the root itself; the operator triggers and uses the relay over ADB. The
+relay and patch are memory-only and disappear at reboot. See
+[ADR 0017](adr/0017-a52-own-pagecache-chain.md).
+
+No external payload bundle, external CLI, or upstream chain directory is
+shipped by the app.

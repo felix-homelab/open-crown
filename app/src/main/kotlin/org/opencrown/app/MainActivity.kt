@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.io.File
@@ -33,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.opencrown.app.consent.ConsentRequest
+import org.opencrown.app.root.A52RootChain
 import org.opencrown.app.consent.ConsentScreen
 import org.opencrown.app.consent.ConsentState
 import org.opencrown.ffi.DeviceProbe
@@ -49,7 +52,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface {
-                    AppContent(filesDir) { name ->
+                    AppContent(this@MainActivity, filesDir) { name ->
                         assets.open(name).bufferedReader().use { it.readText() }
                     }
                 }
@@ -72,8 +75,10 @@ private data class ProbeOutcome(
 )
 
 @Composable
-private fun AppContent(filesDir: File, readAsset: (String) -> String) {
+private fun AppContent(context: android.content.Context, filesDir: File, readAsset: (String) -> String) {
     val scope = rememberCoroutineScope()
+    val rootChain = remember { A52RootChain(context) }
+    var rootLog by remember { mutableStateOf("temporary-root chain not run") }
     val device = remember { DeviceInfo.fromBuild() }
     val catalog = remember {
         runCatching {
@@ -155,6 +160,24 @@ private fun AppContent(filesDir: File, readAsset: (String) -> String) {
         HorizontalDivider()
         Spacer(Modifier.height(12.dp))
 
+        A52RootSection(
+            log = rootLog,
+            onRun = {
+                scope.launch {
+                    rootLog = "running A52 page-cache chain..."
+                    withContext(Dispatchers.IO) {
+                        rootChain.run(object : A52RootChain.Listener {
+                            override fun onLog(line: String) {
+                                rootLog = (rootLog + "\n" + line).takeLast(6000)
+                            }
+                        })
+                        rootLog = (rootLog + "\n" + rootChain.triggerInitLog() +
+                            "\nTrigger fallback: adb shell setprop debug.opencrown.a52 1" +
+                            "\nThe init relay is ADB-only; untrusted_app cannot connect.").takeLast(7000)
+                    }
+                }
+            },
+        )
         outcome.probe?.let { probe -> ProbeSection(probe) }
         outcome.error?.let { error ->
             Text("Probe failed: $error", color = MaterialTheme.colorScheme.error)
@@ -219,6 +242,28 @@ private fun AppContent(filesDir: File, readAsset: (String) -> String) {
             message?.let { Text(it) }
         }
     }
+}
+
+@Composable
+private fun A52RootSection(
+    log: String,
+    onRun: () -> Unit,
+) {
+    Text("A52 temporary root", style = MaterialTheme.typography.titleMedium)
+    Text(
+        "Research chain for SM-A528B / 5.4.254. The app stages the page-cache " +
+            "patch and builds the init relay. Android blocks untrusted_app from " +
+            "the relay socket, so trigger and consume it over ADB. It disappears " +
+            "at reboot.",
+        style = MaterialTheme.typography.bodySmall,
+    )
+    Button(onClick = onRun) { Text("Run chain") }
+    Text(
+        "After Run: adb shell setprop debug.opencrown.a52 1\n" +
+            "Then use the relay from an ADB shell. There is no silent app-side root.",
+        style = MaterialTheme.typography.bodySmall,
+    )
+    Text(log.takeLast(3000), style = MaterialTheme.typography.bodySmall)
 }
 
 @Composable

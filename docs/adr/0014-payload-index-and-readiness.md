@@ -33,10 +33,10 @@ payload, and its `targets` array carries the published per-device data:
 
 ```json
 {
-  "id": "org.opencrown.payload.root-my-galaxy",
+  "id": "org.opencrown.payload.example",
   "family": "futex-uaf",
   "status": "available",
-  "source": "root-my-galaxy",
+  "source": "example",
   "targets": [
     {
       "model": "SM-A536E",
