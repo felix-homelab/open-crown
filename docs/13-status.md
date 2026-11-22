@@ -25,7 +25,7 @@ capability is verified.
 | BLE discovery | Real unprivileged BLE scan for Apple manufacturer advertisements, RSSI and seen count; advertisements are not treated as watches. Physically exercised on the A52; the five observed advertisements were all refused as selectable | `data/BleDiscoveryRepository.kt`; [evidence](evidence/a52-discovery.md) |
 | Diagnostics | Real device facts, app SELinux context, Bluetooth permission state, payload profile, relay marker, broker reachability, pair/link state | `data/DeviceProbe.kt`, Diagnostics screen |
 | Sealed pair store | AES-GCM through Android Keystore, corrupt envelope treated as absent | `data/PairRecordStore.kt` |
-| Discovery rules | Bounded inventory, opaque tokens, TTL, stale-token rejection, no metadata means no selection. FE25 decode remains UNKNOWN | `core/src/discovery/mod.rs` |
+| Discovery rules | Bounded inventory, opaque tokens, TTL, stale-token rejection, no metadata means no selection. FE25 decode remains UNKNOWN. Rust owns the inventory; the Android scanner renders it | `core/src/discovery/mod.rs`; [wiring evidence](evidence/a52-rust-discovery.md) |
 | IDS rules | Route catalogue with class checks, epoch-scoped correlation, receipt versus effect, 15/30/60 s reconnect backoff | `core/src/ids/mod.rs` |
 | Provisioning rules | Ordered checkpoints, locale hard stop, activation/sync gating, strict versus owner-confirmed completion | `core/src/setup/mod.rs` |
 | Face delta rules | Complete baseline, operation validation, staged transaction, read-back-only APPLIED, timeout/disconnect UNKNOWN | `core/src/faces/mod.rs` |
