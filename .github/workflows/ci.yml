@@ -108,6 +108,13 @@ jobs:
           name: release-apk
           path: app/build/outputs/apk/release/app-release.apk
 
+      - name: Generate release SBOM
+        run: python3 tools/release/sbom.py --apk app/build/outputs/apk/release/app-release.apk --out release-sbom.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-sbom
+          path: release-sbom.cdx.json
+
       - name: APK report
         run: python3 tools/release/apk-report.py app/build/outputs/apk/debug/app-debug.apk --out apk-report.json
       - uses: actions/upload-artifact@v4

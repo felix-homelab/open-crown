@@ -49,7 +49,7 @@ release sign-off must record which option applies.
 
 ## Release gates still open
 
-- Generate an SBOM for the exact release artifact, not the workspace.
+- Generate a runtime-only SBOM for the exact release artifact; a workspace-wide draft now exists (docs/evidence/a52-release-sbom.md).
 - Bundle the required licence texts and notices in the APK or an adjacent file.
 - Record the JNA licence option and the MPL-2.0 file list.
 - Re-run the inventory after any dependency update.

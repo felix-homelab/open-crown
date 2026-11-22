@@ -37,6 +37,7 @@ capability is verified.
 | Release exclusion | Bench-signed release omits the quarantined relay library and payload asset; app starts and reports it absent | [evidence](evidence/a52-release-no-relay.md) |
 | Reproducibility | Two clean builds at b0c62b0 matched byte-for-byte, unsigned and debug-signed | [evidence](evidence/a52-release-reproducibility.md) |
 | Signing gate | Env-based release signing plus a script that rejects relay/payload and checks signature/minSdk | [evidence](evidence/a52-release-signing-gate.md) |
+| SBOM | 144-component CycloneDX draft for the exact APK, with native hashes; runtime narrowing/signing open | [evidence](evidence/a52-release-sbom.md) |
 | Secret scan | Tracked files scanned for private keys, provider tokens and signing material; CI enforced | tools/cleanroom/secret-scan.py |
 | Clean-room similarity | Phase 1: 94 product files vs 794 reference files, max containment 0.189, zero findings | [report](cleanroom/audit/phase-1-similarity.md) |
 | Feature registry | 232 rows generated from one source, with blockers and evidence | `tools/feature-registry/build.py`, `docs/cleanroom/feature-registry.json` |

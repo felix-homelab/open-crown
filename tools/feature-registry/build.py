@@ -875,7 +875,7 @@ A(f("ops.release-build", "Operations & quality", "Release build and install path
     "The iPhone app ships through the App Store; Open Crown ships an APK with reproducible checks.",
     "implemented_unverified", 6,
     impl=["app/proguard-rules.pro", "app/build.gradle.kts", "app/src/main/cpp/CMakeLists.txt", "app/src/main/kotlin/org/opencrown/app/root/PageCacheRelayChain.kt"],
-    evidence=["docs/evidence/a52-release-build.md", "docs/evidence/a52-release-no-relay.md", "docs/evidence/a52-release-reproducibility.md", "docs/evidence/a52-release-signing-gate.md"],
+    evidence=["docs/evidence/a52-release-build.md", "docs/evidence/a52-release-no-relay.md", "docs/evidence/a52-release-reproducibility.md", "docs/evidence/a52-release-signing-gate.md", "docs/evidence/a52-release-sbom.md"],
     notes="R8 release starts and loads UniFFI on the A52. Environment-based signing and tools/release/verify-artifact.sh enforce signature, minSdk 33 and exclusion of the quarantined relay/payload; CI runs the gate with a throwaway key. Two clean builds at b0c62b0 were byte-identical. Production key custody, SBOM and distribution are not verified."))
 A(f("ops.negative-tests", "Operations & quality", "Fuzz and negative tests",
     "Not user-visible; required for protocol robustness.",
