@@ -34,6 +34,7 @@ unauditable.
 | Pairing rules | [spec/02-pairing-security.md](cleanroom/spec/02-pairing-security.md) | none (uIKE/SPAKE/SMP UNKNOWN; no capture) | Lane A spec; reference phase/branch inventory | branch exclusivity, bond ordering, replacement safety | none | lead, 2026-11-22 |
 | Health mirror rules | [spec/07-settings-wifi-health.md](cleanroom/spec/07-settings-wifi-health.md) | none (encryption/anchors UNKNOWN; no capture) | Lane A spec; reference merge-rule inventory | newer-wins, tombstones, bounds, transactionality | none | lead, 2026-11-22 |
 | Wi-Fi guards | [spec/07-settings-wifi-health.md](cleanroom/spec/07-settings-wifi-health.md) | none (archive layout UNKNOWN; no capture) | Lane A spec; reference Wi-Fi trigger/limits | generation binding, expiry, delivery-versus-join | none | lead, 2026-11-22 |
+| Preference and pigment rules | [spec/07-settings-wifi-health.md](cleanroom/spec/07-settings-wifi-health.md) | none (NPS encodings UNKNOWN; no capture) | Lane A spec; reference key/domain/bounds inventory | unknown-as-state, baseline read-back, complete sets | none | lead, 2026-11-22 |
 
 ## Attestation
 

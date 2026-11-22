@@ -20,6 +20,7 @@ pub mod ids;
 pub mod notifications;
 pub mod pairing;
 pub mod session;
+pub mod settings;
 pub mod setup;
 pub mod telephony;
 pub mod transport;

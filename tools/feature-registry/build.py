@@ -161,6 +161,16 @@ A(f("foundation.faces-delta-rules", "Foundation", "Face mutation and read-back r
     "implemented_unverified", 4, impl=["core/src/faces/mod.rs"],
     evidence=["docs/cleanroom/spec/05-faces.md"],
     notes="Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."))
+A(f("foundation.preference-writes", "Foundation", "Preference write baselines and read-back",
+    "The iPhone confirms a Watch setting only after the exact key is observed with the new value.",
+    "implemented_unverified", 4, impl=["core/src/settings.rs"],
+    evidence=["docs/cleanroom/spec/07-settings-wifi-health.md"],
+    notes="Known key/domain table, unknown-never-false, pair/session/revision baseline, exact-key read-back and timeout-is-unknown. NPS value encodings remain UNKNOWN."))
+A(f("foundation.pigment-sets", "Foundation", "Pigment sets and baseline",
+    "The iPhone sends both complete pigment sets and confirms them from a new mirror.",
+    "implemented_unverified", 4, impl=["core/src/settings.rs"],
+    evidence=["docs/cleanroom/spec/07-settings-wifi-health.md"],
+    notes="1023 names/64 KiB bounds, duplicate/empty refusal, pair/session binding and exact two-set mirror confirmation. Palette namespace remains UNKNOWN."))
 A(f("foundation.wifi-guards", "Foundation", "Wi-Fi provisioning guards",
     "The iPhone dispatches one encrypted network archive per setup generation and never treats an ACK as a Wi-Fi join.",
     "implemented_unverified", 6, impl=["core/src/wifi.rs"],

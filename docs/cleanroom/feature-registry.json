@@ -491,6 +491,42 @@
       "notes": "Complete-baseline planning, last-face refusal, exact reorder, staged transaction, 180 s read-back and 16 MiB/64 KiB limits. Wire encoding remains UNKNOWN."
     },
     {
+      "id": "foundation.preference-writes",
+      "category": "Foundation",
+      "title": "Preference write baselines and read-back",
+      "iphone_behavior": "The iPhone confirms a Watch setting only after the exact key is observed with the new value.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [
+        "core/src/settings.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": "Known key/domain table, unknown-never-false, pair/session/revision baseline, exact-key read-back and timeout-is-unknown. NPS value encodings remain UNKNOWN."
+    },
+    {
+      "id": "foundation.pigment-sets",
+      "category": "Foundation",
+      "title": "Pigment sets and baseline",
+      "iphone_behavior": "The iPhone sends both complete pigment sets and confirms them from a new mirror.",
+      "status": "implemented_unverified",
+      "blocker": null,
+      "phase": 4,
+      "implementation": [
+        "core/src/settings.rs"
+      ],
+      "tests": [],
+      "evidence": [
+        "docs/cleanroom/spec/07-settings-wifi-health.md"
+      ],
+      "physical_verified": false,
+      "notes": "1023 names/64 KiB bounds, duplicate/empty refusal, pair/session binding and exact two-set mirror confirmation. Palette namespace remains UNKNOWN."
+    },
+    {
       "id": "foundation.wifi-guards",
       "category": "Foundation",
       "title": "Wi-Fi provisioning guards",

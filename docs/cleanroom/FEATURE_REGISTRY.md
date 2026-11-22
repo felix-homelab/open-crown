@@ -20,17 +20,17 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 3 |
-| implemented_unverified | 22 |
+| implemented_unverified | 24 |
 | blocked | 32 |
 | out_of_scope | 0 |
 | unimplemented | 167 |
-| **total** | **224** |
+| **total** | **226** |
 
 ## By category
 
 | Category | verified | implemented_unverified | blocked | out_of_scope | unimplemented | total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Foundation | 2 | 17 | 3 | 0 | 17 | 39 |
+| Foundation | 2 | 19 | 3 | 0 | 17 | 41 |
 | Onboarding & lifecycle | 0 | 0 | 0 | 0 | 6 | 6 |
 | Pairing & setup | 0 | 0 | 1 | 0 | 19 | 20 |
 | Notifications & communication | 1 | 0 | 1 | 0 | 19 | 21 |
@@ -72,6 +72,8 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | foundation.networkrelay | NetworkRelay / ESP / IPsec | unimplemented |  | 3 |
 | foundation.ids | IDS application session | unimplemented |  | 3 |
 | foundation.faces-delta-rules | Face mutation and read-back rules | implemented_unverified |  | 4 |
+| foundation.preference-writes | Preference write baselines and read-back | implemented_unverified |  | 4 |
+| foundation.pigment-sets | Pigment sets and baseline | implemented_unverified |  | 4 |
 | foundation.wifi-guards | Wi-Fi provisioning guards | implemented_unverified |  | 6 |
 | foundation.health-mirror | Health defaults mirror rules | implemented_unverified |  | 5 |
 | foundation.pairing-rules | Pairing branch and bond ordering rules | implemented_unverified |  | 3 |
