@@ -118,9 +118,12 @@ class CrownRepository(
 class AppGraph(context: Context) {
     val pairStore: PairRecordStore = KeystorePairRecordStore(context)
     val crown = CrownRepository(context, pairStore)
-    val discovery = BleDiscoveryRepository(context)
     val chain = ChainController(context)
     val onboarding = OnboardingStore(context)
     val featureRegistry: FeatureRegistry.LoadResult = FeatureRegistry.load(context)
     val core: CoreStatus = RustCore.probe()
+    private val discoveryCore = runCatching {
+        org.opencrown.ffi.DiscoveryBridge(core.rules?.discoveryTtlMs ?: 10_000UL)
+    }.getOrNull()
+    val discovery = BleDiscoveryRepository(context, discoveryCore)
 }

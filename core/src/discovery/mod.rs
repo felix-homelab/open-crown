@@ -50,6 +50,49 @@ impl CandidateToken {
     pub fn scan(self) -> ScanId {
         self.scan
     }
+
+    pub fn serial(self) -> u64 {
+        self.serial
+    }
+
+    pub fn revision(self) -> u32 {
+        self.revision
+    }
+}
+
+/// Stable opaque form for FFI/UI transport. It still contains no address.
+impl fmt::Display for CandidateToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:{}:{}", self.scan.value(), self.serial, self.revision)
+    }
+}
+
+impl std::str::FromStr for CandidateToken {
+    type Err = DiscoveryError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        let mut parts = value.split(':');
+        let scan = parts
+            .next()
+            .and_then(|part| part.parse::<u64>().ok())
+            .ok_or(DiscoveryError::UnknownCandidate)?;
+        let serial = parts
+            .next()
+            .and_then(|part| part.parse::<u64>().ok())
+            .ok_or(DiscoveryError::UnknownCandidate)?;
+        let revision = parts
+            .next()
+            .and_then(|part| part.parse::<u32>().ok())
+            .ok_or(DiscoveryError::UnknownCandidate)?;
+        if parts.next().is_some() || scan == 0 || serial == 0 {
+            return Err(DiscoveryError::UnknownCandidate);
+        }
+        Ok(Self {
+            scan: ScanId(scan),
+            serial,
+            revision,
+        })
+    }
 }
 
 /// Decoded setup metadata from FE25.
@@ -597,6 +640,20 @@ name"
             ),
             Err(DiscoveryError::InvalidAdvertisement(_))
         ));
+    }
+
+    #[test]
+    fn tokens_round_trip_without_exposing_an_address() {
+        let mut discovery = Discovery::default();
+        discovery.start_scan();
+        let token = discovery
+            .observe(advertisement(Some(metadata())), 100)
+            .unwrap();
+        let text = token.to_string();
+        assert_eq!(text.parse::<CandidateToken>().unwrap(), token);
+        assert!(!text.contains("1:2:3:4:5:6"));
+        assert!("garbage".parse::<CandidateToken>().is_err());
+        assert!("0:1:0".parse::<CandidateToken>().is_err());
     }
 
     #[test]

@@ -15,6 +15,7 @@ pub enum FfiError {
     NotReady { reason: String },
     Payload { reason: String },
     Config { reason: String },
+    Discovery { reason: String },
 }
 
 impl std::fmt::Display for FfiError {
@@ -23,6 +24,7 @@ impl std::fmt::Display for FfiError {
             Self::NotReady { reason } => write!(f, "not ready: {reason}"),
             Self::Payload { reason } => write!(f, "payload: {reason}"),
             Self::Config { reason } => write!(f, "config: {reason}"),
+            Self::Discovery { reason } => write!(f, "discovery: {reason}"),
         }
     }
 }
@@ -385,6 +387,171 @@ pub fn core_rules() -> CoreRules {
     }
 }
 
+/// One candidate as the app may display it. No transport address is exposed.
+#[derive(Debug, uniffi::Record)]
+pub struct FfiCandidate {
+    pub token: String,
+    pub name: Option<String>,
+    pub rssi: i32,
+    pub selectable: bool,
+    pub product_type: Option<String>,
+    pub os_version: Option<String>,
+    pub last_seen_ms: u64,
+}
+
+#[derive(Debug, uniffi::Record)]
+pub struct FfiSelection {
+    pub token: String,
+    pub product_type: String,
+    pub os_version: String,
+    pub rssi: i32,
+}
+
+/// A stateful discovery session owned by the app's scanner.
+///
+/// Inventory, expiry, token generation and selection validation live in the
+/// Rust core. Kotlin keeps only display metadata (advertisement type and raw
+/// bytes) that the core does not need.
+#[derive(uniffi::Object)]
+pub struct DiscoveryBridge {
+    inner: std::sync::Mutex<opencrown_core::discovery::Discovery>,
+}
+
+#[uniffi::export]
+impl DiscoveryBridge {
+    #[uniffi::constructor]
+    pub fn new(ttl_ms: u64) -> std::sync::Arc<Self> {
+        std::sync::Arc::new(Self {
+            inner: std::sync::Mutex::new(opencrown_core::discovery::Discovery::new(ttl_ms)),
+        })
+    }
+
+    pub fn start_scan(&self) -> Result<u64, FfiError> {
+        Ok(self.lock()?.start_scan().value())
+    }
+
+    pub fn stop_scan(&self) -> Result<(), FfiError> {
+        self.lock()?.stop_scan();
+        Ok(())
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn observe(
+        &self,
+        address_hex: String,
+        rssi: i32,
+        name: Option<String>,
+        product_type: Option<String>,
+        os_version: Option<String>,
+        metadata_hex: Option<String>,
+        now_ms: u64,
+    ) -> Result<String, FfiError> {
+        let address = decode_address(&address_hex)?;
+        let metadata = match (product_type, os_version, metadata_hex) {
+            (None, None, None) => None,
+            (Some(product_type), Some(os_version), Some(metadata_hex)) => {
+                let raw = opencrown_runtime::hex::decode(&metadata_hex).ok_or_else(|| {
+                    FfiError::Discovery {
+                        reason: "metadata is not hex".into(),
+                    }
+                })?;
+                Some(
+                    opencrown_core::discovery::SetupMetadata::decoded(
+                        product_type,
+                        os_version,
+                        &raw,
+                    )
+                    .map_err(|error| FfiError::Discovery {
+                        reason: error.to_string(),
+                    })?,
+                )
+            }
+            _ => {
+                return Err(FfiError::Discovery {
+                    reason: "metadata fields must be all present or all absent".into(),
+                });
+            }
+        };
+        let advertisement = opencrown_core::discovery::Advertisement::new(
+            address,
+            rssi.clamp(i32::from(i16::MIN), i32::from(i16::MAX)) as i16,
+            name,
+            metadata,
+        )
+        .map_err(|error| FfiError::Discovery {
+            reason: error.to_string(),
+        })?;
+        self.lock()?
+            .observe(advertisement, now_ms)
+            .map(|token| token.to_string())
+            .map_err(|error| FfiError::Discovery {
+                reason: error.to_string(),
+            })
+    }
+
+    pub fn candidates(&self, now_ms: u64) -> Result<Vec<FfiCandidate>, FfiError> {
+        Ok(self
+            .lock()?
+            .candidates(now_ms)
+            .into_iter()
+            .map(|candidate| FfiCandidate {
+                token: candidate.token.to_string(),
+                name: candidate.local_name,
+                rssi: i32::from(candidate.rssi),
+                selectable: candidate.selectable,
+                product_type: candidate
+                    .metadata
+                    .as_ref()
+                    .map(|m| m.product_type().to_string()),
+                os_version: candidate
+                    .metadata
+                    .as_ref()
+                    .map(|m| m.os_version().to_string()),
+                last_seen_ms: candidate.last_seen_ms,
+            })
+            .collect())
+    }
+
+    pub fn select(&self, token: String, now_ms: u64) -> Result<FfiSelection, FfiError> {
+        let token = token
+            .parse::<opencrown_core::discovery::CandidateToken>()
+            .map_err(|error| FfiError::Discovery {
+                reason: error.to_string(),
+            })?;
+        let selection =
+            self.lock()?
+                .select(token, now_ms)
+                .map_err(|error| FfiError::Discovery {
+                    reason: error.to_string(),
+                })?;
+        Ok(FfiSelection {
+            token: selection.token.to_string(),
+            product_type: selection.metadata.product_type().to_string(),
+            os_version: selection.metadata.os_version().to_string(),
+            rssi: i32::from(selection.rssi),
+        })
+    }
+}
+
+impl DiscoveryBridge {
+    fn lock(
+        &self,
+    ) -> Result<std::sync::MutexGuard<'_, opencrown_core::discovery::Discovery>, FfiError> {
+        self.inner.lock().map_err(|_| FfiError::Config {
+            reason: "discovery lock poisoned".into(),
+        })
+    }
+}
+
+fn decode_address(value: &str) -> Result<[u8; 6], FfiError> {
+    let bytes = opencrown_runtime::hex::decode(value).ok_or(FfiError::Discovery {
+        reason: "address is not hex".into(),
+    })?;
+    bytes.try_into().map_err(|_| FfiError::Discovery {
+        reason: "address must be six bytes".into(),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -521,6 +688,46 @@ mod tests {
         assert_eq!(rules.face_readback_timeout_ms, 180_000);
         assert_eq!(rules.setup_checkpoint_first, 1);
         assert_eq!(rules.setup_checkpoint_last, 18);
+    }
+
+    #[test]
+    fn discovery_bridge_keeps_inventory_and_selection_in_rust() {
+        let bridge = DiscoveryBridge::new(10_000);
+        bridge.start_scan().unwrap();
+        let token = bridge
+            .observe(
+                "010203040506".into(),
+                -40,
+                Some("Watch".into()),
+                None,
+                None,
+                None,
+                100,
+            )
+            .unwrap();
+        let candidates = bridge.candidates(100).unwrap();
+        assert_eq!(candidates.len(), 1);
+        assert!(!candidates[0].selectable);
+        assert!(bridge.select(token, 100).is_err());
+
+        let token = bridge
+            .observe(
+                "010203040506".into(),
+                -38,
+                Some("Watch".into()),
+                Some("Watch7,5".into()),
+                Some("26.2.0".into()),
+                Some("0102".into()),
+                110,
+            )
+            .unwrap();
+        let candidates = bridge.candidates(110).unwrap();
+        assert_eq!(candidates.len(), 1);
+        assert!(candidates[0].selectable);
+        assert_eq!(candidates[0].product_type.as_deref(), Some("Watch7,5"));
+        let selection = bridge.select(token, 110).unwrap();
+        assert_eq!(selection.os_version, "26.2.0");
+        bridge.stop_scan().unwrap();
     }
 
     fn example_root(tag: &str) -> PathBuf {

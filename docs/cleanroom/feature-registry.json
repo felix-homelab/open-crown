@@ -363,14 +363,17 @@
       "blocker": null,
       "phase": 2,
       "implementation": [
-        "core/src/discovery/mod.rs"
+        "core/src/discovery/mod.rs",
+        "ffi/src/lib.rs",
+        "app/src/main/kotlin/org/opencrown/app/data/BleDiscoveryRepository.kt"
       ],
       "tests": [],
       "evidence": [
-        "docs/cleanroom/spec/01-discovery.md"
+        "docs/cleanroom/spec/01-discovery.md",
+        "docs/evidence/a52-rust-discovery.md"
       ],
       "physical_verified": false,
-      "notes": "Bounded inventory, opaque tokens, TTL, stale-token rejection and the no-metadata-means-no-selection rule; host tests only."
+      "notes": "Rust owns the inventory/tokens/TTL and the app renders them on hardware; selection success is unverified without FE25 metadata and a Watch."
     },
     {
       "id": "foundation.ble-connect",

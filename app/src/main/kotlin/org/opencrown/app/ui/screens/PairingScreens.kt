@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,9 @@ fun DiscoveryScreen(
 ) {
     LaunchedEffect(Unit) {
         if (state is DiscoveryState.Idle) onStartScan()
+    }
+    DisposableEffect(Unit) {
+        onDispose { onStopScan() }
     }
     CrownScaffold(
         title = "Pair a watch",
@@ -166,9 +170,15 @@ private fun AdvertisementRow(
     CrownRow(
         title = advertisement.displayName ?: "Apple advertisement",
         subtitle = "Type 0x" + (advertisement.appleManufacturerType?.toString(16)?.padStart(2, '0') ?: "??") +
-            " \u00b7 RSSI " + advertisement.rssi + " dBm \u00b7 seen " + advertisement.seenCount + "\u00d7",
+            " \u00b7 RSSI " + advertisement.rssi + " dBm \u00b7 seen " + advertisement.seenCount + "\u00d7" +
+            (advertisement.productType?.let { " \u00b7 " + it } ?: ""),
         showDivider = showDivider,
-        trailing = { CrownStatusPill("Not selectable", CrownTone.NEUTRAL) },
+        trailing = {
+            CrownStatusPill(
+                if (advertisement.selectable) "Selectable" else "Not selectable",
+                CrownTone.NEUTRAL,
+            )
+        },
     )
 }
 
