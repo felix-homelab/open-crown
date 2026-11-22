@@ -247,7 +247,7 @@ fun NotificationsScreen(
     }
 }
 
-private fun hasNotificationAccess(context: android.content.Context): Boolean =
+internal fun hasNotificationAccess(context: android.content.Context): Boolean =
     NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
 
 @Composable
@@ -378,6 +378,11 @@ fun SettingsScreen(
                     onClick = { onNavigate(Destination.Diagnostics) },
                 )
                 CrownDisclosureRow(
+                    "Privacy and permissions",
+                    subtitle = "Local data, permissions and controls",
+                    onClick = { onNavigate(Destination.Privacy) },
+                )
+                CrownDisclosureRow(
                     "Evidence and blockers",
                     subtitle = verified.toString() + " verified capabilities",
                     onClick = { onNavigate(Destination.Evidence) },
@@ -496,6 +501,7 @@ fun AboutScreen(
     snapshot: CrownSnapshot?,
     onBack: () -> Unit,
     onOpenEvidence: () -> Unit,
+    onOpenPrivacy: () -> Unit,
     onResetOnboarding: () -> Unit,
 ) {
     val colors = CrownTheme.colors
@@ -536,6 +542,11 @@ fun AboutScreen(
                 CrownRow(
                     title = "No device identifiers in logs",
                     subtitle = "Diagnostics shows model and kernel, never the serial or a pairing key.",
+                    showDivider = true,
+                )
+                CrownDisclosureRow(
+                    "Privacy and permissions",
+                    onClick = onOpenPrivacy,
                     showDivider = false,
                 )
             }

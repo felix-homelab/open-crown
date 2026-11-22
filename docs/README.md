@@ -16,6 +16,9 @@
 | [11 — Glossary](11-glossary.md) | Terms and the real protocol vocabulary |
 | [12 — Decisions](12-decisions.md) | The decision log this revision came from |
 | [13 — Status](13-status.md) | What exists, what is verified, what is blocked |
+| [Privacy policy](privacy.md) | What data exists, where it lives, permissions and user controls |
+| [Security notes](security.md) | Trust boundaries, secrets, privileged payload, supply chain and gaps |
+| [Install and recovery](install.md) | Requirements, build, permissions, update, recovery and release gate |
 | [Provenance log](provenance.md) | Per-feature clean-room record |
 | [Clean-room provenance](cleanroom/PROVENANCE.md) | Lanes, custody, Apple-origin policy, payload-boundary finding |
 | [Reference boundary](cleanroom/REFERENCE_BOUNDARY.md) | What Lane B may and may not read; build independence |

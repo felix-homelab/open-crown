@@ -3359,42 +3359,56 @@
       "category": "About, privacy & evidence",
       "title": "Privacy policy",
       "iphone_behavior": "The iPhone Watch app links privacy information for Health and account data.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 6,
-      "implementation": [],
+      "implementation": [
+        "docs/privacy.md",
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/PrivacyScreen.kt"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/evidence/a52-privacy-screen.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Documented and rendered on the A52 with live permission state. Not a legal review."
     },
     {
       "id": "about.security-notes",
       "category": "About, privacy & evidence",
       "title": "Security notes",
       "iphone_behavior": "Not a stock iPhone screen; Open Crown documents its borrowed privilege and agent surface.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 6,
-      "implementation": [],
+      "implementation": [
+        "docs/security.md",
+        "SECURITY.md"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/security.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Trust boundaries, secret handling, privileged payload quarantine and supply-chain gaps documented."
     },
     {
       "id": "about.evidence",
       "category": "About, privacy & evidence",
       "title": "Evidence and blockers",
       "iphone_behavior": "Not a stock iPhone screen; Open Crown shows what is verified, what is unverified and what is blocked.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 1,
-      "implementation": [],
+      "implementation": [
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/EvidenceScreens.kt"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/cleanroom/FEATURE_REGISTRY.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Registry browser with filters, blocker detail and feature rows; physically exercised on the A52."
     },
     {
       "id": "about.open-source",
@@ -3415,14 +3429,19 @@
       "category": "About, privacy & evidence",
       "title": "Blocker transparency",
       "iphone_behavior": "No equivalent; the product must not hide blocked iPhone parity behind a generic error.",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "blocker": null,
       "phase": 1,
-      "implementation": [],
+      "implementation": [
+        "docs/cleanroom/BLOCKERS.md",
+        "app/src/main/kotlin/org/opencrown/app/ui/screens/EvidenceScreens.kt"
+      ],
       "tests": [],
-      "evidence": [],
+      "evidence": [
+        "docs/cleanroom/BLOCKERS.md"
+      ],
       "physical_verified": false,
-      "notes": ""
+      "notes": "Blocked rows name a catalog entry with dependency and reason in the app."
     },
     {
       "id": "ops.cleanroom-audit",

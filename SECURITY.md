@@ -1,7 +1,13 @@
 # Security policy
 
-Open Crown ships software that borrows root on the user's own phone. A
-vulnerability here is not an ordinary bug, and it is treated as critical.
+Open Crown is intended to run alongside a privileged agent on the user's own
+phone. A vulnerability in that agent or in the pairing path is treated as
+critical.
+
+**Current build:** no resident agent, watch transport or pairing implementation
+exists yet. The in-tree page-cache chain is quarantined research code behind an
+explicit Diagnostics consent sheet. See [docs/security.md](docs/security.md) for
+the current trust boundaries and gaps.
 
 ## Reporting
 

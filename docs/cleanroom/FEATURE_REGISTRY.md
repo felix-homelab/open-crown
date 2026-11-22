@@ -20,10 +20,10 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Status | Count |
 | --- | ---: |
 | verified | 3 |
-| implemented_unverified | 24 |
+| implemented_unverified | 28 |
 | blocked | 32 |
 | out_of_scope | 0 |
-| unimplemented | 167 |
+| unimplemented | 163 |
 | **total** | **226** |
 
 ## By category
@@ -41,7 +41,7 @@ row is verified, blocked, or out_of_scope with recorded approval.
 | Apps & software | 0 | 0 | 7 | 0 | 6 | 13 |
 | Settings & accessibility | 0 | 0 | 0 | 0 | 33 | 33 |
 | Secure & Apple-service | 0 | 0 | 17 | 0 | 0 | 17 |
-| About, privacy & evidence | 0 | 0 | 0 | 0 | 5 | 5 |
+| About, privacy & evidence | 0 | 4 | 0 | 0 | 1 | 5 |
 | Operations & quality | 0 | 5 | 0 | 0 | 2 | 7 |
 
 ## Rows
@@ -319,11 +319,11 @@ row is verified, blocked, or out_of_scope with recorded approval.
 
 | Id | Capability | Status | Blocker | Phase |
 | --- | --- | --- | --- | ---: |
-| about.privacy-policy | Privacy policy | unimplemented |  | 6 |
-| about.security-notes | Security notes | unimplemented |  | 6 |
-| about.evidence | Evidence and blockers | unimplemented |  | 1 |
+| about.privacy-policy | Privacy policy | implemented_unverified |  | 6 |
+| about.security-notes | Security notes | implemented_unverified |  | 6 |
+| about.evidence | Evidence and blockers | implemented_unverified |  | 1 |
 | about.open-source | Open-source licences | unimplemented |  | 6 |
-| about.blockers | Blocker transparency | unimplemented |  | 1 |
+| about.blockers | Blocker transparency | implemented_unverified |  | 1 |
 
 ### Operations & quality
 

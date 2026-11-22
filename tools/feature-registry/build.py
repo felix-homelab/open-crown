@@ -796,19 +796,25 @@ A(f("secure.stolen-device", "Secure & Apple-service", "Stolen device support",
 # ------------------------------------------------- About, privacy & evidence
 A(f("about.privacy-policy", "About, privacy & evidence", "Privacy policy",
     "The iPhone Watch app links privacy information for Health and account data.",
-    "unimplemented", 6))
+    "implemented_unverified", 6, impl=["docs/privacy.md", "app/src/main/kotlin/org/opencrown/app/ui/screens/PrivacyScreen.kt"],
+    evidence=["docs/evidence/a52-privacy-screen.md"],
+    notes="Documented and rendered on the A52 with live permission state. Not a legal review."))
 A(f("about.security-notes", "About, privacy & evidence", "Security notes",
     "Not a stock iPhone screen; Open Crown documents its borrowed privilege and agent surface.",
-    "unimplemented", 6))
+    "implemented_unverified", 6, impl=["docs/security.md", "SECURITY.md"],
+    evidence=["docs/security.md"],
+    notes="Trust boundaries, secret handling, privileged payload quarantine and supply-chain gaps documented."))
 A(f("about.evidence", "About, privacy & evidence", "Evidence and blockers",
     "Not a stock iPhone screen; Open Crown shows what is verified, what is unverified and what is blocked.",
-    "unimplemented", 1))
+    "implemented_unverified", 1, impl=["app/src/main/kotlin/org/opencrown/app/ui/screens/EvidenceScreens.kt"],
+    evidence=["docs/cleanroom/FEATURE_REGISTRY.md"], notes="Registry browser with filters, blocker detail and feature rows; physically exercised on the A52."))
 A(f("about.open-source", "About, privacy & evidence", "Open-source licences",
     "The iPhone Settings app shows software licences.",
     "unimplemented", 6))
 A(f("about.blockers", "About, privacy & evidence", "Blocker transparency",
     "No equivalent; the product must not hide blocked iPhone parity behind a generic error.",
-    "unimplemented", 1))
+    "implemented_unverified", 1, impl=["docs/cleanroom/BLOCKERS.md", "app/src/main/kotlin/org/opencrown/app/ui/screens/EvidenceScreens.kt"],
+    evidence=["docs/cleanroom/BLOCKERS.md"], notes="Blocked rows name a catalog entry with dependency and reason in the app."))
 
 # ------------------------------------------------------ Operations & quality
 A(f("ops.cleanroom-audit", "Operations & quality", "Clean-room similarity audit",

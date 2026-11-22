@@ -15,6 +15,7 @@ sealed interface Destination {
     data object Accessibility : Destination
     data object Diagnostics : Destination
     data object Evidence : Destination
+    data object Privacy : Destination
     data object About : Destination
     data class FeatureDetail(val id: String) : Destination
 }
